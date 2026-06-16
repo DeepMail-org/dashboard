@@ -38,6 +38,30 @@ export const CARTO_DARK_STYLE: StyleSpecification = {
   ],
 };
 
+export const CARTO_LIGHT_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    "carto-light": {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [
+    {
+      id: "carto-light-layer",
+      type: "raster",
+      source: "carto-light",
+      minzoom: 0,
+      maxzoom: 19,
+    },
+  ],
+};
+
 export const OSM_STYLE: StyleSpecification = {
   version: 8,
   sources: {
@@ -58,9 +82,18 @@ export const OSM_STYLE: StyleSpecification = {
   ],
 };
 
-export type MapStyleId = "carto" | "osm";
+export type MapStyleId = "carto" | "carto-light" | "osm";
 
 export const MAP_STYLES: Record<MapStyleId, { label: string; style: StyleSpecification }> = {
   carto: { label: "Carto Dark", style: CARTO_DARK_STYLE },
+  "carto-light": { label: "Carto Light", style: CARTO_LIGHT_STYLE },
   osm: { label: "OSM", style: OSM_STYLE },
 };
+
+/**
+ * Returns the appropriate default map style based on the current theme.
+ * Use this in map components to automatically pick dark/light tiles.
+ */
+export function getDefaultMapStyle(theme: string | undefined): MapStyleId {
+  return theme === "light" ? "carto-light" : "carto";
+}

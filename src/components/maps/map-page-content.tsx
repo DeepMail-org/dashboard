@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   ArrowLeft, ChevronRight, ChevronLeft, Target, Globe,
 } from "lucide-react";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/map";
 import { MapToolbar } from "@/components/maps/map-toolbar";
 import { MapPopupContent } from "@/components/maps/map-popup-content";
-import { SEVERITY_COLORS, CARTO_DARK_STYLE, MAP_STYLES, type MapStyleId } from "@/components/maps/map-theme";
+import { SEVERITY_COLORS, CARTO_DARK_STYLE, CARTO_LIGHT_STYLE, MAP_STYLES, getDefaultMapStyle, type MapStyleId } from "@/components/maps/map-theme";
 import {
   MOCK_GEO_POINTS, HOME_LOCATION, buildArcData, toGeoJson,
   type GeoMapPoint, type GeoArcDatum,
@@ -278,13 +279,20 @@ function ThreatSidebar({
 // ── Main Component ───────────────────────────────────────────────────────
 export default function MapPageContent() {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const points = MOCK_GEO_POINTS;
   const [mode, setMode] = useState<"arcs" | "2d">("arcs");
-  const [mapStyle, setMapStyle] = useState<MapStyleId>("carto");
+  const defaultStyle = getDefaultMapStyle(resolvedTheme);
+  const [mapStyle, setMapStyle] = useState<MapStyleId>(defaultStyle);
   const [clustersEnabled, setClustersEnabled] = useState(true);
   const [view3d, setView3d] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedIp, setSelectedIp] = useState<string | null>(null);
+
+  // Sync map style with theme
+  useEffect(() => {
+    setMapStyle(getDefaultMapStyle(resolvedTheme));
+  }, [resolvedTheme]);
 
   const handleSelectPoint = (p: GeoMapPoint | null) => {
     setSelectedIp(p?.ip ?? null);
@@ -297,7 +305,7 @@ export default function MapPageContent() {
   const handleReset = () => {
     setView3d(false);
     setClustersEnabled(true);
-    setMapStyle("carto");
+    setMapStyle(getDefaultMapStyle(resolvedTheme));
     setMode("arcs");
   };
 
@@ -373,7 +381,7 @@ export default function MapPageContent() {
             center={[20, 25]}
             zoom={2}
             className="h-full w-full"
-            styles={{ dark: CARTO_DARK_STYLE }}
+            styles={{ dark: MAP_STYLES[mapStyle]?.style ?? (resolvedTheme === "light" ? CARTO_LIGHT_STYLE : CARTO_DARK_STYLE) }}
             theme="dark"
           >
             <MapInner

@@ -8,8 +8,8 @@ interface MapPopupContentProps {
 export function MapPopupContent({ point }: MapPopupContentProps) {
   return (
     <div
-      className="min-w-[220px] max-w-[280px] rounded-lg border border-border p-0 text-fg"
-      style={{ background: "oklch(19% 0.005 280 / 0.97)", fontFamily: "Inter, sans-serif" }}
+      className="min-w-[220px] max-w-[280px] rounded-lg border border-border bg-surface/97 p-0 text-fg backdrop-blur-sm"
+      style={{ fontFamily: "Inter, sans-serif" }}
     >
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border/50 px-3 py-2">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { Map, MapControls, MapClusterLayer, MapPopup, useMap } from "@/components/ui/map";
 import { MapToolbar } from "@/components/maps/map-toolbar";
 import { MapPopupContent } from "@/components/maps/map-popup-content";
-import { SEVERITY_COLORS, CARTO_DARK_STYLE, MAP_STYLES, type MapStyleId } from "@/components/maps/map-theme";
+import { SEVERITY_COLORS, CARTO_DARK_STYLE, CARTO_LIGHT_STYLE, MAP_STYLES, getDefaultMapStyle, type MapStyleId } from "@/components/maps/map-theme";
 import { MOCK_GEO_POINTS, toGeoJson, type GeoMapPoint } from "@/lib/data-access/geo-points";
 import type { WidgetProps } from "@/lib/dashboard/types";
 
@@ -96,16 +97,26 @@ function MapInner({
 }
 
 export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
+  const { resolvedTheme } = useTheme();
   const points: GeoMapPoint[] = (data as GeoMapPoint[] | null) ?? MOCK_GEO_POINTS;
-  const [mapStyle, setMapStyle] = useState<MapStyleId>("carto");
+  const defaultStyle = getDefaultMapStyle(resolvedTheme);
+  const [mapStyle, setMapStyle] = useState<MapStyleId>(defaultStyle);
   const [clustersEnabled, setClustersEnabled] = useState(true);
   const [view3d, setView3d] = useState(false);
+
+  // Sync map style when theme changes
+  useEffect(() => {
+    const target = getDefaultMapStyle(resolvedTheme);
+    setMapStyle(target);
+  }, [resolvedTheme]);
 
   const handleReset = () => {
     setView3d(false);
     setClustersEnabled(true);
-    setMapStyle("carto");
+    setMapStyle(getDefaultMapStyle(resolvedTheme));
   };
+
+  const currentStyle = MAP_STYLES[mapStyle]?.style ?? (resolvedTheme === "light" ? CARTO_LIGHT_STYLE : CARTO_DARK_STYLE);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-md">
@@ -114,7 +125,7 @@ export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
         zoom={1.5}
         className="h-full w-full"
         loading={isLoading}
-        styles={{ dark: CARTO_DARK_STYLE }}
+        styles={{ dark: currentStyle }}
         theme="dark"
       >
         <MapInner
