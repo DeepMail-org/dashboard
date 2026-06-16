@@ -121,14 +121,14 @@ function registerBuiltinWidgets(): void {
   widgetRegistry.register({
     id: "geo-threat-map",
     name: "Geo Threat Map",
-    description: "Geographic threat origin visualization",
+    description: "Interactive global threat map with clustering, arc visualization, and rich popups. Expandable to full-page view.",
     icon: "Globe",
     category: "intelligence",
     size: { default: { w: 5, h: 3 }, min: { w: 3, h: 2 }, max: { w: 12, h: 6 } },
     dataSource: { type: "websocket", channel: "geo_threats" },
     loader: () => import("@/components/widgets/geo-threat-map"),
     isDefault: false,
-    tags: ["geo", "map", "threats", "globe"],
+    tags: ["geo", "map", "threats", "clustering", "arcs", "interactive"],
   });
 
   widgetRegistry.register({

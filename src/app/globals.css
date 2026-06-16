@@ -116,6 +116,91 @@ html {
   color-scheme: dark;
 }
 
+html.light {
+  color-scheme: light;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Light Theme Token Overrides
+   Applied when <html class="light">
+   ═══════════════════════════════════════════════════════════ */
+
+html.light {
+  /* ── Background & Surface ─────────────────────────── */
+  --color-bg:             oklch(97% 0.005 280);
+  --color-surface:        oklch(100% 0 0);
+  --color-surface-hover:  oklch(95% 0.005 280);
+  --color-surface-2:      oklch(96% 0.005 280);
+  --color-surface-3:      oklch(93% 0.005 280);
+
+  /* ── Text ─────────────────────────────────────────── */
+  --color-fg:         oklch(15% 0.005 280);
+  --color-secondary:  oklch(35% 0.01 280);
+  --color-muted:      oklch(50% 0.01 280);
+  --color-dimmed:     oklch(65% 0.01 280);
+
+  /* ── Borders ──────────────────────────────────────── */
+  --color-border:       oklch(85% 0.01 280);
+  --color-border-hover: oklch(75% 0.01 280);
+
+  /* ── Accent (Purple — slightly more vivid for light) */
+  --color-accent:       oklch(50% 0.2 280);
+  --color-accent-soft:  oklch(50% 0.2 280 / 0.15);
+  --color-accent-muted: oklch(50% 0.2 280 / 0.08);
+
+  /* ── Status ───────────────────────────────────────── */
+  --color-success:    oklch(55% 0.18 160);
+  --color-warning:    oklch(60% 0.18 70);
+  --color-danger:     oklch(55% 0.22 25);
+  --color-orange:     oklch(58% 0.2 45);
+  --color-info:       oklch(52% 0.18 240);
+
+  /* ── Status Soft Backgrounds ──────────────────────── */
+  --color-success-soft:  oklch(55% 0.18 160 / 0.1);
+  --color-warning-soft:  oklch(60% 0.18 70 / 0.1);
+  --color-danger-soft:   oklch(55% 0.22 25 / 0.1);
+  --color-orange-soft:   oklch(58% 0.2 45 / 0.1);
+
+  /* ── Shadows (lighter for light mode) ────────────── */
+  --shadow-sm:    0 1px 2px oklch(0% 0 0 / 0.06);
+  --shadow-md:    0 2px 8px oklch(0% 0 0 / 0.08);
+  --shadow-lg:    0 4px 16px oklch(0% 0 0 / 0.1);
+  --shadow-card:  0 1px 3px oklch(0% 0 0 / 0.08), 0 1px 2px oklch(0% 0 0 / 0.04);
+  --shadow-glow:  0 0 12px oklch(50% 0.2 280 / 0.2);
+
+  /* ── shadcn compat ────────────────────────────────── */
+  --color-background:           oklch(97% 0.005 280);
+  --color-foreground:           oklch(15% 0.005 280);
+  --color-card:                 oklch(100% 0 0);
+  --color-card-foreground:      oklch(15% 0.005 280);
+  --color-popover:              oklch(100% 0 0);
+  --color-popover-foreground:   oklch(15% 0.005 280);
+  --color-primary:              oklch(50% 0.2 280);
+  --color-primary-foreground:   oklch(98% 0 0);
+  --color-secondary-foreground: oklch(35% 0.01 280);
+  --color-muted-foreground:     oklch(50% 0.01 280);
+  --color-accent-foreground:    oklch(15% 0.005 280);
+  --color-destructive:          oklch(55% 0.22 25);
+  --color-destructive-foreground: oklch(98% 0 0);
+  --color-input:                oklch(85% 0.01 280);
+  --color-ring:                 oklch(50% 0.2 280);
+}
+
+html.light ::selection {
+  background: oklch(50% 0.2 280 / 0.2);
+  color: oklch(15% 0.005 280);
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: oklch(78% 0.01 280);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: oklch(65% 0.01 280);
+}
+html.light * {
+  scrollbar-color: oklch(78% 0.01 280) transparent;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-fg);
@@ -401,5 +486,98 @@ body {
     transform: rotate(calc(var(--angle) * 1deg + 360deg))
       translateY(calc(var(--radius) * 1px))
       rotate(calc((var(--angle) * -1deg) - 360deg));
+  }
+}
+
+@layer base {
+  /* ═══════════════════════════════════════════════════════════
+     Map Popup & Control Overrides
+     ═══════════════════════════════════════════════════════════ */
+
+  .maplibregl-popup-content {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .maplibregl-popup-tip {
+    border-top-color: oklch(19% 0.005 280 / 0.97) !important;
+    display: none !important;
+  }
+
+  .maplibregl-ctrl-group {
+    background: oklch(19% 0.005 280 / 0.9) !important;
+    border: 1px solid oklch(26% 0.01 280) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  .maplibregl-ctrl-group button {
+    background: transparent !important;
+    border-color: oklch(26% 0.01 280) !important;
+  }
+
+  .maplibregl-ctrl-group button:hover {
+    background: oklch(23% 0.01 280) !important;
+  }
+
+  .maplibregl-ctrl-group button + button {
+    border-top: 1px solid oklch(26% 0.01 280) !important;
+  }
+
+  .maplibregl-ctrl button .maplibregl-ctrl-icon {
+    filter: invert(1) brightness(0.9) !important;
+  }
+
+  .maplibregl-popup-close-button {
+    color: oklch(65% 0.01 280) !important;
+    font-size: 16px !important;
+    padding: 4px 8px !important;
+  }
+
+  .maplibregl-popup-close-button:hover {
+    color: oklch(98% 0 0) !important;
+    background: transparent !important;
+  }
+
+  /* Hide map attribution / trademark */
+  .maplibregl-ctrl-attrib,
+  .maplibregl-ctrl-attrib-inner,
+  .mapboxgl-ctrl-attrib {
+    display: none !important;
+  }
+
+  /* ── Light mode map control overrides ───────────── */
+  html.light .maplibregl-ctrl-group {
+    background: oklch(100% 0 0 / 0.92) !important;
+    border-color: oklch(85% 0.01 280) !important;
+  }
+
+  html.light .maplibregl-ctrl-group button {
+    border-color: oklch(90% 0.005 280) !important;
+  }
+
+  html.light .maplibregl-ctrl-group button:hover {
+    background: oklch(95% 0.005 280) !important;
+  }
+
+  html.light .maplibregl-ctrl-group button + button {
+    border-top-color: oklch(90% 0.005 280) !important;
+  }
+
+  html.light .maplibregl-ctrl button .maplibregl-ctrl-icon {
+    filter: none !important;
+  }
+
+  html.light .maplibregl-popup-close-button {
+    color: oklch(40% 0.01 280) !important;
+  }
+
+  html.light .maplibregl-popup-close-button:hover {
+    color: oklch(15% 0.005 280) !important;
   }
 }

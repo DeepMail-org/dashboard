@@ -44,10 +44,11 @@ export function WidgetCard({
               <RefreshCw className="h-3 w-3" />
             </button>
           )}
-          {!isLocked && onExpand && (
+          {onExpand && (
             <button
               onClick={onExpand}
               className="rounded p-1 text-muted transition-colors hover:bg-surface-hover hover:text-fg"
+              title="Full screen"
             >
               <Maximize2 className="h-3 w-3" />
             </button>

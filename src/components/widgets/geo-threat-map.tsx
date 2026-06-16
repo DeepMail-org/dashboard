@@ -1,171 +1,152 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { useState, useEffect, useMemo } from "react";
+import { Map, MapControls, MapClusterLayer, MapPopup, useMap } from "@/components/ui/map";
+import { MapToolbar } from "@/components/maps/map-toolbar";
+import { MapPopupContent } from "@/components/maps/map-popup-content";
+import { SEVERITY_COLORS, CARTO_DARK_STYLE, MAP_STYLES, type MapStyleId } from "@/components/maps/map-theme";
+import { MOCK_GEO_POINTS, toGeoJson, type GeoMapPoint } from "@/lib/data-access/geo-points";
 import type { WidgetProps } from "@/lib/dashboard/types";
 
-const THREAT_ORIGINS = [
-  { country: "Russia", lat: 55.75, lng: 37.62, count: 847, severity: "critical" as const },
-  { country: "China", lat: 39.91, lng: 116.40, count: 623, severity: "high" as const },
-  { country: "Nigeria", lat: 6.52, lng: 3.38, count: 412, severity: "high" as const },
-  { country: "Brazil", lat: -23.55, lng: -46.63, count: 298, severity: "medium" as const },
-  { country: "Iran", lat: 35.69, lng: 51.39, count: 234, severity: "high" as const },
-  { country: "India", lat: 19.08, lng: 72.88, count: 189, severity: "medium" as const },
-  { country: "Romania", lat: 44.43, lng: 26.10, count: 156, severity: "medium" as const },
-  { country: "Vietnam", lat: 21.03, lng: 105.85, count: 134, severity: "low" as const },
-];
+// Inner component that has access to useMap()
+function MapInner({
+  points,
+  clustersEnabled,
+  view3d,
+  mapStyle,
+}: {
+  points: GeoMapPoint[];
+  clustersEnabled: boolean;
+  view3d: boolean;
+  mapStyle: MapStyleId;
+}) {
+  const { map, isLoaded } = useMap();
+  const [selectedPoint, setSelectedPoint] = useState<{
+    coords: [number, number];
+    data: GeoMapPoint;
+  } | null>(null);
 
-const SEV_COLORS: Record<string, string> = {
-  critical: "#e54040",
-  high: "#e58040",
-  medium: "#c8a030",
-  low: "#7c6fcd",
-};
-
-export default function GeoThreatMap({ isLoading, containerWidth, containerHeight }: WidgetProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-
+  // Handle 3D pitch toggle
   useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
-
-    const map = new maplibregl.Map({
-      container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          "carto-dark": {
-            type: "raster",
-            tiles: [
-              "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-              "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-              "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-            ],
-            tileSize: 256,
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-          },
-        },
-        layers: [
-          {
-            id: "carto-dark-layer",
-            type: "raster",
-            source: "carto-dark",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-        ],
-      },
-      center: [30, 25],
-      zoom: 1.5,
-      attributionControl: false,
-    });
-
-    map.on("load", () => {
-      const geojson: GeoJSON.FeatureCollection = {
-        type: "FeatureCollection",
-        features: THREAT_ORIGINS.map((t) => ({
-          type: "Feature" as const,
-          geometry: { type: "Point" as const, coordinates: [t.lng, t.lat] },
-          properties: {
-            country: t.country,
-            count: t.count,
-            severity: t.severity,
-            color: SEV_COLORS[t.severity],
-            radius: Math.max(8, Math.sqrt(t.count) * 1.2),
-          },
-        })),
-      };
-
-      map.addSource("threats", { type: "geojson", data: geojson });
-
-      map.addLayer({
-        id: "threat-glow",
-        type: "circle",
-        source: "threats",
-        paint: {
-          "circle-radius": ["get", "radius"],
-          "circle-color": ["get", "color"],
-          "circle-opacity": 0.25,
-          "circle-blur": 1,
-        },
-      });
-
-      map.addLayer({
-        id: "threat-points",
-        type: "circle",
-        source: "threats",
-        paint: {
-          "circle-radius": ["*", ["get", "radius"], 0.5],
-          "circle-color": ["get", "color"],
-          "circle-opacity": 0.9,
-          "circle-stroke-width": 1,
-          "circle-stroke-color": ["get", "color"],
-          "circle-stroke-opacity": 0.5,
-        },
-      });
-
-      const popup = new maplibregl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        className: "dm-map-popup",
-      });
-
-      map.on("mouseenter", "threat-points", (e) => {
-        map.getCanvas().style.cursor = "pointer";
-        const feature = e.features?.[0];
-        if (!feature || feature.geometry.type !== "Point") return;
-        const coords = feature.geometry.coordinates.slice() as [number, number];
-        const props = feature.properties;
-        popup
-          .setLngLat(coords)
-          .setHTML(
-            `<div style="font-family:Inter,sans-serif;font-size:11px;color:#e8e8e8;padding:2px 0;">
-              <strong>${props?.country}</strong><br/>
-              <span style="color:${props?.color}">${props?.count} threats</span>
-              <span style="opacity:0.5"> · ${props?.severity}</span>
-            </div>`
-          )
-          .addTo(map);
-      });
-
-      map.on("mouseleave", "threat-points", () => {
-        map.getCanvas().style.cursor = "";
-        popup.remove();
-      });
-    });
-
-    mapRef.current = map;
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (mapRef.current && containerWidth && containerHeight) {
-      mapRef.current.resize();
+    if (!isLoaded || !map) return;
+    if (view3d) {
+      map.easeTo({ pitch: 60, bearing: -20, duration: 1000 });
+    } else {
+      map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
     }
-  }, [containerWidth, containerHeight]);
+  }, [view3d, isLoaded, map]);
 
-  if (isLoading) return <div className="h-full w-full animate-pulse rounded-lg bg-surface" />;
+  // Handle style switching
+  useEffect(() => {
+    if (!isLoaded || !map) return;
+    const style = MAP_STYLES[mapStyle].style;
+    map.setStyle(style);
+  }, [mapStyle, isLoaded, map]);
+
+  const geoJSON = useMemo(() => toGeoJson(points), [points]);
+
+  return (
+    <>
+      <MapControls
+        position="bottom-right"
+        showZoom
+        showFullscreen
+      />
+
+      {clustersEnabled ? (
+        <MapClusterLayer
+          data={geoJSON}
+          clusterMaxZoom={14}
+          clusterRadius={50}
+          clusterColors={[SEVERITY_COLORS.low, SEVERITY_COLORS.medium, SEVERITY_COLORS.critical]}
+          clusterThresholds={[5, 20]}
+          pointColor={SEVERITY_COLORS.high}
+          onPointClick={(feature, coords) => {
+            const props = feature.properties as unknown as GeoMapPoint;
+            setSelectedPoint({ coords, data: props });
+          }}
+        />
+      ) : (
+        <MapClusterLayer
+          data={geoJSON}
+          clusterMaxZoom={0}
+          clusterRadius={1}
+          clusterColors={[SEVERITY_COLORS.low, SEVERITY_COLORS.medium, SEVERITY_COLORS.critical]}
+          clusterThresholds={[9999, 99999]}
+          pointColor={SEVERITY_COLORS.high}
+          onPointClick={(feature, coords) => {
+            const props = feature.properties as unknown as GeoMapPoint;
+            setSelectedPoint({ coords, data: props });
+          }}
+        />
+      )}
+
+      {selectedPoint && (
+        <MapPopup
+          longitude={selectedPoint.coords[0]}
+          latitude={selectedPoint.coords[1]}
+          closeButton
+          onClose={() => setSelectedPoint(null)}
+        >
+          <MapPopupContent point={selectedPoint.data} />
+        </MapPopup>
+      )}
+    </>
+  );
+}
+
+export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
+  const points: GeoMapPoint[] = (data as GeoMapPoint[] | null) ?? MOCK_GEO_POINTS;
+  const [mapStyle, setMapStyle] = useState<MapStyleId>("carto");
+  const [clustersEnabled, setClustersEnabled] = useState(true);
+  const [view3d, setView3d] = useState(false);
+
+  const handleReset = () => {
+    setView3d(false);
+    setClustersEnabled(true);
+    setMapStyle("carto");
+  };
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-md">
-      <div ref={mapContainer} className="h-full w-full" />
-      <style>{`
-        .dm-map-popup .maplibregl-popup-content {
-          background: oklch(19% 0.005 280 / 0.95);
-          border: 1px solid oklch(26% 0.01 280);
-          border-radius: 6px;
-          padding: 6px 10px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        .dm-map-popup .maplibregl-popup-tip {
-          border-top-color: oklch(19% 0.005 280 / 0.95);
-        }
-      `}</style>
+      <Map
+        center={[30, 25]}
+        zoom={1.5}
+        className="h-full w-full"
+        loading={isLoading}
+        styles={{ dark: CARTO_DARK_STYLE }}
+        theme="dark"
+      >
+        <MapInner
+          points={points}
+          clustersEnabled={clustersEnabled}
+          view3d={view3d}
+          mapStyle={mapStyle}
+        />
+      </Map>
+
+      {/* Toolbar overlay */}
+      <div className="absolute top-2 left-2 z-10">
+        <MapToolbar
+          activeStyle={mapStyle}
+          onStyleChange={setMapStyle}
+          clustersEnabled={clustersEnabled}
+          onToggleClusters={() => setClustersEnabled((v) => !v)}
+          view3d={view3d}
+          onToggle3d={() => setView3d((v) => !v)}
+          onReset={handleReset}
+        />
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-2 left-2 z-10 flex items-center gap-3 rounded-lg border border-border bg-surface/90 px-3 py-2 backdrop-blur-sm">
+        {Object.entries(SEVERITY_COLORS).map(([sev, color]) => (
+          <div key={sev} className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-[10px] capitalize text-muted">{sev}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
