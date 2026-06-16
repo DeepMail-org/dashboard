@@ -1,222 +1,479 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Plus, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-  createColumnHelper,
-  type SortingState,
-} from "@tanstack/react-table";
-import {
-  Table, TableHeader, TableHead, TableBody, TableRow, TableCell,
-} from "@/components/ui/table";
+  ChevronDown, ChevronRight, Search, Plus, RefreshCw,
+  Shield, ExternalLink, UserPlus, FolderOpen, CheckCircle,
+  ArrowUpDown, ArrowUp, ArrowDown, Grid3x3
+} from "lucide-react";
+import { SeverityPill } from "@/components/ui/severity-pill";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { ExportButton } from "@/components/ui/export-button";
+import { FilterChipBar } from "@/components/detections/detection-filter-bar";
+import { SkeletonTable } from "@/components/ui/skeleton-table";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MOCK_DETECTIONS, type Detection, type Severity, type DetectionStatus } from "@/lib/data-access/detections";
+import { cn } from "@/lib/utils";
+import { format, parseISO } from "date-fns";
+import { toast } from "sonner";
 
-type Severity = "critical" | "high" | "medium" | "low";
-type RuleTab = "all" | "custom" | "yara" | "sigma" | "ml";
-
-interface DetectionRule {
-  id: string;
-  name: string;
-  category: string;
-  severity: Severity;
-  hits24h: number;
-  status: "Enabled" | "Testing" | "Disabled";
-  lastTriggered: string;
-  tab: RuleTab;
-}
-
-const DEMO_RULES: DetectionRule[] = [
-  { id: "DM-PHI-001", name: "BEC Wire Transfer Pattern", category: "Phishing", severity: "critical", hits24h: 47, status: "Enabled", lastTriggered: "2 min ago", tab: "custom" },
-  { id: "DM-MAL-014", name: "Emotet Dropper Signature", category: "Malware", severity: "critical", hits24h: 23, status: "Enabled", lastTriggered: "8 min ago", tab: "yara" },
-  { id: "DM-CRD-007", name: "Credential Harvest Login Clone", category: "Credential", severity: "high", hits24h: 18, status: "Enabled", lastTriggered: "15 min ago", tab: "custom" },
-  { id: "DM-C2-003", name: "C2 Beacon DNS Pattern", category: "C2", severity: "high", hits24h: 9, status: "Enabled", lastTriggered: "32 min ago", tab: "sigma" },
-  { id: "DM-PHI-019", name: "Impersonation Display Name", category: "Phishing", severity: "medium", hits24h: 14, status: "Enabled", lastTriggered: "1h ago", tab: "custom" },
-  { id: "DM-MAL-022", name: "Macro-Enabled Doc Heuristic", category: "Malware", severity: "medium", hits24h: 7, status: "Enabled", lastTriggered: "2h ago", tab: "sigma" },
-  { id: "DM-SPM-041", name: "Bulk Sender Reputation Score", category: "Spam", severity: "low", hits24h: 312, status: "Enabled", lastTriggered: "1 min ago", tab: "custom" },
-  { id: "DM-ML-002", name: "NLP Intent Classifier v3", category: "ML Model", severity: "high", hits24h: 56, status: "Enabled", lastTriggered: "30s ago", tab: "ml" },
-  { id: "DM-YAR-008", name: "QakBot Payload YARA", category: "Malware", severity: "critical", hits24h: 3, status: "Testing", lastTriggered: "4h ago", tab: "yara" },
-];
-
-const SEV_PILL: Record<Severity, string> = {
-  critical: "text-danger bg-danger/10 border border-danger/20",
-  high: "text-orange bg-orange/10 border border-orange/20",
-  medium: "text-warning bg-warning/10 border border-warning/20",
-  low: "text-muted bg-fg/5 border border-border",
-};
-
-const STATUS_COLOR: Record<string, string> = {
-  Enabled: "text-success",
-  Testing: "text-muted",
-  Disabled: "text-dimmed",
-};
-
+// ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: "847", label: "Total Rules Active" },
-  { value: "126", label: "Triggered Today", color: "text-danger" },
-  { value: "94.2%", label: "True Positive Rate", color: "text-success" },
-  { value: "12", label: "New Rules (7d)" },
+  { value: "127",   label: "Detections Today",     color: "text-fg" },
+  { value: "14",    label: "Critical",              color: "text-danger" },
+  { value: "94.2%", label: "True Positive Rate",    color: "text-success" },
+  { value: "3",     label: "Open Incidents",        color: "text-orange" },
 ];
 
-const columnHelper = createColumnHelper<DetectionRule>();
-
-const columns = [
-  columnHelper.accessor("id", {
-    header: "Rule ID",
-    cell: (info) => <span className="font-mono text-xs text-accent">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: (info) => <span className="text-[13px] font-medium text-fg">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("category", {
-    header: "Category",
-    cell: (info) => <span className="text-[13px] text-muted">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("severity", {
-    header: "Severity",
-    cell: (info) => (
-      <span className={`inline-block rounded px-2 py-0.5 text-[11px] font-medium capitalize ${SEV_PILL[info.getValue()]}`}>
-        {info.getValue()}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("hits24h", {
-    header: "Hits (24h)",
-    cell: (info) => <span className="font-mono text-[13px] text-fg">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => <span className={`text-[13px] ${STATUS_COLOR[info.getValue()]}`}>{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("lastTriggered", {
-    header: "Last Triggered",
-    cell: (info) => <span className="font-mono text-xs text-muted">{info.getValue()}</span>,
-    enableSorting: false,
-  }),
-];
-
-function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
-  if (sorted === "asc") return <ArrowUp className="h-2.5 w-2.5" />;
-  if (sorted === "desc") return <ArrowDown className="h-2.5 w-2.5" />;
-  return <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />;
-}
-
-export default function DetectionsPage() {
-  const [activeTab, setActiveTab] = useState<RuleTab>("all");
-  const [search, setSearch] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const data = useMemo(() => {
-    if (activeTab === "all") return DEMO_RULES;
-    return DEMO_RULES.filter((r) => r.tab === activeTab);
-  }, [activeTab]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, globalFilter: search },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setSearch,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
-
-  const tabs: { key: RuleTab; label: string }[] = [
-    { key: "all", label: "All Rules" },
-    { key: "custom", label: "Custom" },
-    { key: "yara", label: "YARA" },
-    { key: "sigma", label: "Sigma" },
-    { key: "ml", label: "ML Models" },
-  ];
+// ── Expand-Row Detail ─────────────────────────────────────────────────────────
+function DetectionRowDetail({ detection }: { detection: Detection }) {
+  const handleCreateCase = async () => {
+    toast.promise(
+      new Promise((r) => setTimeout(r, 800)),
+      {
+        loading: "Creating case…",
+        success: `Case created from detection ${detection.id}`,
+        error: "Failed to create case",
+      },
+    );
+  };
 
   return (
-    <div className="mx-auto w-full max-w-350 p-8">
-      <div className="mb-6 flex items-end justify-between">
-        <h1 className="font-display text-lg font-medium text-fg">Detection Rules</h1>
-        <button className="flex items-center gap-2 rounded-md bg-fg px-4 py-2 text-[13px] font-medium text-bg transition-opacity hover:opacity-90">
-          <Plus className="h-3.5 w-3.5" />
-          New Rule
-        </button>
+    <div className="grid grid-cols-1 gap-6 bg-bg/50 px-6 py-5 border-t border-accent/20 md:grid-cols-3">
+      {/* Description */}
+      <div className="col-span-2 space-y-4">
+        <div>
+          <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted">Description</p>
+          <p className="text-[12px] leading-relaxed text-secondary">{detection.description}</p>
+        </div>
+
+        {detection.relatedIocs.length > 0 && (
+          <div>
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted">Related IOCs</p>
+            <div className="flex flex-wrap gap-1.5">
+              {detection.relatedIocs.map((ioc) => (
+                <span
+                  key={ioc}
+                  className="rounded border border-accent/20 bg-accent/5 px-2 py-0.5 font-mono text-[10px] text-accent"
+                >
+                  {ioc}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {detection.adversary && (
+          <div>
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted">Associated Adversary</p>
+            <span className="inline-flex items-center gap-1.5 rounded border border-danger/25 bg-danger/8 px-2.5 py-1 text-[11px] font-medium text-danger">
+              <Shield className="h-3 w-3" />
+              {detection.adversary}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="mb-6 grid grid-cols-4 gap-4">
-        {STATS.map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-border bg-surface p-4">
-            <div className={`font-display text-2xl font-bold ${stat.color ?? "text-fg"}`}>
-              {stat.value}
-            </div>
-            <div className="mt-1 text-xs text-muted">{stat.label}</div>
+      {/* Actions */}
+      <div className="space-y-2">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-muted">Actions</p>
+        <button
+          onClick={handleCreateCase}
+          className="flex w-full items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-secondary transition-colors hover:border-accent/40 hover:text-fg"
+        >
+          <FolderOpen className="h-3.5 w-3.5 text-muted" />
+          Create Case
+        </button>
+        <button className="flex w-full items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-secondary transition-colors hover:border-accent/40 hover:text-fg">
+          <UserPlus className="h-3.5 w-3.5 text-muted" />
+          Assign to Me
+        </button>
+        <button className="flex w-full items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-secondary transition-colors hover:border-accent/40 hover:text-fg">
+          <CheckCircle className="h-3.5 w-3.5 text-muted" />
+          Mark Resolved
+        </button>
+        <a
+          href="/threat-intel"
+          className="flex w-full items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-secondary transition-colors hover:border-accent/40 hover:text-fg"
+        >
+          <ExternalLink className="h-3.5 w-3.5 text-muted" />
+          View in Threat Intel
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ── Sortable Column Header ───────────────────────────────────────────────────
+type SortKey = "severity" | "detectTime" | "name" | "status" | "hostname";
+type SortDir = "asc" | "desc";
+
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active) return <ArrowUpDown className="h-2.5 w-2.5 opacity-30" />;
+  return dir === "asc"
+    ? <ArrowUp className="h-2.5 w-2.5 text-accent" />
+    : <ArrowDown className="h-2.5 w-2.5 text-accent" />;
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+const SEV_ORDER: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+
+export default function DetectionsPage() {
+  const [loading, setLoading] = useState(true);
+  const [detections, setDetections] = useState<Detection[]>([]);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("detectTime");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sevFilter, setSevFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDetections(MOCK_DETECTIONS);
+      setLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const toggleRow = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
+
+  const filtered = useMemo(() => {
+    let d = [...detections];
+    if (sevFilter.length) d = d.filter((x) => sevFilter.includes(x.severity));
+    if (statusFilter.length) d = d.filter((x) => statusFilter.includes(x.status));
+    if (categoryFilter.length) d = d.filter((x) => categoryFilter.includes(x.category));
+    if (search) {
+      const q = search.toLowerCase();
+      d = d.filter(
+        (x) =>
+          x.name.toLowerCase().includes(q) ||
+          x.id.toLowerCase().includes(q) ||
+          x.hostname.toLowerCase().includes(q) ||
+          x.adversary?.toLowerCase().includes(q),
+      );
+    }
+    d.sort((a, b) => {
+      let cmp = 0;
+      if (sortKey === "severity") cmp = SEV_ORDER[a.severity] - SEV_ORDER[b.severity];
+      else if (sortKey === "detectTime") cmp = a.detectTime.localeCompare(b.detectTime);
+      else if (sortKey === "name") cmp = a.name.localeCompare(b.name);
+      else if (sortKey === "status") cmp = a.status.localeCompare(b.status);
+      else if (sortKey === "hostname") cmp = a.hostname.localeCompare(b.hostname);
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return d;
+  }, [detections, sevFilter, statusFilter, categoryFilter, search, sortKey, sortDir]);
+
+  // Group by date
+  const grouped = useMemo(() => {
+    const groups = new Map<string, Detection[]>();
+    for (const d of filtered) {
+      const day = format(parseISO(d.detectTime), "MMM dd, yyyy");
+      const list = groups.get(day) ?? [];
+      list.push(d);
+      groups.set(day, list);
+    }
+    return groups;
+  }, [filtered]);
+
+  const clearAllFilters = () => {
+    setSevFilter([]); setStatusFilter([]); setCategoryFilter([]); setSearch("");
+  };
+
+  const FILTER_DEFS = {
+    severity: [
+      { value: "critical", label: "Critical" },
+      { value: "high", label: "High" },
+      { value: "medium", label: "Medium" },
+      { value: "low", label: "Low" },
+    ],
+    status: [
+      { value: "new", label: "New" },
+      { value: "in_progress", label: "In Progress" },
+      { value: "resolved", label: "Resolved" },
+      { value: "closed", label: "Closed" },
+    ],
+    category: [
+      { value: "Phishing", label: "Phishing" },
+      { value: "Malware", label: "Malware" },
+      { value: "Credential", label: "Credential" },
+      { value: "C2", label: "C2" },
+      { value: "Spam", label: "Spam" },
+      { value: "ML Model", label: "ML Model" },
+    ],
+  };
+
+  const ACTIVE_FILTERS = [
+    { key: "severity", label: "Severity", values: sevFilter },
+    { key: "status", label: "Status", values: statusFilter },
+    { key: "category", label: "Category", values: categoryFilter },
+  ];
+
+  const handleFilterChange = (key: string, values: string[]) => {
+    if (key === "severity") setSevFilter(values);
+    else if (key === "status") setStatusFilter(values);
+    else if (key === "category") setCategoryFilter(values);
+  };
+
+  const COL_HEADER = (key: SortKey | null, label: string, className = "") => (
+    <th
+      onClick={key ? () => toggleSort(key) : undefined}
+      className={cn(
+        "border-b border-border bg-fg/2 px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider text-muted",
+        key && "cursor-pointer select-none hover:text-fg transition-colors",
+        className,
+      )}
+    >
+      <span className="flex items-center gap-1">
+        {label}
+        {key && <SortIcon active={sortKey === key} dir={sortDir} />}
+      </span>
+    </th>
+  );
+
+  return (
+    <div className="mx-auto w-full max-w-screen-2xl px-6 py-6">
+      {/* Page header */}
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="dm-heading text-xl text-fg">Detections</h1>
+          <div className="mt-1 flex items-center gap-2 text-xs text-muted">
+            <span className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+              List is up to date
+            </span>
+            <span className="text-dimmed">·</span>
+            <span>{filtered.length} result{filtered.length !== 1 ? "s" : ""} ({MOCK_DETECTIONS.length.toLocaleString()} total)</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <ExportButton
+            onExport={(fmt) => {
+              void fmt;
+              return new Promise((r) => setTimeout(r, 600));
+            }}
+          />
+          <button className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-secondary transition-colors hover:bg-surface-hover">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </button>
+          <button className="flex items-center gap-2 rounded-md bg-fg px-3.5 py-1.5 text-xs font-medium text-bg transition-opacity hover:opacity-90">
+            <Plus className="h-3.5 w-3.5" />
+            New Detection Rule
+          </button>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {STATS.map((s) => (
+          <div key={s.label} className="rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 px-4 py-3 shadow-card">
+            <div className={cn("font-display text-2xl font-bold", s.color)}>{s.value}</div>
+            <div className="mt-0.5 text-[11px] text-muted">{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 shadow-card">
-        <div className="border-b border-border px-5 pt-5">
-          <div className="flex gap-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`rounded-t-md px-3 py-2 text-xs transition-colors ${
-                  activeTab === tab.key ? "bg-fg/8 text-fg" : "text-muted hover:text-fg"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 border-b border-border px-5 py-3">
+      {/* Filter bar + search */}
+      <div className="mb-4 space-y-3 rounded-xl border border-border bg-surface/60 px-5 py-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5">
             <Search className="h-3.5 w-3.5 text-muted" />
             <input
               type="text"
-              placeholder="Search rules..."
+              placeholder="Search detections…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-48 bg-transparent text-xs text-fg placeholder:text-muted outline-none"
+              className="w-48 bg-transparent text-xs text-fg outline-none placeholder:text-dimmed"
             />
           </div>
+          <FilterChipBar
+            filters={FILTER_DEFS}
+            activeFilters={ACTIVE_FILTERS}
+            onFilterChange={handleFilterChange}
+            onClearAll={clearAllFilters}
+            rightSlot={
+              <button className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-[11px] text-muted transition-colors hover:text-fg">
+                <Grid3x3 className="h-3 w-3" />
+                MITRE ATT&CK® Matrix
+              </button>
+            }
+          />
         </div>
-
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer bg-fg/2 px-5 py-3 text-[11px] font-medium uppercase tracking-wider text-muted transition-colors select-none hover:bg-fg/4 hover:text-fg"
-                  >
-                    <span className="flex items-center gap-1">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && <SortIcon sorted={header.column.getIsSorted()} />}
-                    </span>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="transition-colors hover:bg-fg/3">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border-b border-fg/3 px-5 py-3.5">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
       </div>
+
+      {/* Table */}
+      {loading ? (
+        <SkeletonTable rows={7} cols={8} />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          title="No detections match your filters"
+          description="Try adjusting your filter criteria or clearing all filters."
+          icon={Shield}
+          action={
+            <button
+              onClick={clearAllFilters}
+              className="rounded-md bg-fg/8 px-3 py-1.5 text-xs text-secondary hover:bg-fg/12"
+            >
+              Clear Filters
+            </button>
+          }
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border shadow-card">
+          <table className="w-full text-left">
+            <thead>
+              <tr>
+                <th className="w-8 border-b border-border bg-fg/2 px-3 py-3" />
+                {COL_HEADER("severity", "Sev")}
+                {COL_HEADER("detectTime", "Detect Time")}
+                {COL_HEADER("name", "Name")}
+                {COL_HEADER(null, "Category")}
+                {COL_HEADER(null, "ATT&CK Tactic")}
+                {COL_HEADER("hostname", "Hostname")}
+                {COL_HEADER(null, "Assigned To")}
+                {COL_HEADER("status", "Status")}
+                {COL_HEADER(null, "Source")}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from(grouped.entries()).map(([day, items]) => (
+                <>
+                  {/* Date group row */}
+                  <tr key={`group-${day}`}>
+                    <td
+                      colSpan={10}
+                      className="border-b border-fg/5 bg-fg/3 px-4 py-2"
+                    >
+                      <span className="text-[11px] font-semibold text-muted">{day}</span>
+                      <span className="ml-2 text-[11px] text-dimmed">— {items.length} detection{items.length !== 1 ? "s" : ""}</span>
+                    </td>
+                  </tr>
+
+                  {items.map((det) => {
+                    const isExpanded = expanded.has(det.id);
+                    return (
+                      <>
+                        <tr
+                          key={det.id}
+                          onClick={() => toggleRow(det.id)}
+                          className={cn(
+                            "cursor-pointer border-b border-fg/5 transition-colors hover:bg-fg/4",
+                            isExpanded && "bg-accent/4 border-b-0",
+                          )}
+                        >
+                          {/* Expand toggle */}
+                          <td className="px-3 py-3.5">
+                            <div className="flex items-center justify-center text-muted">
+                              {isExpanded
+                                ? <ChevronDown className="h-3.5 w-3.5" />
+                                : <ChevronRight className="h-3.5 w-3.5" />
+                              }
+                            </div>
+                          </td>
+
+                          {/* Severity */}
+                          <td className="px-4 py-3.5">
+                            <SeverityPill severity={det.severity} size="xs" />
+                          </td>
+
+                          {/* Detect time */}
+                          <td className="px-4 py-3.5">
+                            <span className="font-mono text-[11px] text-muted">
+                              {format(parseISO(det.detectTime), "HH:mm:ss")}
+                            </span>
+                          </td>
+
+                          {/* Name */}
+                          <td className="px-4 py-3.5">
+                            <div className="flex flex-col">
+                              <span className="text-[12px] font-medium text-fg">{det.name}</span>
+                              <span className="font-mono text-[10px] text-dimmed">{det.id}</span>
+                            </div>
+                          </td>
+
+                          {/* Category */}
+                          <td className="px-4 py-3.5">
+                            <span className="rounded bg-fg/5 px-2 py-0.5 text-[10px] text-muted">
+                              {det.category}
+                            </span>
+                          </td>
+
+                          {/* MITRE ATT&CK */}
+                          <td className="px-4 py-3.5">
+                            <div className="flex flex-col">
+                              <span className="text-[11px] text-secondary">{det.mitreTactic}</span>
+                              <span className="font-mono text-[10px] text-accent">{det.mitreId}</span>
+                            </div>
+                          </td>
+
+                          {/* Hostname */}
+                          <td className="px-4 py-3.5">
+                            <span className="font-mono text-[11px] text-fg">{det.hostname}</span>
+                            {det.username && (
+                              <div className="text-[10px] text-muted">{det.username}</div>
+                            )}
+                          </td>
+
+                          {/* Assigned To */}
+                          <td className="px-4 py-3.5">
+                            <span className="text-[12px] text-muted">{det.assignedTo}</span>
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-4 py-3.5">
+                            <StatusBadge
+                              status={
+                                det.status === "in_progress" ? "running"
+                                  : det.status === "new" ? "new"
+                                  : det.status as "resolved" | "closed"
+                              }
+                            />
+                          </td>
+
+                          {/* Source */}
+                          <td className="px-4 py-3.5">
+                            <div className="flex flex-col">
+                              <span className="text-[10px] text-muted">{det.vendor}</span>
+                              <span className="text-[10px] text-dimmed">{det.sourceProduct}</span>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Expanded detail row */}
+                        {isExpanded && (
+                          <tr key={`${det.id}-detail`} className="border-b border-fg/5">
+                            <td colSpan={10} className="p-0">
+                              <DetectionRowDetail detection={det} />
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    );
+                  })}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

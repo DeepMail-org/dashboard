@@ -4,6 +4,7 @@ import type { Breakpoint, BreakpointLayouts } from "@/lib/dashboard/types";
 import { generateLayoutForAllBreakpoints, removeFromAllBreakpoints } from "@/lib/dashboard/breakpoints";
 import { widgetRegistry } from "@/lib/dashboard/registry";
 import { DEFAULT_WIDGETS, DEFAULT_LAYOUTS } from "@/lib/dashboard/presets";
+import { useTemplateStore } from "@/stores/template-store";
 
 interface DashboardState {
   activeWidgets: string[];
@@ -17,6 +18,7 @@ interface DashboardState {
   updateLayouts: (layouts: BreakpointLayouts) => void;
   updateBreakpointLayout: (breakpoint: Breakpoint, layout: import("@/lib/dashboard/types").LayoutItem[]) => void;
   resetToDefault: () => void;
+  syncFromTemplate: () => void;
   setLocked: (locked: boolean) => void;
   toggleLocked: () => void;
   setMarketplaceOpen: (open: boolean) => void;
@@ -82,9 +84,19 @@ export const useDashboardStore = create<DashboardState>()(
         },
 
         resetToDefault: () => {
+          const templateStore = useTemplateStore.getState();
           set({
-            activeWidgets: DEFAULT_WIDGETS,
-            layouts: DEFAULT_LAYOUTS,
+            activeWidgets: templateStore.getActiveWidgets(),
+            layouts: templateStore.getActiveLayouts(),
+          });
+        },
+
+        syncFromTemplate: () => {
+          const templateStore = useTemplateStore.getState();
+          set({
+            activeWidgets: templateStore.getActiveWidgets(),
+            layouts: templateStore.getActiveLayouts(),
+            isLocked: true,
           });
         },
 

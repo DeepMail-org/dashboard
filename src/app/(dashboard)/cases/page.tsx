@@ -2,215 +2,207 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import {
-  FolderOpen, Plus, Search, ArrowUpDown, ArrowUp, ArrowDown, LayoutGrid,
-} from "lucide-react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-  createColumnHelper,
-  type SortingState,
-} from "@tanstack/react-table";
-import {
-  Table, TableHeader, TableHead, TableBody, TableRow, TableCell,
-} from "@/components/ui/table";
+import { Plus, Search, Kanban, Clock, FolderOpen } from "lucide-react";
+import { SeverityPill } from "@/components/ui/severity-pill";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { ExportButton } from "@/components/ui/export-button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MOCK_CASES, type CaseStatus } from "@/lib/data-access/cases";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow, parseISO, addHours, isPast } from "date-fns";
 
-type Severity = "critical" | "high" | "medium" | "low";
-type Status = "investigating" | "open" | "resolved" | "closed";
-
-interface CaseItem {
-  id: string;
-  severity: Severity;
-  title: string;
-  entity: string;
-  status: Status;
-  statusLabel: string;
-  created: string;
-}
-
-const DEMO_CASES: CaseItem[] = [
-  { id: "CAS-8821", severity: "critical", title: "BEC Attempt - Wire Transfer Request", entity: "finance@corp.com", status: "investigating", statusLabel: "Investigating", created: "10 min ago" },
-  { id: "CAS-8820", severity: "high", title: "Credential Harvesting via Fake Login Page", entity: "sales_team@corp.com", status: "open", statusLabel: "Open", created: "45 min ago" },
-  { id: "CAS-8819", severity: "medium", title: "Suspicious Attachment - Macro Enabled Excel", entity: "hr@corp.com", status: "resolved", statusLabel: "Resolved", created: "2 hours ago" },
-  { id: "CAS-8818", severity: "medium", title: "Multiple Failed Login Attempts Followed by Success", entity: "j.doe@corp.com", status: "closed", statusLabel: "Closed (False Positive)", created: "5 hours ago" },
-  { id: "CAS-8817", severity: "high", title: "Ransomware Signature Detected in ZIP", entity: "ops@corp.com", status: "resolved", statusLabel: "Resolved (Blocked)", created: "1 day ago" },
-  { id: "CAS-8816", severity: "critical", title: "Malware Payload in ISO Attachment (Emotet)", entity: "engineering@corp.com", status: "investigating", statusLabel: "Investigating", created: "1 day ago" },
-  { id: "CAS-8815", severity: "high", title: "Spearphishing Campaign Targeting C-Suite", entity: "exec@corp.com", status: "investigating", statusLabel: "Investigating", created: "2 days ago" },
-  { id: "CAS-8814", severity: "low", title: "Anomalous Mail Forwarding Rule Created", entity: "m.jones@corp.com", status: "open", statusLabel: "Open", created: "2 days ago" },
-];
-
-const SEV_PILL: Record<Severity, string> = {
-  critical: "text-danger bg-danger/10 border border-danger/20",
-  high: "text-orange bg-orange/10 border border-orange/20",
-  medium: "text-warning bg-warning/10 border border-warning/20",
-  low: "text-muted bg-fg/5 border border-border",
+const STATUS_MAP: Record<CaseStatus, "new" | "running" | "pending" | "resolved" | "closed"> = {
+  new:         "new",
+  in_progress: "running",
+  pending:     "pending",
+  resolved:    "resolved",
+  closed:      "closed",
 };
-
-const STATUS_COLOR: Record<Status, string> = {
-  investigating: "text-accent",
-  open: "text-blue-400",
-  resolved: "text-success",
-  closed: "text-muted",
-};
-
-const columnHelper = createColumnHelper<CaseItem>();
-
-const columns = [
-  columnHelper.accessor("id", {
-    header: "Case ID",
-    cell: (info) => <span className="font-mono text-[13px] text-accent">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("severity", {
-    header: "Severity",
-    cell: (info) => (
-      <span className={`inline-block rounded px-2 py-0.5 text-[11px] font-medium capitalize ${SEV_PILL[info.getValue()]}`}>
-        {info.getValue()}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("title", {
-    header: "Title",
-    cell: (info) => <span className="text-[13px] text-fg">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("entity", {
-    header: "Affected Entity",
-    cell: (info) => <span className="text-[13px] text-muted">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => {
-      const row = info.row.original;
-      return (
-        <span className={`flex items-center gap-1.5 text-[13px] ${STATUS_COLOR[info.getValue()]}`}>
-          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-          {row.statusLabel}
-        </span>
-      );
-    },
-  }),
-  columnHelper.accessor("created", {
-    header: "Created",
-    cell: (info) => <span className="font-mono text-xs text-muted">{info.getValue()}</span>,
-    enableSorting: false,
-  }),
-];
-
-function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
-  if (sorted === "asc") return <ArrowUp className="h-2.5 w-2.5" />;
-  if (sorted === "desc") return <ArrowDown className="h-2.5 w-2.5" />;
-  return <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />;
-}
 
 export default function CasesPage() {
   const [search, setSearch] = useState("");
-  const [filterSev, setFilterSev] = useState<Severity | "all">("all");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [statusFilter, setStatusFilter] = useState<CaseStatus | "all">("all");
 
-  const data = useMemo(() => {
-    let cases = DEMO_CASES;
-    if (filterSev !== "all") cases = cases.filter((c) => c.severity === filterSev);
-    return cases;
-  }, [filterSev]);
+  const filtered = useMemo(() => {
+    let d = MOCK_CASES;
+    if (statusFilter !== "all") d = d.filter((c) => c.status === statusFilter);
+    if (search) {
+      const q = search.toLowerCase();
+      d = d.filter((c) => c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
+    }
+    return d;
+  }, [search, statusFilter]);
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, globalFilter: search },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setSearch,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
+  const counts = useMemo(() => ({
+    all:         MOCK_CASES.length,
+    new:         MOCK_CASES.filter((c) => c.status === "new").length,
+    in_progress: MOCK_CASES.filter((c) => c.status === "in_progress").length,
+    pending:     MOCK_CASES.filter((c) => c.status === "pending").length,
+    resolved:    MOCK_CASES.filter((c) => c.status === "resolved").length,
+    closed:      MOCK_CASES.filter((c) => c.status === "closed").length,
+  }), []);
+
+  const FILTER_TABS: Array<{ key: CaseStatus | "all"; label: string }> = [
+    { key: "all",         label: "All" },
+    { key: "new",         label: "New" },
+    { key: "in_progress", label: "In Progress" },
+    { key: "pending",     label: "Pending" },
+    { key: "resolved",    label: "Resolved" },
+    { key: "closed",      label: "Closed" },
+  ];
 
   return (
-    <div className="mx-auto w-full max-w-350 p-8">
-      <div className="mb-6 flex items-end justify-between">
-        <h1 className="font-display text-lg font-medium text-fg">Case Management</h1>
-        <div className="flex items-center gap-3">
+    <div className="mx-auto w-full max-w-screen-xl px-6 py-6">
+      {/* Header */}
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="dm-heading text-xl text-fg">Cases</h1>
+          <p className="mt-1 text-xs text-muted">{filtered.length} of {MOCK_CASES.length} cases</p>
+        </div>
+        <div className="flex items-center gap-2">
           <Link
             href="/cases/board"
-            className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-fg"
+            className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-secondary transition-colors hover:bg-surface-hover hover:text-fg"
           >
-            <LayoutGrid className="h-3.5 w-3.5" />
+            <Kanban className="h-3.5 w-3.5" />
             Board View
           </Link>
-          <button className="flex items-center gap-2 rounded-md bg-fg px-4 py-2 text-[13px] font-medium text-bg transition-opacity hover:opacity-90">
+          <ExportButton onExport={(fmt) => { void fmt; return new Promise((r) => setTimeout(r, 600)); }} />
+          <button className="flex items-center gap-2 rounded-md bg-fg px-3.5 py-1.5 text-xs font-medium text-bg hover:opacity-90">
             <Plus className="h-3.5 w-3.5" />
             New Case
           </button>
         </div>
       </div>
 
-      <div className="mb-4 flex items-center gap-3">
-        <div className="flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5">
-          <Search className="h-3.5 w-3.5 text-muted" />
-          <input
-            type="text"
-            placeholder="Search cases..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-48 bg-transparent text-xs text-fg placeholder:text-muted outline-none"
-          />
-        </div>
-        <div className="flex gap-1">
-          {(["all", "critical", "high", "medium", "low"] as const).map((s) => (
+      {/* Stats */}
+      <div className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
+        {[
+          { label: "Open",        value: counts.new + counts.in_progress + counts.pending, color: "text-danger" },
+          { label: "New",         value: counts.new,         color: "text-accent" },
+          { label: "In Progress", value: counts.in_progress, color: "text-info" },
+          { label: "Resolved",    value: counts.resolved,    color: "text-success" },
+          { label: "Closed",      value: counts.closed,      color: "text-muted" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 px-4 py-3 shadow-card">
+            <div className={cn("font-display text-2xl font-bold", s.color)}>{s.value}</div>
+            <div className="mt-0.5 text-[11px] text-muted">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter tabs + search */}
+      <div className="mb-4 flex items-center gap-4 border-b border-border">
+        <div className="flex">
+          {FILTER_TABS.map((tab) => (
             <button
-              key={s}
-              onClick={() => setFilterSev(s)}
-              className={`rounded px-2.5 py-1 text-[11px] capitalize transition-colors ${
-                filterSev === s ? "bg-fg/8 text-fg" : "text-muted hover:text-fg"
-              }`}
+              key={tab.key}
+              onClick={() => setStatusFilter(tab.key)}
+              className={cn(
+                "px-3 py-2.5 text-[12px] transition-colors",
+                statusFilter === tab.key
+                  ? "border-b-2 border-accent text-fg font-medium"
+                  : "text-muted hover:text-fg",
+              )}
             >
-              {s}
+              {tab.label}
+              <span className={cn(
+                "ml-1 rounded-full px-1.5 py-px text-[9px] font-bold",
+                statusFilter === tab.key ? "bg-accent/20 text-accent" : "bg-fg/8 text-dimmed",
+              )}>
+                {tab.key === "all" ? counts.all : counts[tab.key as CaseStatus]}
+              </span>
             </button>
           ))}
         </div>
+        <div className="ml-auto mb-1 flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5">
+          <Search className="h-3.5 w-3.5 text-muted" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search cases…"
+            className="w-44 bg-transparent text-xs text-fg outline-none placeholder:text-dimmed"
+          />
+        </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 shadow-card">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer bg-fg/2 px-6 py-3 text-[11px] font-medium uppercase tracking-wider text-muted transition-colors select-none hover:bg-fg/4 hover:text-fg"
-                  >
-                    <span className="flex items-center gap-1">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getCanSort() && <SortIcon sorted={header.column.getIsSorted()} />}
-                    </span>
-                  </TableHead>
+      {/* Cases table */}
+      {filtered.length === 0 ? (
+        <EmptyState
+          title="No cases match your filters"
+          description="Try adjusting the status filter or search query."
+          icon={FolderOpen}
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border shadow-card">
+          <table className="w-full text-left">
+            <thead>
+              <tr>
+                {["Case ID", "Severity", "Title", "Assignee", "Status", "SLA", "Source", "Tags"].map((col) => (
+                  <th key={col} className="border-b border-border bg-fg/2 px-4 py-3 text-[10px] font-medium uppercase tracking-wider text-muted">
+                    {col}
+                  </th>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="transition-colors hover:bg-fg/3">
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border-b border-fg/3 px-6 py-3.5">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-            {table.getRowModel().rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="px-6 py-12 text-center text-sm text-muted">
-                  No cases match your filters
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((c) => {
+                const deadline = addHours(parseISO(c.createdAt), c.slaDeadlineHours);
+                const expired = isPast(deadline);
+                return (
+                  <tr key={c.id} className="border-b border-fg/5 transition-colors hover:bg-fg/4">
+                    <td className="px-4 py-3.5">
+                      <span className="font-mono text-[12px] text-accent">{c.id}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <SeverityPill severity={c.severity} size="xs" />
+                    </td>
+                    <td className="max-w-xs px-4 py-3.5">
+                      <p className="text-[12px] font-medium text-fg line-clamp-1">{c.title}</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          "flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-bold",
+                          c.assigneeInitials === "?" ? "bg-border text-dimmed" : "bg-accent/20 text-accent",
+                        )}>
+                          {c.assigneeInitials}
+                        </div>
+                        <span className="text-[11px] text-muted">{c.assignee}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <StatusBadge status={STATUS_MAP[c.status]} />
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className={cn(
+                        "flex items-center gap-1 text-[10px]",
+                        expired ? "text-danger" : c.slaDeadlineHours <= 4 ? "text-orange" : "text-muted",
+                      )}>
+                        <Clock className="h-3 w-3 shrink-0" />
+                        {expired ? "Expired" : formatDistanceToNow(deadline, { addSuffix: true })}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="rounded bg-fg/5 px-2 py-0.5 text-[10px] capitalize text-muted">
+                        {c.source.replace(/_/g, " ")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex flex-wrap gap-1">
+                        {c.tags.slice(0, 2).map((tag) => (
+                          <span key={tag} className="rounded bg-fg/5 px-1.5 py-px text-[9px] text-dimmed">{tag}</span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

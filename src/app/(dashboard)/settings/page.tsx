@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, Bell, Key, Shield, Users, Globe } from "lucide-react";
+import { Settings, Bell, Key, Shield, Users, Palette } from "lucide-react";
+import { TemplateAppearanceTab } from "@/components/settings/template-appearance-tab";
 
-type SettingsTab = "general" | "notifications" | "api" | "security" | "team";
+type SettingsTab = "general" | "appearance" | "notifications" | "api" | "security" | "team";
 
 const TABS: { key: SettingsTab; label: string; icon: typeof Settings }[] = [
-  { key: "general", label: "General", icon: Settings },
-  { key: "notifications", label: "Notifications", icon: Bell },
-  { key: "api", label: "API Keys", icon: Key },
-  { key: "security", label: "Security", icon: Shield },
-  { key: "team", label: "Team", icon: Users },
+  { key: "general",      label: "General",      icon: Settings },
+  { key: "appearance",   label: "Appearance",   icon: Palette },
+  { key: "notifications",label: "Notifications",icon: Bell },
+  { key: "api",          label: "API Keys",     icon: Key },
+  { key: "security",     label: "Security",     icon: Shield },
+  { key: "team",         label: "Team",         icon: Users },
 ];
 
 const API_KEYS = [
@@ -97,6 +99,8 @@ export default function SettingsPage() {
               </div>
             </>
           )}
+
+          {activeTab === "appearance" && <TemplateAppearanceTab />}
 
           {activeTab === "notifications" && (
             <>
