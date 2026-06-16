@@ -18,20 +18,20 @@ export default function EmailVolumeTimeline({ data, isLoading }: WidgetProps) {
     return {
       tooltip: {
         trigger: "axis" as const,
-        axisPointer: { type: "cross" as const, lineStyle: { color: "oklch(60% 0.15 280)", opacity: 0.4 } },
+        axisPointer: { type: "cross" as const, lineStyle: { color: "var(--color-accent, #a855f7)", opacity: 0.4 } },
       },
       grid: { left: 48, right: 16, top: 16, bottom: 28 },
       xAxis: {
         type: "category" as const,
         data: hours,
-        axisLabel: { fontSize: 9, interval: 3, color: "oklch(45% 0.01 280)" },
-        axisLine: { lineStyle: { color: "oklch(26% 0.01 280)" } },
+        axisLabel: { fontSize: 9, interval: 3, color: "var(--color-dimmed, #888)" },
+        axisLine: { lineStyle: { color: "var(--color-border, #333)" } },
         axisTick: { show: false },
       },
       yAxis: {
         type: "value" as const,
-        splitLine: { lineStyle: { color: "oklch(26% 0.01 280)", opacity: 0.3, type: "dashed" as const } },
-        axisLabel: { fontSize: 9, color: "oklch(45% 0.01 280)" },
+        splitLine: { lineStyle: { color: "var(--color-border, #333)", opacity: 0.3, type: "dashed" as const } },
+        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
       },
       series: [
         {

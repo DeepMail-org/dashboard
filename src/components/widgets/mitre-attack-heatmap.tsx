@@ -40,7 +40,7 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
       xAxis: {
         type: "category" as const,
         data: WEEKS,
-        axisLabel: { fontSize: 9, color: "oklch(45% 0.01 280)" },
+        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
         axisTick: { show: false },
         axisLine: { show: false },
         splitArea: { show: false },
@@ -48,7 +48,7 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
       yAxis: {
         type: "category" as const,
         data: TACTICS,
-        axisLabel: { fontSize: 9, color: "oklch(45% 0.01 280)" },
+        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
         axisTick: { show: false },
         axisLine: { show: false },
         splitArea: { show: false },
@@ -59,15 +59,15 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
         calculable: false,
         show: false,
         inRange: {
-          color: ["oklch(19% 0.005 280)", "oklch(40% 0.1 280)", "#a855f7", "#ef4444"],
+          color: ["var(--color-surface, #1a1a2e)", "var(--color-accent-muted, #a855f740)", "#a855f7", "#ef4444"],
         },
       },
       series: [{
         type: "heatmap" as const,
         data,
         label: { show: false },
-        itemStyle: { borderRadius: 3, borderWidth: 2, borderColor: "oklch(15% 0.005 280)" },
-        emphasis: { itemStyle: { borderColor: "oklch(98% 0 0)", borderWidth: 1 } },
+        itemStyle: { borderRadius: 3, borderWidth: 2, borderColor: "var(--color-bg, #111)" },
+        emphasis: { itemStyle: { borderColor: "var(--color-fg, #fff)", borderWidth: 1 } },
       }],
     };
   }, []);

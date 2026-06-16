@@ -24,7 +24,7 @@ export function WidgetCard({
   onRefresh,
 }: WidgetCardProps) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.01)_100%)] shadow-card">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card">
       <WidgetDragHandle isLocked={isLocked} />
 
       <div className="flex items-center justify-between border-b border-border/50 px-4 py-2.5">

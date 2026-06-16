@@ -43,7 +43,7 @@ export default function SeverityBreakdown({ data, isLoading }: WidgetProps) {
             fontSize: 24,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
-            color: "oklch(98% 0 0)",
+            color: "var(--color-fg, #f5f5f5)",
           },
           emphasis: {
             label: { show: true, fontSize: 14, fontWeight: 600 },
@@ -52,7 +52,7 @@ export default function SeverityBreakdown({ data, isLoading }: WidgetProps) {
           data: dashboard.severityBreakdown.map((d) => ({
             name: d.severity,
             value: d.count,
-            itemStyle: { color: SEVERITY_COLORS[d.severity] ?? d.color },
+            itemStyle: { color: SEVERITY_COLORS[d.severity] ?? d.color ?? "#888" },
           })),
         },
       ],

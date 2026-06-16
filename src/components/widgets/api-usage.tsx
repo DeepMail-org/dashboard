@@ -28,11 +28,11 @@ export default function ApiUsage({ data, isLoading }: WidgetProps) {
     return {
       tooltip: {
         trigger: "axis" as const,
-        axisPointer: { type: "cross" as const, lineStyle: { color: "oklch(60% 0.15 280)", opacity: 0.3 } },
+        axisPointer: { type: "cross" as const, lineStyle: { color: "var(--color-accent, #a855f7)", opacity: 0.3 } },
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "oklch(45% 0.01 280)", fontSize: 10 },
+        textStyle: { color: "var(--color-dimmed, #888)", fontSize: 10 },
         itemWidth: 10,
         itemHeight: 10,
         itemGap: 20,
@@ -41,14 +41,14 @@ export default function ApiUsage({ data, isLoading }: WidgetProps) {
       xAxis: {
         type: "category" as const,
         data: hours,
-        axisLabel: { fontSize: 9, interval: 5, color: "oklch(45% 0.01 280)" },
-        axisLine: { lineStyle: { color: "oklch(26% 0.01 280)" } },
+        axisLabel: { fontSize: 9, interval: 5, color: "var(--color-dimmed, #888)" },
+        axisLine: { lineStyle: { color: "var(--color-border, #333)" } },
         axisTick: { show: false },
       },
       yAxis: {
         type: "value" as const,
-        splitLine: { lineStyle: { color: "oklch(26% 0.01 280)", opacity: 0.3, type: "dashed" as const } },
-        axisLabel: { fontSize: 9, color: "oklch(45% 0.01 280)" },
+        splitLine: { lineStyle: { color: "var(--color-border, #333)", opacity: 0.3, type: "dashed" as const } },
+        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
       },
       series: [
         {

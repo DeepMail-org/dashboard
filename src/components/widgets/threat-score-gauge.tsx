@@ -35,15 +35,15 @@ export default function ThreatScoreGauge({ data, isLoading }: WidgetProps) {
           pointer: {
             width: 5,
             length: "60%",
-            itemStyle: { color: "oklch(98% 0 0)" },
+            itemStyle: { color: "var(--color-fg, #f5f5f5)" },
           },
           anchor: {
             show: true,
             size: 10,
             itemStyle: {
               borderWidth: 2,
-              borderColor: "oklch(60% 0.15 280)",
-              color: "oklch(19% 0.005 280)",
+              borderColor: "var(--color-accent, #a855f7)",
+              color: "var(--color-surface, #1a1a2e)",
             },
           },
           detail: {
@@ -51,13 +51,13 @@ export default function ThreatScoreGauge({ data, isLoading }: WidgetProps) {
             fontSize: 32,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
-            color: "oklch(98% 0 0)",
+            color: "var(--color-fg, #f5f5f5)",
             offsetCenter: [0, "40%"],
             formatter: "{value}",
           },
           title: {
             fontSize: 11,
-            color: "oklch(65% 0.01 280)",
+            color: "var(--color-muted, #888)",
             offsetCenter: [0, "65%"],
           },
           data: [{ value: dashboard.threatScore, name: "THREAT SCORE" }],

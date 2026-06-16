@@ -18,10 +18,10 @@ export default function AttackVectorRadar({ isLoading }: WidgetProps) {
     radar: {
       indicator: DEMO_VECTORS.map((v) => ({ name: v.name, max: 100 })),
       shape: "polygon" as const,
-      axisLine: { lineStyle: { color: "oklch(26% 0.01 280)" } },
-      splitLine: { lineStyle: { color: "oklch(26% 0.01 280)", opacity: 0.3 } },
+      axisLine: { lineStyle: { color: "var(--color-border, #333)" } },
+      splitLine: { lineStyle: { color: "var(--color-border, #333)", opacity: 0.3 } },
       splitArea: { show: false },
-      axisName: { color: "oklch(65% 0.01 280)", fontSize: 10 },
+      axisName: { color: "var(--color-muted, #888)", fontSize: 10 },
     },
     series: [{
       type: "radar" as const,
