@@ -25,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
     >
@@ -36,9 +36,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
             position="bottom-right"
             toastOptions={{
               style: {
-                background: "oklch(19% 0.005 280)",
-                border: "1px solid oklch(26% 0.01 280)",
-                color: "oklch(98% 0 0)",
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-fg)",
               },
             }}
           />
