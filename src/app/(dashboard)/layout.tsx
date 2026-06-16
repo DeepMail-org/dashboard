@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { CommandPalette } from "@/components/dashboard/command-palette";
@@ -13,23 +13,24 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
-  const [checked, setChecked] = useState(false);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
 
   useEffect(() => {
-    if (!token) {
+    if (isHydrated && !token) {
       router.replace("/login");
-    } else {
-      setChecked(true);
     }
-  }, [token, router]);
+  }, [isHydrated, token, router]);
 
-  // Don't render dashboard until auth is confirmed
-  if (!checked) {
+  if (!isHydrated) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-bg">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       </div>
     );
+  }
+
+  if (!token) {
+    return null;
   }
 
   return (

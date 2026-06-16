@@ -75,13 +75,17 @@ export function UploadModal({
 	const [analyzing, setAnalyzing] = useState(false);
 	const [done, setDone] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const isFirstRender = useRef(true);
 
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = "hidden";
-			setFile(null);
-			setAnalyzing(false);
-			setDone(false);
+			if (!isFirstRender.current) {
+				setFile(null);
+				setAnalyzing(false);
+				setDone(false);
+			}
+			isFirstRender.current = false;
 		} else {
 			document.body.style.overflow = "";
 		}
@@ -224,13 +228,17 @@ export function ContactModal({
 	const [submitting, setSubmitting] = useState(false);
 	const [done, setDone] = useState(false);
 	const [errors, setErrors] = useState<Record<string, boolean>>({});
+	const isFirstRender = useRef(true);
 
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = "hidden";
-			setSubmitting(false);
-			setDone(false);
-			setErrors({});
+			if (!isFirstRender.current) {
+				setSubmitting(false);
+				setDone(false);
+				setErrors({});
+			}
+			isFirstRender.current = false;
 		} else {
 			document.body.style.overflow = "";
 		}

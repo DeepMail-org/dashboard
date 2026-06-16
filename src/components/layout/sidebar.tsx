@@ -18,8 +18,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
-  User,
+  Grid3x3,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLayoutStore } from "@/stores/layout-store";
 
@@ -63,7 +64,9 @@ const NAV_GROUPS: NavGroup[] = [
         children: [{ label: "Board View", href: "/cases/board", icon: Columns3 }],
       },
       { label: "Detections", href: "/detections", icon: ShieldAlert },
+      { label: "Vulnerabilities", href: "/vulnerabilities", icon: Shield },
       { label: "Sandbox", href: "/sandbox", icon: Monitor },
+      { label: "Tasks", href: "/tasks", icon: Activity },
     ],
   },
   {
@@ -72,6 +75,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Log Explorer", href: "/log-explorer", icon: FileText },
       { label: "Threat Intel", href: "/threat-intel", icon: Rss },
+      { label: "MITRE ATT&CK", href: "/mitre-attack", icon: Grid3x3 },
       { label: "Graph Analysis", href: "/graph-analysis", icon: Activity },
     ],
   },
@@ -207,6 +211,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const collapsed = useLayoutStore((s) => s.sidebarCollapsed);
   const toggleCollapsed = useLayoutStore((s) => s.toggleCollapsed);
+  const expandedGroups = useLayoutStore((s) => s.expandedGroups);
+  const toggleGroup = useLayoutStore((s) => s.toggleGroup);
 
   return (
     <aside
@@ -238,19 +244,42 @@ export function Sidebar() {
         {NAV_GROUPS.map((group) => (
           <div key={group.id} className="mb-5">
             {!collapsed && (
-              <div className="dm-caption mb-2 px-3">{group.title}</div>
-            )}
-            <div className="space-y-0.5">
-              {group.items.map((item, idx) => (
-                <NavParentItem
-                  key={item.href}
-                  item={item}
-                  pathname={pathname}
-                  collapsed={collapsed}
-                  isLast={idx === group.items.length - 1}
+              <button
+                onClick={() => toggleGroup(group.id)}
+                className="flex items-center gap-2 dm-caption mb-2 px-3 w-full justify-start hover:text-fg transition-colors"
+              >
+                <span>{group.title}</span>
+                <ChevronRight
+                  className={cn(
+                    "h-3.5 w-3.5 shrink-0 ml-auto transition-transform",
+                    expandedGroups[group.id] ? "rotate-90" : ""
+                  )}
                 />
-              ))}
-            </div>
+              </button>
+            )}
+            <AnimatePresence initial={false}>
+              {expandedGroups[group.id] && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-0.5">
+                    {group.items.map((item, idx) => (
+                      <NavParentItem
+                        key={item.href}
+                        item={item}
+                        pathname={pathname}
+                        collapsed={collapsed}
+                        isLast={idx === group.items.length - 1}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </nav>

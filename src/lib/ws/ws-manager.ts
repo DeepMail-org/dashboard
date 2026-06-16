@@ -16,6 +16,7 @@ class WsManager {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
   private pendingBuffer: WsMessage[] = [];
+  private isDestroyed = false;
 
   getState(): WsConnectionState {
     return this.state;
@@ -27,6 +28,10 @@ class WsManager {
   }
 
   subscribe(channel: string, handler: ChannelHandler): () => void {
+    if (this.isDestroyed) {
+      return () => {};
+    }
+
     let handlers = this.subscriptions.get(channel);
     if (!handlers) {
       handlers = new Set();
@@ -52,6 +57,7 @@ class WsManager {
   private connect(): void {
     if (typeof window === "undefined") return;
     if (this.ws) return;
+    if (this.isDestroyed) return;
 
     this.setState("connecting");
 
@@ -59,6 +65,7 @@ class WsManager {
       this.ws = new WebSocket(WS_URL);
 
       this.ws.onopen = () => {
+        if (this.isDestroyed) return;
         this.setState("connected");
         this.reconnectAttempt = 0;
         this.startHeartbeat();
@@ -69,6 +76,7 @@ class WsManager {
       };
 
       this.ws.onmessage = (event) => {
+        if (this.isDestroyed) return;
         try {
           const msg = JSON.parse(event.data) as WsMessage;
           if (msg.channel === "pong") return;
@@ -79,6 +87,7 @@ class WsManager {
       };
 
       this.ws.onclose = () => {
+        if (this.isDestroyed) return;
         this.cleanup();
         if (this.subscriptions.size > 0) {
           this.scheduleReconnect();
@@ -88,9 +97,11 @@ class WsManager {
       };
 
       this.ws.onerror = () => {
+        if (this.isDestroyed) return;
         this.ws?.close();
       };
     } catch {
+      if (this.isDestroyed) return;
       this.cleanup();
       this.scheduleReconnect();
     }
@@ -100,6 +111,16 @@ class WsManager {
     this.cleanup();
     this.ws?.close();
     this.ws = null;
+    this.setState("disconnected");
+  }
+
+  destroy(): void {
+    this.isDestroyed = true;
+    this.cleanup();
+    this.ws?.close();
+    this.ws = null;
+    this.subscriptions.clear();
+    this.stateListeners.clear();
     this.setState("disconnected");
   }
 
@@ -127,6 +148,10 @@ class WsManager {
   private startHeartbeat(): void {
     this.stopHeartbeat();
     this.heartbeatTimer = setInterval(() => {
+      if (this.isDestroyed) {
+        this.stopHeartbeat();
+        return;
+      }
       this.send({ type: "ping" });
     }, HEARTBEAT_INTERVAL);
   }
@@ -140,6 +165,7 @@ class WsManager {
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer) return;
+    if (this.isDestroyed) return;
     this.setState("reconnecting");
     const delay = Math.min(
       RECONNECT_BASE * Math.pow(2, this.reconnectAttempt),
@@ -148,7 +174,9 @@ class WsManager {
     this.reconnectAttempt++;
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      this.connect();
+      if (!this.isDestroyed) {
+        this.connect();
+      }
     }, delay);
   }
 
@@ -168,3 +196,9 @@ class WsManager {
 }
 
 export const wsManager = new WsManager();
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    wsManager.destroy();
+  });
+}

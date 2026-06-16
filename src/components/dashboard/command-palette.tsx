@@ -45,19 +45,19 @@ export function CommandPalette() {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen(!useLayoutStore.getState().commandOpen);
+        setOpen(!open);
       }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [setOpen, open]);
 
   const runAction = useCallback(
     (fn: () => void) => {
       fn();
       setOpen(false);
     },
-    [],
+    [setOpen],
   );
 
   const allWidgets = widgetRegistry.getAll();

@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 import { BentoGrid, BentoGridItem } from "@/components/marketing/ui/bento-grid";
 import {
 	IconShieldCheck,
@@ -83,6 +84,10 @@ const SkeletonTwo = () => {
 		hover: { width: ["0%", "100%"], transition: { duration: 2 } },
 	};
 	const arr = new Array(6).fill(0);
+	const widths = useMemo(
+		() => arr.map(() => Math.random() * (100 - 40) + 40 + "%"),
+		[]
+	);
 	return (
 		<motion.div
 			initial="initial"
@@ -94,7 +99,7 @@ const SkeletonTwo = () => {
 				<motion.div
 					key={"skeleton-two" + i}
 					variants={variants}
-					style={{ maxWidth: Math.random() * (100 - 40) + 40 + "%" }}
+					style={{ maxWidth: widths[i] }}
 					className="flex h-3 w-full flex-row items-center rounded-full bg-linear-to-r from-white/20 via-white/35 to-white/10"
 				/>
 			))}

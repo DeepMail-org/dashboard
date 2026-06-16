@@ -17,17 +17,31 @@ export default function LoginPage() {
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
 	const [spot, setSpot] = useState({ x: 0, y: 0 });
 	const [cardHovered, setCardHovered] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setError("");
 		setIsLoading(true);
-		await new Promise((r) => setTimeout(r, 1200));
-		// TODO: Replace with real API call
-		setToken("mock_jwt_token");
-		setIsLoading(false);
-		router.push("/dashboard");
+		try {
+			const response = await fetch("/api/auth/login", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email, password }),
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				throw new Error(data.error || "Login failed");
+			}
+			setToken(data.token);
+			router.push("/dashboard");
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Login failed");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const onCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -100,6 +114,11 @@ export default function LoginPage() {
 						</div>
 
 						<form onSubmit={handleSubmit} className="space-y-4">
+							{error && (
+								<div className="rounded-md bg-rose-500/10 border border-rose-500/20 p-3 text-sm text-rose-300">
+									{error}
+								</div>
+							)}
 							<div className="space-y-1.5">
 								<label className="text-xs font-medium text-white/45 uppercase tracking-wider">Email</label>
 								<Input

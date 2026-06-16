@@ -46,16 +46,29 @@ export default function VerifyPage() {
 		}
 		setError("");
 		setIsLoading(true);
-		await new Promise((r) => setTimeout(r, 1100));
-		// TODO: Replace with real API verification
-		setToken("mock_jwt_token");
-		setIsLoading(false);
-		router.push("/dashboard");
+		try {
+			const response = await fetch("/api/auth/verify", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ code }),
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				throw new Error(data.error || "Verification failed");
+			}
+			setToken(data.token);
+			router.push("/dashboard");
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Verification failed");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleResend = async () => {
 		setResent(true);
 		setTimeout(() => setResent(false), 3000);
+		// TODO: Call resend API endpoint when available
 	};
 
 	return (

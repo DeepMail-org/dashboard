@@ -1,20 +1,29 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthState {
   token: string | null;
+  isHydrated: boolean;
   setToken: (token: string | null) => void;
   clearToken: () => void;
+  setHydrated: () => void;
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
-  token: typeof window !== "undefined" ? localStorage.getItem("deepmail_token") : null,
-  setToken: (token) => {
-    if (token) localStorage.setItem("deepmail_token", token);
-    else localStorage.removeItem("deepmail_token");
-    set({ token });
-  },
-  clearToken: () => {
-    localStorage.removeItem("deepmail_token");
-    set({ token: null });
-  },
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
+      isHydrated: false,
+      setToken: (token) => set({ token }),
+      clearToken: () => set({ token: null }),
+      setHydrated: () => set({ isHydrated: true }),
+    }),
+    {
+      name: "deepmail_auth",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHydrated();
+      },
+    }
+  )
+);
