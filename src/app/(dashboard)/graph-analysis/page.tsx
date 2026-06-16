@@ -1,247 +1,347 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Plus, ChevronRight, Network } from "lucide-react";
+import { useState } from "react";
+import { Search, Network, ChevronRight, Filter, Download } from "lucide-react";
+import {
+  Mail, Shield, Globe, FileCode, User, Skull,
+  AlertTriangle, Server, Key, Cpu,
+} from "lucide-react";
+import { N8nWorkflowBlock, type WorkflowNode, type WorkflowConnection } from "@/components/ui/n8n-workflow-block";
 import { cn } from "@/lib/utils";
 
-interface GraphNode {
-  id: string;
-  label: string;
-  type: "ip" | "domain" | "hash" | "email" | "host" | "adversary";
-  severity?: "critical" | "high" | "medium" | "low";
-  x: number;
-  y: number;
-}
-
-interface GraphEdge {
-  source: string;
-  target: string;
-  label: string;
-}
-
-const NODE_COLORS: Record<string, string> = {
-  ip:        "#ef4444",  // danger
-  domain:    "#3b82f6",  // info
-  hash:      "#f59e0b",  // warning
-  email:     "#8b5cf6",  // purple
-  host:      "#06b6d4",  // accent
-  adversary: "#f97316",  // orange
+// ── Color classes for n8n node styling ────────────────────────────────────────
+const NODE_COLOR_CLASSES: Record<string, string> = {
+  red:    "border-danger/30 text-danger",
+  blue:   "border-info/30 text-info",
+  amber:  "border-warning/30 text-warning",
+  purple: "border-purple/30 text-purple",
+  cyan:   "border-accent/30 text-accent",
+  orange: "border-orange/30 text-orange",
+  green:  "border-success/30 text-success",
+  emerald: "border-success/40 text-success",
 };
 
-const MOCK_NODES: GraphNode[] = [
-  { id: "n1", label: "185.220.101.34", type: "ip", severity: "critical", x: 400, y: 200 },
-  { id: "n2", label: "evil-cdn.ru", type: "domain", severity: "critical", x: 600, y: 300 },
-  { id: "n3", label: "SE-KTH-RDP", type: "host", x: 200, y: 300 },
-  { id: "n4", label: "macro_doc.xlsm", type: "hash", severity: "high", x: 400, y: 400 },
-  { id: "n5", label: "alice.kim@acme.com", type: "email", x: 200, y: 150 },
-  { id: "n6", label: "TA542 (Emotet)", type: "adversary", x: 600, y: 150 },
-  { id: "n7", label: "dhl-tracking.info", type: "domain", severity: "medium", x: 700, y: 400 },
+// ── Node type legend ──────────────────────────────────────────────────────────
+const NODE_TYPE_COLORS: Record<string, { color: string; icon: React.ElementType }> = {
+  ip:        { color: "#ef4444", icon: Globe },
+  domain:    { color: "#3b82f6", icon: Server },
+  hash:      { color: "#f59e0b", icon: FileCode },
+  email:     { color: "#8b5cf6", icon: Mail },
+  host:      { color: "#06b6d4", icon: Cpu },
+  adversary: { color: "#f97316", icon: Skull },
+};
+
+// ── Email Threat Investigation Workflow ───────────────────────────────────────
+const INVESTIGATION_NODES: WorkflowNode[] = [
+  {
+    id: "trigger-1",
+    type: "trigger",
+    title: "Phishing Alert",
+    description: "New phishing email detected by ML model with 98.2% confidence",
+    icon: AlertTriangle,
+    color: "red",
+    position: { x: 50, y: 120 },
+  },
+  {
+    id: "action-1",
+    type: "action",
+    title: "Extract IOCs",
+    description: "Parse URLs, IPs, domains, and file hashes from email body & attachments",
+    icon: Search,
+    color: "blue",
+    position: { x: 300, y: 60 },
+  },
+  {
+    id: "action-2",
+    type: "action",
+    title: "Header Analysis",
+    description: "Validate SPF/DKIM/DMARC, trace mail relay path, check X-headers",
+    icon: Mail,
+    color: "purple",
+    position: { x: 300, y: 220 },
+  },
+  {
+    id: "condition-1",
+    type: "condition",
+    title: "Sandbox Verdict",
+    description: "Detonate attachments in isolated sandbox, analyze runtime behavior",
+    icon: Shield,
+    color: "amber",
+    position: { x: 550, y: 60 },
+  },
+  {
+    id: "action-3",
+    type: "action",
+    title: "Threat Intel Lookup",
+    description: "Cross-reference IOCs against VirusTotal, AbuseIPDB, MISP feeds",
+    icon: Globe,
+    color: "cyan",
+    position: { x: 550, y: 220 },
+  },
+  {
+    id: "action-4",
+    type: "action",
+    title: "MITRE Mapping",
+    description: "Map TTPs to MITRE ATT&CK framework — T1566.001 Spearphishing",
+    icon: Key,
+    color: "orange",
+    position: { x: 800, y: 120 },
+  },
+  {
+    id: "action-5",
+    type: "action",
+    title: "Create Case",
+    description: "Generate incident report, assign to SOC analyst, set SLA timer",
+    icon: FileCode,
+    color: "green",
+    position: { x: 1050, y: 120 },
+  },
 ];
 
-const MOCK_EDGES: GraphEdge[] = [
-  { source: "n1", target: "n2", label: "hosts" },
-  { source: "n1", target: "n3", label: "contacted by" },
-  { source: "n3", target: "n4", label: "executed" },
-  { source: "n5", target: "n4", label: "received" },
-  { source: "n6", target: "n1", label: "uses" },
-  { source: "n6", target: "n2", label: "uses" },
-  { source: "n2", target: "n7", label: "aliases" },
+const INVESTIGATION_CONNECTIONS: WorkflowConnection[] = [
+  { from: "trigger-1", to: "action-1" },
+  { from: "trigger-1", to: "action-2" },
+  { from: "action-1", to: "condition-1" },
+  { from: "action-2", to: "action-3" },
+  { from: "condition-1", to: "action-4" },
+  { from: "action-3", to: "action-4" },
+  { from: "action-4", to: "action-5" },
 ];
 
-function GraphCanvas({ nodes, edges, selected, onSelect }: {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-  selected: string | null;
-  onSelect: (id: string | null) => void;
-}) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+// ── Lateral Movement Detection Workflow ──────────────────────────────────────
+const LATERAL_NODES: WorkflowNode[] = [
+  {
+    id: "lat-trigger",
+    type: "trigger",
+    title: "RDP Brute Force",
+    description: "Excessive RDP login attempts from internal host SE-KTH-RDP",
+    icon: AlertTriangle,
+    color: "red",
+    position: { x: 50, y: 150 },
+  },
+  {
+    id: "lat-action-1",
+    type: "action",
+    title: "Auth Log Correlation",
+    description: "Correlate failed logins with successful auth events across domain controllers",
+    icon: Key,
+    color: "purple",
+    position: { x: 300, y: 80 },
+  },
+  {
+    id: "lat-action-2",
+    type: "action",
+    title: "Network Flow Analysis",
+    description: "Analyze NetFlow data for unusual port usage, SMB/WMI lateral traffic",
+    icon: Network,
+    color: "cyan",
+    position: { x: 300, y: 250 },
+  },
+  {
+    id: "lat-condition",
+    type: "condition",
+    title: "Behavior Score",
+    description: "ML-based anomaly detection score: 94/100 — high-confidence threat",
+    icon: Shield,
+    color: "amber",
+    position: { x: 550, y: 150 },
+  },
+  {
+    id: "lat-action-3",
+    type: "action",
+    title: "Isolate Host",
+    description: "Quarantine affected endpoint via EDR API, block at network level",
+    icon: Cpu,
+    color: "red",
+    position: { x: 800, y: 150 },
+  },
+];
 
-  const nodeById = Object.fromEntries(nodes.map((n) => [n.id, n]));
+const LATERAL_CONNECTIONS: WorkflowConnection[] = [
+  { from: "lat-trigger", to: "lat-action-1" },
+  { from: "lat-trigger", to: "lat-action-2" },
+  { from: "lat-action-1", to: "lat-condition" },
+  { from: "lat-action-2", to: "lat-condition" },
+  { from: "lat-condition", to: "lat-action-3" },
+];
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+// ── Node templates for adding new nodes ──────────────────────────────────────
+const NODE_TEMPLATES: Omit<WorkflowNode, "id" | "position">[] = [
+  { type: "action", title: "Enrichment", description: "Enrich indicator with external threat feeds", icon: Globe, color: "cyan" },
+  { type: "condition", title: "Threshold Check", description: "Check if score exceeds configured threshold", icon: Shield, color: "amber" },
+  { type: "action", title: "Notification", description: "Send alert to Slack/Teams/PagerDuty", icon: Mail, color: "green" },
+  { type: "action", title: "Block Rule", description: "Push IOC to firewall/proxy blocklist", icon: Key, color: "red" },
+];
+
+// ── IOC Details Panel ─────────────────────────────────────────────────────────
+function IOCDetailPanel({ selectedType }: { selectedType: string | null }) {
+  if (!selectedType) return null;
+
+  const config = NODE_TYPE_COLORS[selectedType];
+  if (!config) return null;
+  const Icon = config.icon;
+
+  const sampleIOCs: Record<string, { value: string; source: string; risk: string }[]> = {
+    ip: [
+      { value: "185.220.101.34", source: "AbuseIPDB", risk: "Critical" },
+      { value: "103.224.182.250", source: "VirusTotal", risk: "High" },
+    ],
+    domain: [
+      { value: "evil-cdn.ru", source: "MISP", risk: "Critical" },
+      { value: "dhl-tracking.info", source: "PhishTank", risk: "Medium" },
+    ],
+    hash: [
+      { value: "a1b2c3d4e5f6...7890", source: "Sandbox", risk: "High" },
+    ],
+    email: [
+      { value: "alice.kim@acme.com", source: "Internal", risk: "Target" },
+    ],
+    host: [
+      { value: "SE-KTH-RDP", source: "EDR", risk: "Compromised" },
+    ],
+    adversary: [
+      { value: "TA542 (Emotet)", source: "MITRE", risk: "APT" },
+    ],
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!dragging) return;
-    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-  };
-
-  const handleMouseUp = () => setDragging(false);
-
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    setZoom((z) => Math.max(0.3, Math.min(3, z - e.deltaY * 0.001)));
-  };
+  const iocs = sampleIOCs[selectedType] ?? [];
 
   return (
-    <svg
-      ref={svgRef}
-      className="w-full h-full cursor-grab"
-      style={{ cursor: dragging ? "grabbing" : "grab" }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
-      onClick={(e) => { if (e.target === svgRef.current) onSelect(null); }}
-    >
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#444" />
-        </marker>
-      </defs>
-
-      <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
-        {/* Edges */}
-        {edges.map((edge, i) => {
-          const s = nodeById[edge.source];
-          const t = nodeById[edge.target];
-          if (!s || !t) return null;
-          const mx = (s.x + t.x) / 2;
-          const my = (s.y + t.y) / 2;
-          return (
-            <g key={i}>
-              <line
-                x1={s.x} y1={s.y} x2={t.x} y2={t.y}
-                stroke="#333" strokeWidth="1.5"
-                markerEnd="url(#arrowhead)"
-                strokeDasharray="4 2"
-              />
-              <text x={mx} y={my - 6} textAnchor="middle" fontSize="9" fill="#666">
-                {edge.label}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Nodes */}
-        {nodes.map((node) => {
-          const isSelected = selected === node.id;
-          const color = NODE_COLORS[node.type];
-          return (
-            <g
-              key={node.id}
-              onClick={(e) => { e.stopPropagation(); onSelect(node.id); }}
-              className="cursor-pointer"
-            >
-              {/* Selection ring */}
-              {isSelected && (
-                <circle cx={node.x} cy={node.y} r="28" fill="none" stroke={color} strokeWidth="2" strokeDasharray="4 2" />
-              )}
-              {/* Node circle */}
-              <circle
-                cx={node.x} cy={node.y} r="20"
-                fill={`${color}22`} stroke={color} strokeWidth={isSelected ? 2.5 : 1.5}
-              />
-              {/* Label */}
-              <text x={node.x} y={node.y + 34} textAnchor="middle" fontSize="10" fill="#aaa">
-                {node.label.length > 18 ? node.label.slice(0, 18) + "…" : node.label}
-              </text>
-              {/* Type icon letter */}
-              <text x={node.x} y={node.y + 4} textAnchor="middle" fontSize="11" fontWeight="bold" fill={color}>
-                {node.type.slice(0, 1).toUpperCase()}
-              </text>
-            </g>
-          );
-        })}
-      </g>
-    </svg>
+    <div className="w-72 shrink-0 border-l border-border bg-surface overflow-y-auto">
+      <div className="border-b border-border px-5 py-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: `${config.color}20` }}>
+            <Icon className="h-3.5 w-3.5" style={{ color: config.color }} />
+          </div>
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted">IOC Type</p>
+            <h2 className="font-display text-[13px] font-bold capitalize text-fg">{selectedType}</h2>
+          </div>
+        </div>
+      </div>
+      <div className="px-5 py-4 space-y-3">
+        <p className="text-[10px] uppercase tracking-wider text-muted">Related Indicators</p>
+        {iocs.map((ioc, i) => (
+          <div key={i} className="rounded-lg border border-border bg-bg px-3 py-2.5 space-y-1">
+            <p className="font-mono text-[11px] text-fg break-all">{ioc.value}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-dimmed">{ioc.source}</span>
+              <span
+                className="rounded-full px-2 py-0.5 text-[9px] font-medium"
+                style={{
+                  backgroundColor: `${config.color}15`,
+                  color: config.color,
+                }}
+              >
+                {ioc.risk}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
-export default function GraphAnalysisPage() {
-  const [nodes] = useState<GraphNode[]>(MOCK_NODES);
-  const [edges] = useState<GraphEdge[]>(MOCK_EDGES);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+// ── Main Page ─────────────────────────────────────────────────────────────────
+type WorkflowTab = "investigation" | "lateral";
 
-  const selectedNode = nodes.find((n) => n.id === selected);
+export default function GraphAnalysisPage() {
+  const [activeTab, setActiveTab] = useState<WorkflowTab>("investigation");
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       {/* Toolbar */}
-      <div className="flex items-center gap-3 border-b border-border px-6 py-3 bg-surface/80">
-        <div className="flex items-center gap-2">
-          <Network className="h-4 w-4 text-accent" />
-          <span className="text-sm font-semibold text-fg">Graph Analysis</span>
+      <div className="flex items-center justify-between border-b border-border px-6 py-3 bg-surface/80 shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Network className="h-4 w-4 text-accent" />
+            <span className="text-sm font-semibold text-fg">Graph Analysis</span>
+          </div>
+
+          {/* Workflow tabs */}
+          <div className="flex overflow-hidden rounded-lg border border-border bg-surface/90">
+            <button
+              onClick={() => setActiveTab("investigation")}
+              className={cn(
+                "px-3 py-1.5 text-[11px] font-medium transition-colors",
+                activeTab === "investigation"
+                  ? "bg-accent/15 text-accent"
+                  : "text-muted hover:text-secondary",
+              )}
+            >
+              Email Investigation
+            </button>
+            <button
+              onClick={() => setActiveTab("lateral")}
+              className={cn(
+                "px-3 py-1.5 text-[11px] font-medium transition-colors",
+                activeTab === "lateral"
+                  ? "bg-accent/15 text-accent"
+                  : "text-muted hover:text-secondary",
+              )}
+            >
+              Lateral Movement
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5">
-          <Search className="h-3.5 w-3.5 text-muted" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search nodes…"
-            className="w-36 bg-transparent text-xs text-fg outline-none placeholder:text-dimmed"
-          />
-        </div>
-        <div className="flex gap-1">
-          {Object.entries(NODE_COLORS).map(([type, color]) => (
-            <span key={type} className="flex items-center gap-1 text-[10px] text-muted px-2 py-1 rounded bg-fg/5">
-              <span className="h-2 w-2 rounded-full" style={{ background: color }} />
-              {type}
-            </span>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-2 text-[11px] text-dimmed">
-          <span>Drag to pan · Scroll to zoom · Click node for details</span>
+
+        <div className="flex items-center gap-3">
+          {/* Node type legend */}
+          <div className="hidden lg:flex gap-1">
+            {Object.entries(NODE_TYPE_COLORS).map(([type, { color }]) => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(selectedType === type ? null : type)}
+                className={cn(
+                  "flex items-center gap-1 text-[10px] px-2 py-1 rounded transition-colors",
+                  selectedType === type
+                    ? "bg-fg/10 text-fg"
+                    : "text-muted hover:bg-fg/5",
+                )}
+              >
+                <span className="h-2 w-2 rounded-full" style={{ background: color }} />
+                {type}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] text-dimmed">
+            <span>Drag nodes to reposition</span>
+          </div>
         </div>
       </div>
 
       {/* Canvas + Detail panel */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 bg-bg relative">
-          <GraphCanvas nodes={nodes} edges={edges} selected={selected} onSelect={setSelected} />
-          {/* Stats overlay */}
-          <div className="absolute bottom-4 left-4 flex items-center gap-3 rounded-xl border border-border bg-surface/80 px-4 py-2.5 backdrop-blur-sm">
-            <span className="text-[11px] text-muted">{nodes.length} nodes</span>
-            <span className="text-dimmed">·</span>
-            <span className="text-[11px] text-muted">{edges.length} edges</span>
-          </div>
+        <div className="flex-1 overflow-hidden p-6 bg-bg">
+          {activeTab === "investigation" && (
+            <N8nWorkflowBlock
+              initialNodes={INVESTIGATION_NODES}
+              initialConnections={INVESTIGATION_CONNECTIONS}
+              nodeTemplates={NODE_TEMPLATES}
+              colorClasses={NODE_COLOR_CLASSES}
+              title="Email Threat Investigation"
+              statusLabel="Active"
+              statusColor="emerald"
+            />
+          )}
+          {activeTab === "lateral" && (
+            <N8nWorkflowBlock
+              initialNodes={LATERAL_NODES}
+              initialConnections={LATERAL_CONNECTIONS}
+              nodeTemplates={NODE_TEMPLATES}
+              colorClasses={NODE_COLOR_CLASSES}
+              title="Lateral Movement Detection"
+              statusLabel="Monitoring"
+              statusColor="amber"
+            />
+          )}
         </div>
 
-        {/* Right panel: Node detail */}
-        {selectedNode && (
-          <div className="w-72 shrink-0 border-l border-border bg-surface overflow-y-auto">
-            <div className="border-b border-border px-5 py-4">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-muted">{selectedNode.type}</p>
-              <h2 className="mt-1 font-mono text-[13px] font-bold text-fg break-all">{selectedNode.label}</h2>
-            </div>
-            <div className="px-5 py-4 space-y-4">
-              <div>
-                <p className="mb-2 text-[10px] uppercase tracking-wider text-muted">Connected To</p>
-                <div className="space-y-1.5">
-                  {edges
-                    .filter((e) => e.source === selectedNode.id || e.target === selectedNode.id)
-                    .map((e, i) => {
-                      const otherId = e.source === selectedNode.id ? e.target : e.source;
-                      const other = nodes.find((n) => n.id === otherId);
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setSelected(otherId)}
-                          className="flex w-full items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-left transition-colors hover:border-accent/30 hover:bg-accent/5"
-                        >
-                          <span className="h-2 w-2 rounded-full shrink-0" style={{ background: NODE_COLORS[other?.type ?? "ip"] }} />
-                          <div className="min-w-0">
-                            <p className="truncate font-mono text-[11px] text-fg">{other?.label}</p>
-                            <p className="text-[10px] text-dimmed">{e.label}</p>
-                          </div>
-                          <ChevronRight className="ml-auto h-3 w-3 shrink-0 text-dimmed" />
-                        </button>
-                      );
-                    })}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* IOC Detail Panel */}
+        <IOCDetailPanel selectedType={selectedType} />
       </div>
     </div>
   );

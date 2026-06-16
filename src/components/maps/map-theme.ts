@@ -25,7 +25,6 @@ export const CARTO_DARK_STYLE: StyleSpecification = {
         "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
       ],
       tileSize: 256,
-      attribution: '© <a href="https://carto.com/">CARTO</a>',
     },
   },
   layers: [
@@ -46,7 +45,6 @@ export const OSM_STYLE: StyleSpecification = {
       type: "raster",
       tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
       tileSize: 256,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     },
   },
   layers: [
