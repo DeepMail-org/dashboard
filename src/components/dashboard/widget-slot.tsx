@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, lazy, useMemo, memo, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { WidgetErrorBoundary } from "./widget-error-boundary";
 import { WidgetSkeleton } from "./widget-skeleton";
 import { WidgetCard } from "./widget-card";
@@ -10,6 +11,11 @@ import { useContainerSize } from "@/hooks/use-container-size";
 import { useWidgetQuery } from "@/hooks/use-widget-query";
 import type { WidgetProps } from "@/lib/dashboard/types";
 import * as LucideIcons from "lucide-react";
+
+// Widgets that have a dedicated full-page route
+const EXPAND_ROUTES: Record<string, string> = {
+  "geo-threat-map": "/map",
+};
 
 interface WidgetSlotProps {
   widgetId: string;
@@ -58,6 +64,7 @@ export const WidgetSlot = memo(function WidgetSlot({ widgetId }: WidgetSlotProps
   const isLocked = useDashboardStore((s) => s.isLocked);
   const removeWidget = useDashboardStore((s) => s.removeWidget);
   const refetchRef = useRef<(() => void) | null>(null);
+  const router = useRouter();
 
   if (!definition) {
     return (
@@ -71,6 +78,8 @@ export const WidgetSlot = memo(function WidgetSlot({ widgetId }: WidgetSlotProps
   const IconComponent = icons[definition.icon];
   const icon = IconComponent ? <IconComponent className="h-3.5 w-3.5" /> : null;
 
+  const expandRoute = EXPAND_ROUTES[widgetId];
+
   return (
     <WidgetErrorBoundary widgetId={widgetId} onRemove={() => removeWidget(widgetId)}>
       <WidgetCard
@@ -79,6 +88,7 @@ export const WidgetSlot = memo(function WidgetSlot({ widgetId }: WidgetSlotProps
         isLocked={isLocked}
         onRemove={() => removeWidget(widgetId)}
         onRefresh={() => refetchRef.current?.()}
+        onExpand={expandRoute ? () => router.push(expandRoute) : undefined}
       >
         <WidgetDataBridge widgetId={widgetId} definition={definition} refetchRef={refetchRef} />
       </WidgetCard>

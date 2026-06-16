@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Shield,
   Grid3x3,
+  Globe,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -77,6 +78,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Threat Intel", href: "/threat-intel", icon: Rss },
       { label: "MITRE ATT&CK", href: "/mitre-attack", icon: Grid3x3 },
       { label: "Graph Analysis", href: "/graph-analysis", icon: Activity },
+      { label: "Geo Map", href: "/map", icon: Globe },
     ],
   },
   {

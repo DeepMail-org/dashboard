@@ -44,6 +44,7 @@ const ROUTE_TITLES: Record<string, string> = {
   "/mitre-attack":      "MITRE ATT&CK",
   "/vulnerabilities":   "Vulnerabilities",
   "/tasks":             "Tasks",
+  "/map":               "Geo Threat Map",
 };
 
 const ORGS = [

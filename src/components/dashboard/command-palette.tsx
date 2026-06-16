@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, Mail, FolderOpen, Columns3, ShieldAlert, Monitor,
   FileText, Activity, Store, CreditCard, Settings, Search, Plus, Trash2,
-  Lock, Unlock, RotateCcw,
+  Lock, Unlock, RotateCcw, Globe,
 } from "lucide-react";
 import {
   CommandDialog, CommandInput, CommandList, CommandEmpty,
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Sandbox", href: "/sandbox", icon: Monitor },
   { label: "Log Explorer", href: "/log-explorer", icon: FileText, shortcut: "⌘5" },
   { label: "Graph Analysis", href: "/graph-analysis", icon: Activity },
+  { label: "Geo Map", href: "/map", icon: Globe },
   { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Billing", href: "/billing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
