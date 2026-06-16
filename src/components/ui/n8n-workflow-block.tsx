@@ -194,7 +194,7 @@ export function N8nWorkflowBlock({
       {/* Canvas */}
       <div
         ref={canvasRef}
-        className="relative h-[500px] w-full overflow-auto rounded-xl border border-border/50 bg-base/40 md:h-[600px]"
+        className="relative h-[500px] w-full overflow-auto rounded-xl border border-border/50 bg-bg/40 md:h-[600px]"
         role="region"
         aria-label="Workflow canvas"
         tabIndex={0}

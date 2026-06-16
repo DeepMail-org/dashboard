@@ -123,8 +123,8 @@ function NavLink({
         "group relative flex items-center gap-3 rounded-md py-1.5 text-[13px] transition-all duration-150",
         collapsed ? "justify-center px-2" : indent ? "pl-11 pr-3" : "px-3",
         isActive
-          ? "text-fg bg-white/7"
-          : "text-muted hover:text-secondary hover:bg-white/3",
+          ? "text-fg bg-fg/7"
+          : "text-muted hover:text-secondary hover:bg-fg/3",
       )}
     >
       {isActive && (
@@ -139,11 +139,11 @@ function NavLink({
               "absolute left-0 w-px",
               isLastChild ? "top-0 h-1/2" : "top-0 h-full",
             )}
-            style={{ borderLeft: "1px dashed oklch(0.45 0 0 / 0.35)" }}
+            style={{ borderLeft: "1px dashed var(--color-dimmed)" }}
           />
           <div
             className="absolute left-0 top-1/2 h-px w-3.5"
-            style={{ borderTop: "1px dashed oklch(0.45 0 0 / 0.35)" }}
+            style={{ borderTop: "1px dashed var(--color-dimmed)" }}
           />
         </div>
       )}
@@ -184,7 +184,7 @@ function NavParentItem({
       {hasChildren && !collapsed && (
         <div
           className="absolute left-5.5 top-7.5 bottom-0 w-px"
-          style={{ borderLeft: "1px dashed oklch(0.45 0 0 / 0.35)" }}
+          style={{ borderLeft: "1px dashed var(--color-dimmed)" }}
         />
       )}
 
@@ -308,7 +308,7 @@ export function Sidebar() {
         <button
           onClick={toggleCollapsed}
           className={cn(
-            "flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] text-muted transition-colors hover:text-fg hover:bg-white/3",
+            "flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] text-muted transition-colors hover:text-fg hover:bg-fg/3",
             collapsed && "justify-center px-2",
           )}
         >
