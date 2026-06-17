@@ -1,5 +1,8 @@
 import { useMailStore } from "@/stores/mail-store";
+import { useSandboxStore } from "@/stores/sandbox-store";
 import { useMails, useMailAction } from "@/hooks/use-mail";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { 
   Archive, Trash2, Reply, Forward, Shield, AlertTriangle, 
   CheckCircle, Download, Monitor, Activity, ShieldAlert,
@@ -29,6 +32,8 @@ function AuthBadge({ label, pass }: { label: string; pass: boolean }) {
 export function MailDetail() {
   const selectedMailId = useMailStore((s) => s.selectedMailId);
   const filters = useMailStore((s) => s.filters);
+  const addSandboxTask = useSandboxStore((s) => s.addTask);
+  const router = useRouter();
   const { data } = useMails(filters);
   const actionMutation = useMailAction();
 
@@ -197,7 +202,23 @@ export function MailDetail() {
                     <button className="flex-1 flex items-center justify-center gap-1.5 rounded py-1.5 text-[10px] font-medium text-secondary hover:bg-surface hover:text-fg transition-colors">
                       <Download className="h-3 w-3" /> Download
                     </button>
-                    <button onClick={() => handleAction("sandbox")} className="flex-1 flex items-center justify-center gap-1.5 rounded py-1.5 text-[10px] font-medium text-secondary hover:bg-surface hover:text-fg transition-colors">
+                    <button 
+                      onClick={() => {
+                        addSandboxTask({
+                          name: att.name,
+                          type: "attachment",
+                          targetId: att.id,
+                          size: att.size
+                        });
+                        toast.success("Added to Sandbox Queue", {
+                          action: {
+                            label: "View",
+                            onClick: () => router.push("/sandbox"),
+                          },
+                        });
+                      }} 
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded py-1.5 text-[10px] font-medium text-secondary hover:bg-surface hover:text-fg transition-colors"
+                    >
                       <Monitor className="h-3 w-3" /> Sandbox
                     </button>
                   </div>
