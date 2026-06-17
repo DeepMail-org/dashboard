@@ -28,7 +28,7 @@ export function SandboxConfigPanel({ task }: SandboxConfigProps) {
   };
 
   const handleRun = () => {
-    updateStatus(task.id, "running");
+    updateStatus(task.id, "LAUNCH");
   };
 
   if (task.status === "completed") {

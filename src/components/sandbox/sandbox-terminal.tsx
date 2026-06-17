@@ -108,7 +108,7 @@ export function SandboxTerminal({ task }: SandboxTerminalProps) {
     if (task.status !== "running") return;
     
     if (visibleLines >= TERMINAL_LINES.length) {
-      updateTaskStatus(task.id, "completed");
+      updateTaskStatus(task.id, "COMPLETE");
       return;
     }
     
