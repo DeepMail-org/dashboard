@@ -22,7 +22,6 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useLayoutStore } from "@/stores/layout-store";
-import { AiSearchModal } from "@/components/layout/ai-search-modal";
 import { NotificationPanel } from "@/components/layout/notification-panel";
 import { AnimatePresence, motion } from "framer-motion";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
@@ -338,7 +337,6 @@ export function Topbar() {
       </header>
 
       {/* Global modals */}
-      <AiSearchModal />
       <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
     </>
   );

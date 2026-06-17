@@ -69,7 +69,14 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a command or search pages, widgets, actions..." />
+      <CommandInput placeholder="Search pages, actions, widgets..." />
+      <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5">
+        <span className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
+          <Globe className="h-2.5 w-2.5" />
+          DeepMail Navigation
+        </span>
+        <span className="text-[11px] text-muted">Quick actions and dashboard controls</span>
+      </div>
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
 
