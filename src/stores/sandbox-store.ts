@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import mockTasks from "../data/mock-tasks.json";
+import { sandboxTaskMachine } from "./sandbox-machine";
+import { createActor } from "xstate";
 
-export type SandboxTaskStatus = "pending" | "running" | "completed" | "failed";
+export type SandboxTaskStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
 
 export interface SandboxConfig {
   os: string;
@@ -13,22 +16,46 @@ export interface SandboxTask {
   id: string;
   name: string;
   type: "email" | "attachment";
-  targetId: string; // The ID of the email or attachment
-  size?: number; // In bytes
+  targetId: string;
+  size?: number;
   status: SandboxTaskStatus;
   config: SandboxConfig;
   createdAt: number;
   completedAt?: number;
+  
+  // Enterprise fields
+  tenant?: string;
+  owner?: string;
+  worker?: string;
+  risk?: number;
+  verdict?: "malicious" | "suspicious" | "clean" | "unknown";
+  campaign?: string;
+  iocCount?: number;
+  confidence?: number;
+}
+
+export interface SandboxWorker {
+  id: string;
+  name: string;
+  status: "healthy" | "busy" | "offline";
+  cpu: number;
+  ram: number;
+  queueLength: number;
+  region: string;
+  latency: number;
+  lastHeartbeat: number;
 }
 
 interface SandboxState {
   tasks: SandboxTask[];
+  workers: SandboxWorker[];
   activeTaskId: string | null;
-  addTask: (task: Omit<SandboxTask, "id" | "status" | "config" | "createdAt">) => string;
+  addTask: (task: Omit<SandboxTask, "id" | "status" | "config" | "createdAt" | "iocCount" | "confidence" | "verdict">) => string;
   updateTaskConfig: (id: string, config: Partial<SandboxConfig>) => void;
-  updateTaskStatus: (id: string, status: SandboxTaskStatus) => void;
+  updateTaskStatus: (id: string, event: "LAUNCH" | "COMPLETE" | "FAIL" | "RETRY" | "CANCEL") => void;
   removeTask: (id: string) => void;
   setActiveTask: (id: string | null) => void;
+  bulkAction: (ids: string[], action: "delete" | "retry" | "cancel") => void;
 }
 
 const DEFAULT_CONFIG: SandboxConfig = {
@@ -37,23 +64,21 @@ const DEFAULT_CONFIG: SandboxConfig = {
   timeout: 120,
 };
 
+const INITIAL_WORKERS: SandboxWorker[] = [
+  { id: "w-01", name: "sandbox-01", status: "busy", cpu: 84, ram: 70, queueLength: 3, region: "us-east-1", latency: 12, lastHeartbeat: Date.now() },
+  { id: "w-02", name: "sandbox-02", status: "healthy", cpu: 12, ram: 24, queueLength: 0, region: "us-east-2", latency: 15, lastHeartbeat: Date.now() },
+  { id: "w-03", name: "sandbox-03", status: "healthy", cpu: 5, ram: 18, queueLength: 0, region: "eu-west-1", latency: 89, lastHeartbeat: Date.now() },
+  { id: "w-04", name: "sandbox-04", status: "offline", cpu: 0, ram: 0, queueLength: 0, region: "ap-south-1", latency: 0, lastHeartbeat: Date.now() - 3600000 },
+  { id: "w-05", name: "sandbox-05", status: "healthy", cpu: 22, ram: 45, queueLength: 1, region: "us-west-2", latency: 45, lastHeartbeat: Date.now() },
+];
+
 export const useSandboxStore = create<SandboxState>()(
   persist(
     (set, get) => ({
-      tasks: [
-        // Let's prepopulate a pending mock task so the list isn't completely empty
-        {
-          id: "sbx-001",
-          name: "invoice_q3.pdf.exe",
-          type: "attachment",
-          targetId: "att-123",
-          size: 2400000,
-          status: "pending",
-          config: { ...DEFAULT_CONFIG },
-          createdAt: Date.now() - 3600000,
-        }
-      ],
-      activeTaskId: "sbx-001",
+      tasks: mockTasks as SandboxTask[],
+      workers: INITIAL_WORKERS,
+      activeTaskId: null,
+      
       addTask: (taskData) => {
         const id = `sbx-${Math.random().toString(36).substring(2, 9)}`;
         const newTask: SandboxTask = {
@@ -62,13 +87,19 @@ export const useSandboxStore = create<SandboxState>()(
           status: "pending",
           config: { ...DEFAULT_CONFIG },
           createdAt: Date.now(),
+          tenant: "Current Tenant",
+          owner: "current.user",
+          verdict: "unknown",
+          iocCount: 0,
+          confidence: 0
         };
         set((state) => ({
           tasks: [newTask, ...state.tasks],
-          activeTaskId: id, // Automatically switch view to newly added task
+          activeTaskId: id,
         }));
         return id;
       },
+      
       updateTaskConfig: (id, newConfig) => {
         set((state) => ({
           tasks: state.tasks.map((t) =>
@@ -76,30 +107,83 @@ export const useSandboxStore = create<SandboxState>()(
           ),
         }));
       },
-      updateTaskStatus: (id, status) => {
-        set((state) => ({
-          tasks: state.tasks.map((t) => {
-            if (t.id === id) {
-              return {
-                ...t,
-                status,
-                completedAt: status === "completed" || status === "failed" ? Date.now() : t.completedAt,
-              };
-            }
-            return t;
-          }),
-        }));
+      
+      updateTaskStatus: (id, event) => {
+        set((state) => {
+          const task = state.tasks.find(t => t.id === id);
+          if (!task) return state;
+
+          // XState evaluation strictly dictates next state
+          const actor = createActor(sandboxTaskMachine, {
+            state: sandboxTaskMachine.resolveState({ value: task.status, context: { id } })
+          });
+          actor.start();
+          actor.send({ type: event });
+          
+          const nextStateValue = actor.getSnapshot().value as SandboxTaskStatus;
+          
+          if (nextStateValue === task.status) {
+            // Invalid transition attempted
+            console.warn(`[XState] Invalid transition: ${task.status} -> ${event}`);
+            return state;
+          }
+
+          return {
+            tasks: state.tasks.map((t) => {
+              if (t.id === id) {
+                return {
+                  ...t,
+                  status: nextStateValue,
+                  worker: nextStateValue === "running" ? "sandbox-01" : t.worker,
+                  completedAt: (nextStateValue === "completed" || nextStateValue === "failed" || nextStateValue === "cancelled") ? Date.now() : t.completedAt,
+                  // If completed mock some random stats
+                  verdict: nextStateValue === "completed" ? (Math.random() > 0.5 ? "malicious" : "clean") : t.verdict,
+                  iocCount: nextStateValue === "completed" ? Math.floor(Math.random() * 20) : t.iocCount,
+                  confidence: nextStateValue === "completed" ? 90 + Math.floor(Math.random() * 10) : t.confidence,
+                };
+              }
+              return t;
+            }),
+          };
+        });
       },
+      
       removeTask: (id) => {
         set((state) => ({
           tasks: state.tasks.filter((t) => t.id !== id),
           activeTaskId: state.activeTaskId === id ? null : state.activeTaskId,
         }));
       },
+      
       setActiveTask: (id) => set({ activeTaskId: id }),
+      
+      bulkAction: (ids, action) => {
+        set((state) => {
+          if (action === "delete") {
+            return {
+              tasks: state.tasks.filter((t) => !ids.includes(t.id)),
+              activeTaskId: ids.includes(state.activeTaskId!) ? null : state.activeTaskId,
+            };
+          }
+          
+          return {
+            tasks: state.tasks.map(t => {
+              if (!ids.includes(t.id)) return t;
+              
+              if (action === "retry" && (t.status === "failed" || t.status === "cancelled")) {
+                return { ...t, status: "pending" };
+              }
+              if (action === "cancel" && (t.status === "pending" || t.status === "running")) {
+                return { ...t, status: "cancelled", completedAt: Date.now() };
+              }
+              return t;
+            })
+          };
+        });
+      }
     }),
     {
-      name: "deepmail-sandbox-storage",
+      name: "deepmail-sandbox-operations",
     }
   )
 );
