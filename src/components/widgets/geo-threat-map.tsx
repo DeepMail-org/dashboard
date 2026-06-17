@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTheme } from "next-themes";
-import { Map, MapControls, MapClusterLayer, MapPopup, useMap } from "@/components/ui/map";
+import { Map, MapControls, MapClusterLayer, MapPopup, useMap, Map3DBuildings } from "@/components/ui/map";
 import { MapToolbar } from "@/components/maps/map-toolbar";
 import { MapPopupContent } from "@/components/maps/map-popup-content";
 import { SEVERITY_COLORS, CARTO_DARK_STYLE, CARTO_LIGHT_STYLE, MAP_STYLES, getDefaultMapStyle, type MapStyleId } from "@/components/maps/map-theme";
@@ -37,12 +37,7 @@ function MapInner({
     }
   }, [view3d, isLoaded, map]);
 
-  // Handle style switching
-  useEffect(() => {
-    if (!isLoaded || !map) return;
-    const style = MAP_STYLES[mapStyle].style;
-    map.setStyle(style);
-  }, [mapStyle, isLoaded, map]);
+  // Style switching is handled by the parent <Map> component via the `styles` prop.
 
   const geoJSON = useMemo(() => toGeoJson(points), [points]);
 
@@ -51,8 +46,11 @@ function MapInner({
       <MapControls
         position="bottom-right"
         showZoom
+        showCompass
         showFullscreen
       />
+      
+      <Map3DBuildings enabled={view3d && mapStyle.startsWith("carto")} />
 
       {clustersEnabled ? (
         <MapClusterLayer
@@ -123,6 +121,7 @@ export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
       <Map
         center={[30, 25]}
         zoom={1.5}
+        projection={{ type: "globe" } as any}
         className="h-full w-full"
         loading={isLoading}
         styles={{ dark: currentStyle }}
