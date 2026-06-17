@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Fragment } from "react";
 import {
   ChevronDown, ChevronRight, Search, Plus, RefreshCw,
   Shield, ExternalLink, UserPlus, FolderOpen, CheckCircle,
@@ -355,9 +355,9 @@ export default function DetectionsPage() {
             </thead>
             <tbody>
               {Array.from(grouped.entries()).map(([day, items]) => (
-                <>
+                <Fragment key={`group-frag-${day}`}>
                   {/* Date group row */}
-                  <tr key={`group-${day}`}>
+                  <tr className="group-row">
                     <td
                       colSpan={10}
                       className="border-b border-fg/5 bg-fg/3 px-4 py-2"
@@ -370,9 +370,8 @@ export default function DetectionsPage() {
                   {items.map((det) => {
                     const isExpanded = expanded.has(det.id);
                     return (
-                      <>
+                      <Fragment key={det.id}>
                         <tr
-                          key={det.id}
                           onClick={() => toggleRow(det.id)}
                           className={cn(
                             "cursor-pointer border-b border-fg/5 transition-colors hover:bg-fg/4",
@@ -465,10 +464,10 @@ export default function DetectionsPage() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     );
                   })}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
