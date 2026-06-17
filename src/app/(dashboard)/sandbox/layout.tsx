@@ -2,31 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Search, Server, Activity, Database, CloudRain, Bell, RefreshCw, LayoutDashboard, List, PlayCircle, CheckCircle, XCircle, ShieldAlert, FileSearch, Code, Eye, Layers, Settings, Workflow, Network, HardDrive, Share2, Bug } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const SIDEBAR_GROUPS = [
-  {
-    title: "OPERATIONS",
-    items: [
-      { label: "Overview", icon: LayoutDashboard, href: "/sandbox/overview" },
-      { label: "Queue", icon: List, href: "/sandbox/queue" },
-    ]
-  },
-  {
-    title: "INFRASTRUCTURE",
-    items: [
-      { label: "Workers", icon: Server, href: "/sandbox/workers" },
-    ]
-  },
-  {
-    title: "MANAGEMENT",
-    items: [
-      { label: "Reports", icon: FileSearch, href: "/sandbox/reports" },
-      { label: "Settings", icon: Settings, href: "/sandbox/settings" },
-    ]
-  }
-];
+import { Search, Server, Activity, Database, CloudRain, Bell, RefreshCw, PlayCircle, Workflow } from "lucide-react";
 
 export default function SandboxLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -40,46 +16,9 @@ export default function SandboxLayout({ children }: { children: React.ReactNode 
   }, [pathname, router]);
 
   return (
-    <div className="flex h-[calc(100vh-64px)] w-full overflow-hidden bg-bg">
-      {/* 1. SIDEBAR */}
-      <div className="w-64 shrink-0 flex flex-col border-r border-border bg-surface-2/30 backdrop-blur-md">
-        <div className="h-14 flex items-center px-6 border-b border-border">
-          <div className="flex items-center gap-2 text-fg font-bold tracking-tight">
-            <Workflow className="h-4 w-4 text-accent" />
-            Sandbox SOC
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-          {SIDEBAR_GROUPS.map((group) => (
-            <div key={group.title}>
-              <div className="px-3 mb-2 text-[10px] font-bold tracking-wider text-muted/80 uppercase">
-                {group.title}
-              </div>
-              <div className="space-y-0.5">
-                {group.items.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => router.push(item.href)}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                      pathname.startsWith(item.href) 
-                        ? "bg-accent/15 text-accent" 
-                        : "text-muted hover:bg-surface hover:text-fg"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
+    <div className="flex flex-col h-[calc(100vh-64px)] w-full overflow-hidden bg-bg">
       <div className="flex-1 flex flex-col min-w-0">
-        {/* 2. HEADER */}
+        {/* 1. HEADER */}
         <header className="h-14 flex items-center justify-between px-6 border-b border-border bg-bg/80 backdrop-blur-xl shrink-0 z-10">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative w-96">

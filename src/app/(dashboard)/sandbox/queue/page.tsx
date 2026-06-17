@@ -52,8 +52,8 @@ export default function SandboxQueuePage() {
       size: 250,
       cell: (info) => (
         <div className="flex flex-col">
-          <span className="font-semibold text-fg text-[12px] truncate max-w-[230px]">{info.getValue()}</span>
-          <span className="font-mono text-[9px] text-muted">{info.row.original.id}</span>
+          <span className="font-semibold text-gray-200 text-[12px] truncate max-w-[230px] group-hover:text-white transition-colors">{info.getValue()}</span>
+          <span className="font-mono text-[9px] text-gray-500">{info.row.original.id}</span>
         </div>
       )
     }),
@@ -103,7 +103,7 @@ export default function SandboxQueuePage() {
       id: 'actions',
       size: 60,
       cell: () => (
-        <button className="h-6 w-6 flex items-center justify-center rounded hover:bg-surface text-muted hover:text-fg">
+        <button className="h-6 w-6 flex items-center justify-center rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
           <MoreHorizontal className="h-4 w-4" />
         </button>
       )
@@ -130,23 +130,23 @@ export default function SandboxQueuePage() {
   });
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div className="flex flex-col h-full bg-[#0a0c10] text-white">
       {/* EC2 Style Sub-Header Action Bar */}
-      <div className="h-14 flex items-center justify-between px-6 border-b border-border bg-surface-2 shrink-0">
-        <h1 className="text-lg font-bold text-fg">Sandbox Instances</h1>
+      <div className="h-14 flex items-center justify-between px-6 border-b border-white/5 bg-[#0f1115] shrink-0">
+        <h1 className="text-lg font-bold text-white">Sandbox Instances</h1>
         
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface border border-border text-[11px] font-medium hover:bg-surface-hover">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0f1115] border border-white/10 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
             <PlayCircle className="h-3.5 w-3.5" /> Re-analyze
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface border border-border text-[11px] font-medium hover:bg-surface-hover text-danger">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-500/10 border border-rose-500/20 text-[11px] font-medium text-rose-400 hover:bg-rose-500/20 transition-colors">
             <Trash2 className="h-3.5 w-3.5" /> Terminate
           </button>
-          <div className="w-px h-4 bg-border mx-1" />
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface border border-border text-[11px] font-medium hover:bg-surface-hover">
+          <div className="w-px h-4 bg-white/10 mx-1" />
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0f1115] border border-white/10 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
             <Download className="h-3.5 w-3.5" /> Export JSON
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface border border-border text-[11px] font-medium hover:bg-surface-hover">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0f1115] border border-white/10 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
             <Settings className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -155,13 +155,13 @@ export default function SandboxQueuePage() {
       {/* Virtualized Data Grid */}
       <div ref={parentRef} className="flex-1 overflow-auto">
         <div style={{ height: `${virtualizer.getTotalSize()}px` }} className="w-full relative">
-          <div className="absolute top-0 left-0 w-full sticky z-10 bg-surface-2 border-b border-border shadow-sm">
+          <div className="absolute top-0 left-0 w-full sticky z-10 bg-[#0f1115] border-b border-white/5 shadow-sm">
             {table.getHeaderGroups().map(headerGroup => (
               <div key={headerGroup.id} className="flex w-full">
                 {headerGroup.headers.map(header => (
                   <div
                     key={header.id}
-                    className="flex items-center px-4 py-2 text-[11px] font-bold text-muted uppercase tracking-wider cursor-pointer hover:bg-surface-hover select-none"
+                    className="flex items-center px-4 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none"
                     style={{ width: header.getSize() }}
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -193,7 +193,7 @@ export default function SandboxQueuePage() {
                   data-index={virtualRow.index}
                   ref={virtualizer.measureElement}
                   onClick={() => router.push(`/sandbox/task/${row.original.id}`)}
-                  className="flex w-full border-b border-border/50 hover:bg-surface/50 cursor-pointer transition-colors group h-12"
+                  className="flex w-full border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors group h-12"
                 >
                   {row.getVisibleCells().map(cell => (
                     <div

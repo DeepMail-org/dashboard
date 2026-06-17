@@ -20,6 +20,8 @@ import {
   Shield,
   Grid3x3,
   Globe,
+  List,
+  Server,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -66,7 +68,18 @@ const NAV_GROUPS: NavGroup[] = [
       },
       { label: "Detections", href: "/detections", icon: ShieldAlert },
       { label: "Vulnerabilities", href: "/vulnerabilities", icon: Shield },
-      { label: "Sandbox", href: "/sandbox", icon: Monitor },
+      { 
+        label: "Sandbox", 
+        href: "/sandbox", 
+        icon: Monitor,
+        children: [
+          { label: "Overview", href: "/sandbox/overview", icon: LayoutDashboard },
+          { label: "Queue", href: "/sandbox/queue", icon: List },
+          { label: "Workers", href: "/sandbox/workers", icon: Server },
+          { label: "Reports", href: "/sandbox/reports", icon: FileText },
+          { label: "Settings", href: "/sandbox/settings", icon: Settings },
+        ]
+      },
       { label: "Tasks", href: "/tasks", icon: Activity },
     ],
   },
