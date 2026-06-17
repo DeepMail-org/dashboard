@@ -106,7 +106,6 @@ export default function ThreatMapPage() {
             position="bottom-right"
             showZoom
             showCompass
-            showLocate
             showFullscreen
           />
 
