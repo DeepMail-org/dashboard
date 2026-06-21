@@ -17,7 +17,7 @@ export function SkeletonTable({ rows = 8, cols = 6, className }: SkeletonTablePr
           <div
             key={i}
             className="h-3 animate-pulse rounded bg-fg/10"
-            style={{ width: `${60 + Math.random() * 80}px` }}
+            style={{ width: `${60 + ((i * 13) % 80)}px` }}
           />
         ))}
       </div>
@@ -32,7 +32,7 @@ export function SkeletonTable({ rows = 8, cols = 6, className }: SkeletonTablePr
               key={col}
               className="h-3 animate-pulse rounded bg-fg/7"
               style={{
-                width: `${50 + Math.random() * 100}px`,
+                width: `${50 + (((row * cols + col) * 17) % 100)}px`,
                 animationDelay: `${(row * cols + col) * 30}ms`,
               }}
             />

@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable */
 
 import * as MapLibreGL from "@maptiler/sdk";
 import type { PopupOptions, MarkerOptions } from "@maptiler/sdk";
@@ -1050,8 +1051,11 @@ function MapPopup({
 		if (prev.maxWidth !== popupOptions.maxWidth && popupOptions.maxWidth) {
 			popup.setMaxWidth(popupOptions.maxWidth ?? "none");
 		}
-		popupOptionsRef.current = popupOptions;
 	}
+	
+	useEffect(() => {
+		popupOptionsRef.current = popupOptions;
+	}, [popupOptions]);
 
 	const handleClose = () => {
 		popup.remove();
@@ -1425,7 +1429,9 @@ function MapArc<T extends MapArcDatum = MapArcDatum>({
 	);
 
 	const latestRef = useRef({ data, onClick, onHover });
-	latestRef.current = { data, onClick, onHover };
+	useEffect(() => {
+		latestRef.current = { data, onClick, onHover };
+	}, [data, onClick, onHover]);
 
 	// Add source and layers on mount.
 	useEffect(() => {

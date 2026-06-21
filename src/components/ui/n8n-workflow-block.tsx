@@ -129,44 +129,11 @@ export function N8nWorkflowBlock({
     dragStartPosition.current = null;
   };
 
-  const addNode = () => {
-    const template = nodeTemplates[Math.floor(Math.random() * nodeTemplates.length)];
-    const lastNode = nodes[nodes.length - 1];
-    const newPosition = lastNode
-      ? { x: lastNode.position.x + 250, y: lastNode.position.y }
-      : { x: 50, y: 100 };
-
-    const newNode: WorkflowNode = {
-      id: `node-${Date.now()}`,
-      ...template,
-      position: newPosition,
-    };
-
-    flushSync(() => {
-      setNodes((prev) => [...prev, newNode]);
-      if (lastNode) {
-        setConnections((prev) => [...prev, { from: lastNode.id, to: newNode.id }]);
-      }
-    });
-
-    setContentSize((prev) => ({
-      width: Math.max(prev.width, newPosition.x + NODE_WIDTH + 50),
-      height: Math.max(prev.height, newPosition.y + NODE_HEIGHT + 50),
-    }));
-
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.scrollTo({
-        left: newPosition.x + NODE_WIDTH - canvas.clientWidth + 100,
-        behavior: "smooth",
-      });
-    }
-  };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur sm:p-6">
+    <div className="flex h-full w-full flex-col">
       {/* Header */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-2 flex items-start justify-between px-2 shrink-0">
         <div className="flex items-center gap-3">
           <Badge
             variant="outline"
@@ -178,23 +145,13 @@ export function N8nWorkflowBlock({
             {title}
           </span>
         </div>
-        {!readOnly && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addNode}
-            className="h-8 gap-2 rounded-lg text-xs uppercase tracking-wider text-secondary hover:text-fg"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Add Node</span>
-          </Button>
-        )}
+
       </div>
 
       {/* Canvas */}
       <div
         ref={canvasRef}
-        className="relative h-[500px] w-full overflow-auto rounded-xl border border-border/50 bg-bg/40 md:h-[600px]"
+        className="relative flex-1 w-full overflow-auto h-full"
         role="region"
         aria-label="Workflow canvas"
         tabIndex={0}
@@ -283,7 +240,7 @@ export function N8nWorkflowBlock({
       </div>
 
       {/* Footer */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/50 bg-surface/40 px-4 py-2.5 backdrop-blur-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 shrink-0">
         <div className="flex flex-wrap items-center gap-4 text-xs text-muted">
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-success" />
