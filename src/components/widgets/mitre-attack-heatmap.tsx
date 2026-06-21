@@ -59,7 +59,7 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
         calculable: false,
         show: false,
         inRange: {
-          color: ["#1a1a2e", "#a855f740", "#a855f7", "#ef4444"],
+          color: ["#1a1a2e", "#f43f5e30", "#f43f5e90", "#f43f5e"],
         },
       },
       series: [{

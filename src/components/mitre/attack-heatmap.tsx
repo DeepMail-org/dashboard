@@ -14,19 +14,17 @@ import Link from "next/link";
 function getHeatStyle(count: number, maxCount: number): React.CSSProperties {
   if (count === 0) return {};
   const ratio = Math.min(count / maxCount, 1);
-  // 0→surface, low→warning/orange, high→danger
-  if (ratio < 0.05) return { background: "oklch(75% 0.15 70 / 0.15)" };
-  if (ratio < 0.15) return { background: "oklch(72% 0.16 55 / 0.3)" };
-  if (ratio < 0.35) return { background: "oklch(68% 0.18 40 / 0.45)" };
-  if (ratio < 0.6)  return { background: "oklch(65% 0.2 30 / 0.55)" };
-  return { background: "oklch(62% 0.22 25 / 0.7)" };
+  if (ratio < 0.1) return { backgroundColor: "rgba(244, 63, 94, 0.1)" };
+  if (ratio < 0.3) return { backgroundColor: "rgba(244, 63, 94, 0.3)" };
+  if (ratio < 0.6) return { backgroundColor: "rgba(244, 63, 94, 0.6)" };
+  return { backgroundColor: "rgba(244, 63, 94, 1.0)" };
 }
 
 function getTextStyle(count: number, maxCount: number): string {
+  if (count === 0) return "text-muted";
   const ratio = count / maxCount;
-  if (ratio < 0.05) return "text-warning";
-  if (ratio < 0.35) return "text-orange";
-  return "text-danger";
+  if (ratio < 0.6) return "text-danger";
+  return "text-white";
 }
 
 // ── Technique Cell ─────────────────────────────────────────────────────────────

@@ -101,12 +101,13 @@ export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
   const [mapStyle, setMapStyle] = useState<MapStyleId>(defaultStyle);
   const [clustersEnabled, setClustersEnabled] = useState(true);
   const [view3d, setView3d] = useState(false);
+  const [prevTheme, setPrevTheme] = useState(resolvedTheme);
 
   // Sync map style when theme changes
-  useEffect(() => {
-    const target = getDefaultMapStyle(resolvedTheme);
-    setMapStyle(target);
-  }, [resolvedTheme]);
+  if (resolvedTheme !== prevTheme) {
+    setPrevTheme(resolvedTheme);
+    setMapStyle(getDefaultMapStyle(resolvedTheme));
+  }
 
   const handleReset = () => {
     setView3d(false);

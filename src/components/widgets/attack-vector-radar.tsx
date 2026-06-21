@@ -1,40 +1,48 @@
 "use client";
 
-import { useMemo } from "react";
 import type { WidgetProps } from "@/lib/dashboard/types";
-import { EChartsWrapper } from "@/components/charts/echarts-wrapper";
+import { RadarChart } from "@/components/charts/radar-chart";
+import { RadarGrid } from "@/components/charts/radar-grid";
+import { RadarAxis } from "@/components/charts/radar-axis";
+import { RadarLabels } from "@/components/charts/radar-labels";
+import { RadarArea } from "@/components/charts/radar-area";
 
-const DEMO_VECTORS = [
-  { name: "Phishing", value: 85 },
-  { name: "Malware", value: 62 },
-  { name: "BEC", value: 48 },
-  { name: "Ransomware", value: 33 },
-  { name: "Data Exfil", value: 27 },
-  { name: "Zero-Day", value: 15 },
+const metrics = [
+  { key: "phishing", label: "Phishing" },
+  { key: "malware", label: "Malware" },
+  { key: "bec", label: "BEC" },
+  { key: "ransomware", label: "Ransomware" },
+  { key: "dataExfil", label: "Data Exfil" },
+  { key: "zeroDay", label: "Zero-Day" },
 ];
 
-export default function AttackVectorRadar({ isLoading }: WidgetProps) {
-  const option = useMemo(() => ({
-    radar: {
-      indicator: DEMO_VECTORS.map((v) => ({ name: v.name, max: 100 })),
-      shape: "polygon" as const,
-      axisLine: { lineStyle: { color: "var(--color-border, #333)" } },
-      splitLine: { lineStyle: { color: "var(--color-border, #333)", opacity: 0.3 } },
-      splitArea: { show: false },
-      axisName: { color: "var(--color-muted, #888)", fontSize: 10 },
-    },
-    series: [{
-      type: "radar" as const,
-      data: [{
-        value: DEMO_VECTORS.map((v) => v.value),
-        name: "Attack Vectors",
-        lineStyle: { color: "#a855f7", width: 2 },
-        areaStyle: { color: "rgba(168, 85, 247, 0.15)" },
-        itemStyle: { color: "#a855f7" },
-      }],
-    }],
-  }), []);
+const radarData = [
+  {
+    label: "Attack Vectors",
+    color: "#a855f7",
+    values: { phishing: 85, malware: 62, bec: 48, ransomware: 33, dataExfil: 27, zeroDay: 15 }
+  }
+];
 
+export default function AttackVectorRadar({ isLoading, containerWidth }: WidgetProps) {
   if (isLoading) return <div className="h-full w-full animate-pulse rounded-lg bg-surface" />;
-  return <EChartsWrapper option={option} />;
+
+  const isCompact = containerWidth < 300;
+
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden">
+      <div className="flex-1 min-h-0 relative flex items-center justify-center">
+        <div className="absolute inset-0">
+          <RadarChart data={radarData} metrics={metrics}>
+            <RadarGrid showLabels={false} />
+            <RadarAxis />
+            <RadarLabels offset={isCompact ? 16 : 24} fontSize={isCompact ? 9 : 10} />
+            {radarData.map((item, index) => (
+              <RadarArea key={item.label} index={index} showPoints={!isCompact} />
+            ))}
+          </RadarChart>
+        </div>
+      </div>
+    </div>
+  );
 }

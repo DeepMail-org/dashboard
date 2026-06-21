@@ -1,72 +1,82 @@
-"use client";
-
 import { useMemo } from "react";
 import type { WidgetProps } from "@/lib/dashboard/types";
 import type { DashboardOverview } from "@/lib/api/types";
 import { DEMO_DASHBOARD } from "@/lib/demo-data";
-import { EChartsWrapper } from "@/components/charts/echarts-wrapper";
+import { AreaChart, Area } from "@/components/charts/area-chart";
+import { XAxis } from "@/components/charts/x-axis";
+import { Grid } from "@/components/charts/grid";
+import { ChartTooltip } from "@/components/charts/tooltip";
+import { AreaChartLoading } from "@/components/charts/area-chart-loading";
+import { ChartBrushLayout } from "@/components/charts/brush";
+import { Background } from "@/components/charts/background";
+import { curveNatural } from "@visx/curve";
 
 export default function EmailVolumeTimeline({ data, isLoading }: WidgetProps) {
   const dashboard = (data as DashboardOverview) ?? DEMO_DASHBOARD;
 
-  const option = useMemo(() => {
-    const hours = dashboard.emailVolume.map((d) =>
-      new Date(d.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    );
-    const counts = dashboard.emailVolume.map((d) => d.count);
+  const chartData = useMemo(() => {
+    const now = new Date();
+    const sliceLength = dashboard.emailVolume.length;
 
-    return {
-      tooltip: {
-        trigger: "axis" as const,
-        axisPointer: { type: "cross" as const, lineStyle: { color: "var(--color-accent, #a855f7)", opacity: 0.4 } },
-      },
-      grid: { left: 48, right: 16, top: 16, bottom: 28 },
-      xAxis: {
-        type: "category" as const,
-        data: hours,
-        axisLabel: { fontSize: 9, interval: 3, color: "var(--color-dimmed, #888)" },
-        axisLine: { lineStyle: { color: "var(--color-border, #333)" } },
-        axisTick: { show: false },
-      },
-      yAxis: {
-        type: "value" as const,
-        splitLine: { lineStyle: { color: "var(--color-border, #333)", opacity: 0.3, type: "dashed" as const } },
-        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
-      },
-      series: [
-        {
-          type: "line" as const,
-          data: counts,
-          smooth: true,
-          showSymbol: false,
-          lineStyle: { width: 2, color: "#a855f7" },
-          areaStyle: {
-            color: {
-              type: "linear" as const,
-              x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: "rgba(168, 85, 247, 0.3)" },
-                { offset: 1, color: "rgba(168, 85, 247, 0.02)" },
-              ],
-            },
-          },
-        },
-      ],
-    };
+    return dashboard.emailVolume.slice(0, sliceLength).map((d, i) => {
+      const date = new Date(now);
+      const stepsFromEnd = sliceLength - 1 - i;
+      date.setHours(now.getHours() - stepsFromEnd * ((24 * 30) / Math.max(1, sliceLength - 1)));
+
+      return {
+        time: date,
+        count: d.count,
+      };
+    });
   }, [dashboard.emailVolume]);
 
-  if (isLoading) return <div className="h-full w-full animate-pulse rounded-lg bg-surface" />;
+  const totalAnalyzed = useMemo(() => {
+    return chartData.reduce((sum, d) => sum + d.count, 0);
+  }, [chartData]);
+
+  if (isLoading) return <AreaChartLoading loadingStyle="sweep" className="h-full w-full" />;
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-2 flex items-baseline gap-3">
-        <span className="font-display text-2xl font-bold text-fg">
-          {dashboard.totalAnalyzed.toLocaleString()}
-        </span>
-        <span className="text-xs text-muted">emails analyzed (24h)</span>
+      <div className="mb-2 flex items-baseline justify-between">
+        <div className="flex items-baseline gap-3">
+          <span className="font-display text-2xl font-bold text-fg">
+            {totalAnalyzed.toLocaleString()}
+          </span>
+          <span className="text-xs text-muted">emails analyzed</span>
+        </div>
       </div>
-      <div className="min-h-0 flex-1">
-        <EChartsWrapper option={option} />
+      <div className="min-h-0 flex-1 overflow-hidden pb-4" style={{ "--chart-line-primary": "#a855f7", "--chart-1": "#a855f7" } as React.CSSProperties}>
+        <ChartBrushLayout
+          data={chartData}
+          enabled
+          height={72}
+          xDataKey="time"
+          brushStrip={() => (
+            <AreaChart data={chartData} className="h-full" margin={{ top: 0, right: 20, bottom: 0, left: 30 }} xDataKey="time">
+              <Background />
+              <Area dataKey="count" curve={curveNatural} fillOpacity={0.15} fadeEdges gradientToOpacity={0} showLine={true} showHighlight={true} fill="var(--chart-line-primary)" />
+            </AreaChart>
+          )}
+        >
+          {(layout) => (
+            <AreaChart
+              className="h-full"
+              data={chartData}
+              xDataKey="time"
+              xDomain={layout.xDomain}
+              margin={{ top: 8, right: 30, bottom: 30, left: 30 }}
+              animationDuration={1600}
+              animationEasing="cubic-bezier(0, 0, 0.58, 1)"
+            >
+              <Background />
+              <Grid horizontal />
+              <Area dataKey="count" curve={curveNatural} fill="var(--chart-line-primary)" fillOpacity={0.3} strokeWidth={2} fadeEdges gradientToOpacity={0} showLine={true} showHighlight={true} />
+              <XAxis />
+              <ChartTooltip />
+            </AreaChart>
+          )}
+        </ChartBrushLayout>
       </div>
     </div>
   );
