@@ -7,6 +7,7 @@ import {
   EmptyTitle,
 } from "@/components/marketing/ui/empty";
 import { HomeIcon, CompassIcon } from "lucide-react";
+import Link from "next/link";
 
 export function NotFound() {
   return (
@@ -24,10 +25,10 @@ export function NotFound() {
         <EmptyContent>
           <div className="flex gap-2">
             <Button asChild>
-              <a href="/">
+              <Link href="/">
                 <HomeIcon className="size-4 mr-2" data-icon="inline-start" />
                 Go Home
-              </a>
+              </Link>
             </Button>
           </div>
         </EmptyContent>

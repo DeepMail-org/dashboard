@@ -7,31 +7,31 @@ import { Topbar } from "./topbar";
 import { MobileNav } from "./mobile-nav";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const collapsed = useLayoutStore((s) => s.sidebarCollapsed);
+	const collapsed = useLayoutStore((s) => s.sidebarCollapsed);
 
-  return (
-    <div className="flex min-h-dvh">
-      {/* Desktop sidebar */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
+	return (
+		<div className="flex h-screen w-full overflow-hidden">
+			{/* Desktop sidebar */}
+			<div className="hidden md:block">
+				<Sidebar />
+			</div>
 
-      {/* Mobile nav overlay */}
-      <MobileNav />
+			{/* Mobile nav overlay */}
+			<MobileNav />
 
-      {/* Main content area */}
-      <div
-        className={cn(
-          "flex flex-1 flex-col transition-[margin-left] duration-200 ease-out",
-          "md:ml-[250px]",
-          collapsed && "md:ml-[72px]",
-        )}
-      >
-        <Topbar />
-        <main className="flex-1 overflow-x-hidden p-6 lg:p-8">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+			{/* Main content area */}
+			<div
+				className={cn(
+					"flex flex-1 flex-col min-h-0 overflow-hidden transition-[margin-left] duration-200 ease-out",
+					"md:ml-[250px]",
+					collapsed && "md:ml-[72px]",
+				)}
+			>
+				<Topbar />
+				<main className="flex flex-1 flex-col overflow-hidden min-h-0 bg-[#0a0c10]">
+					{children}
+				</main>
+			</div>
+		</div>
+	);
 }
