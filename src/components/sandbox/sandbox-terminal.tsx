@@ -99,149 +99,53 @@ export function SandboxTerminal({ task }: SandboxTerminalProps) {
   const updateTaskStatus = useSandboxStore((s) => s.updateTaskStatus);
 
   useEffect(() => {
-    // Reset terminal if task changes
-    if (task.status === "completed") {
+    // Determine the target lines based on status
+    if (task.status === "completed" || task.status === "failed" || task.status === "cancelled") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisibleLines(TERMINAL_LINES.length);
       return;
     }
     
-    if (task.status !== "running") return;
+    if (task.status === "pending") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setVisibleLines(1); // Show just the prompt when pending
+      return;
+    }
     
+    // For running status
     if (visibleLines >= TERMINAL_LINES.length) {
+      // We reached the end of the predefined logs. Auto-complete for mock realism
       updateTaskStatus(task.id, "COMPLETE");
       return;
     }
     
-    const delay = TERMINAL_LINES[visibleLines]?.type === "output" && TERMINAL_LINES[visibleLines]?.text === "" ? 100 : 50;
+    const currentLine = TERMINAL_LINES[visibleLines];
+    const isOutputLine = currentLine?.type === "output" && currentLine?.text === "";
+    const isStageLine = currentLine?.type === "info" && currentLine?.text.includes("Stage");
+    
+    // Create realistic delays based on line type
+    let delay = 50;
+    if (isOutputLine) delay = 150;
+    if (isStageLine) delay = 800;
+    
     const timer = setTimeout(() => setVisibleLines((v) => v + 1), delay);
     return () => clearTimeout(timer);
   }, [visibleLines, task.status, task.id, updateTaskStatus]);
 
   useEffect(() => {
-    terminalRef.current?.scrollTo({ top: terminalRef.current.scrollHeight });
+    // Smooth scroll to bottom
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
   }, [visibleLines]);
 
   return (
-    <div className="flex h-full w-full overflow-hidden">
-      {/* Left: Metadata & IOCs */}
-      <div className="w-80 shrink-0 space-y-4 overflow-y-auto border-r border-border p-6 bg-bg">
-        {/* Verdict (Only show if completed or towards end of running) */}
-        {task.status === "completed" ? (
-          <div className="flex items-center gap-3 rounded-lg border border-danger/30 bg-danger/5 p-4">
-            <div className="h-3 w-3 animate-pulse rounded-full bg-danger shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-            <div>
-              <div className="text-sm font-bold tracking-wide text-danger">MALICIOUS</div>
-              <div className="text-[11px] text-muted">Confidence: 98.7%</div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3 rounded-lg border border-warning/30 bg-warning/5 p-4">
-            <div className="h-3 w-3 animate-spin rounded-full border-2 border-warning border-t-transparent" />
-            <div>
-              <div className="text-sm font-bold tracking-wide text-warning">ANALYZING</div>
-              <div className="text-[11px] text-muted">Running dynamic execution...</div>
-            </div>
-          </div>
-        )}
-
-        {/* File Metadata */}
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <h3 className="mb-3 text-xs font-semibold text-fg">File Metadata</h3>
-          <div className="space-y-2">
-            {FILE_META.map((m) => (
-              <div key={m.label} className="flex items-center justify-between">
-                <span className="text-[11px] text-muted">{m.label}</span>
-                <span className={`font-mono text-fg ${m.small ? "text-[9px]" : "text-[11px]"}`}>
-                  {m.value.replace("target", task.name)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* MITRE Techniques */}
-        {task.status === "completed" && (
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <h3 className="mb-3 text-xs font-semibold text-fg">MITRE Techniques</h3>
-            <div className="space-y-2">
-              {MITRE.map((t) => (
-                <div key={t.id} className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] text-muted">{t.id}</span>
-                  <span className={`font-mono text-[11px] ${t.color}`}>{t.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Extracted IOCs */}
-        {task.status === "completed" && (
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <h3 className="mb-3 text-xs font-semibold text-fg">Extracted IOCs</h3>
-            <div className="space-y-1.5">
-              {IOCS.map((ioc) => (
-                <div key={ioc} className="rounded-md bg-bg px-2.5 py-1.5 font-mono text-[10px] text-accent break-all">
-                  {ioc}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Sandbox Environment */}
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <h3 className="mb-3 text-xs font-semibold text-fg">Sandbox Environment</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted">Status</span>
-              <span className={`flex items-center gap-1.5 text-[11px] font-medium ${task.status === "completed" ? "text-muted" : "text-success"}`}>
-                {task.status === "running" && (
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
-                  </span>
-                )}
-                {task.status === "completed" ? "Terminated" : "Active (Live)"}
-              </span>
-            </div>
-            <div className="space-y-1.5">
-               <div className="flex items-center justify-between">
-                 <span className="text-[11px] text-muted">CPU Usage</span>
-                 <span className="font-mono text-[11px] text-fg">{task.status === "completed" ? "0%" : "84%"}</span>
-               </div>
-               <div className="h-1.5 w-full overflow-hidden rounded-full bg-fg/10">
-                 <div className={`h-full bg-warning transition-all ${task.status === "completed" ? "w-0" : "w-[84%]"}`} />
-               </div>
-            </div>
-            <div className="space-y-1.5">
-               <div className="flex items-center justify-between">
-                 <span className="text-[11px] text-muted">RAM Consumption</span>
-                 <span className="font-mono text-[11px] text-fg">{task.status === "completed" ? "0 / 4.0 GB" : "2.8 / 4.0 GB"}</span>
-               </div>
-               <div className="h-1.5 w-full overflow-hidden rounded-full bg-fg/10">
-                 <div className={`h-full bg-accent transition-all ${task.status === "completed" ? "w-0" : "w-[70%]"}`} />
-               </div>
-            </div>
-            <div className="pt-2 border-t border-border mt-1 flex flex-col gap-2">
-               <div className="flex items-center justify-between">
-                 <span className="text-[11px] text-muted">Virtual Machine</span>
-                 <span className="font-mono text-[11px] text-fg capitalize">{task.config.os.replace("windows", "Win ")}</span>
-               </div>
-               <div className="flex items-center justify-between">
-                 <span className="text-[11px] text-muted">Cost Rate</span>
-                 <span className="font-mono text-[11px] text-fg">0.05 Cr / min</span>
-               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right: Glass Terminal */}
-      <div className="flex flex-1 flex-col p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-bg via-bg to-[#0a0a0c]">
-        <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-white/5 bg-[#0a0a0c]/60 backdrop-blur-xl shadow-2xl relative ring-1 ring-white/5">
+    <div className="flex h-full w-full overflow-hidden p-6 bg-transparent">
+      {/* Full-width Glass Terminal */}
+      <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-white/5 bg-[#0a0a0c] backdrop-blur-xl shadow-2xl relative ring-1 ring-white/5">
         {/* Inner glass highlight */}
         <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/5 pointer-events-none" />
-        
+
         {/* Title bar */}
         <div className="flex items-center justify-between border-b border-white/5 bg-white/[0.02] px-4 py-3 relative z-10">
           <div className="flex items-center gap-2 w-20">
@@ -267,7 +171,6 @@ export function SandboxTerminal({ task }: SandboxTerminalProps) {
           )}
         </div>
       </div>
-    </div>
     </div>
   );
 }

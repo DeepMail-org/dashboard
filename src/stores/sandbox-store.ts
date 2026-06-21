@@ -74,7 +74,7 @@ const INITIAL_WORKERS: SandboxWorker[] = [
 
 export const useSandboxStore = create<SandboxState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       tasks: mockTasks as SandboxTask[],
       workers: INITIAL_WORKERS,
       activeTaskId: null,

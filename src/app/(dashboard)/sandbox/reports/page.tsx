@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PageWrapper } from "@/components/layout/page-wrapper";
 import { FileText, Download, Filter, Search, Calendar, CheckCircle, ExternalLink } from "lucide-react";
 import ReactECharts from "echarts-for-react";
 import { cn } from "@/lib/utils";
@@ -57,50 +58,51 @@ export default function SandboxReportsPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0c10] text-white overflow-hidden">
-      {/* Header */}
-      <div className="h-14 flex items-center justify-between px-6 border-b border-white/5 bg-[#0f1115] shrink-0">
-        <h1 className="text-lg font-bold text-white">Intelligence Reports</h1>
-        
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0f1115] border border-white/10 text-[11px] font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
-            <Filter className="h-3.5 w-3.5" /> Filter
-          </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-[11px] font-bold text-blue-400 hover:bg-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)] transition-all">
-            <FileText className="h-3.5 w-3.5" /> Generate Report
-          </button>
+    <PageWrapper
+      header={
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-bold text-fg">Intelligence Reports</h1>
+          
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface border border-border text-[11px] font-medium text-secondary hover:text-fg hover:bg-surface-hover transition-colors">
+              <Filter className="h-3.5 w-3.5" /> Filter
+            </button>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-accent-soft border border-accent/20 text-[11px] font-bold text-accent hover:bg-accent-soft/80 shadow-xs transition-all">
+              <FileText className="h-3.5 w-3.5" /> Generate Report
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      }
+    >
+      <div className="space-y-6 max-w-7xl mx-auto w-full">
         
         {/* Top Widgets */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-2xl border border-white/5 bg-[#0f1115] p-5 shadow-2xl relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-surface p-5 shadow-card relative overflow-hidden">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400">Total Reports</h3>
-                <div className="text-xs text-gray-500 mt-1">This month</div>
+                <h3 className="text-sm font-semibold text-muted">Total Reports</h3>
+                <div className="text-xs text-dimmed mt-1">This month</div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-2xl font-bold text-white">128</span>
+                <span className="text-2xl font-bold text-fg">128</span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded mt-1">+14%</span>
               </div>
             </div>
-            <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-gray-400">
+            <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs text-muted">
               <span className="flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-emerald-400" /> 124 Delivered</span>
               <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Next scheduled: Tomorrow</span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#0f1115] p-5 shadow-2xl relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-surface p-5 shadow-card relative overflow-hidden">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400">Generation Volume</h3>
-                <div className="text-xs text-gray-500 mt-1">Last 7 days</div>
+                <h3 className="text-sm font-semibold text-muted">Generation Volume</h3>
+                <div className="text-xs text-dimmed mt-1">Last 7 days</div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-2xl font-bold text-white">108</span>
+                <span className="text-2xl font-bold text-fg">108</span>
               </div>
             </div>
             <div className="h-20 w-full mt-2">
@@ -108,21 +110,21 @@ export default function SandboxReportsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#0f1115] p-5 shadow-2xl relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-surface p-5 shadow-card relative overflow-hidden">
              <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400">Storage Usage</h3>
-                <div className="text-xs text-gray-500 mt-1">Report Archives</div>
+                <h3 className="text-sm font-semibold text-muted">Storage Usage</h3>
+                <div className="text-xs text-dimmed mt-1">Report Archives</div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-2xl font-bold text-white">4.2 GB</span>
+                <span className="text-2xl font-bold text-fg">4.2 GB</span>
               </div>
             </div>
             <div className="mt-6">
-              <div className="h-2 w-full rounded-full bg-gray-800 overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-fg/10 overflow-hidden">
                  <div className="h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]" style={{ width: '35%' }} />
               </div>
-              <div className="flex justify-between mt-2 text-xs text-gray-500">
+              <div className="flex justify-between mt-2 text-xs text-dimmed">
                 <span>35% utilized</span>
                 <span>12 GB Total</span>
               </div>
@@ -131,24 +133,24 @@ export default function SandboxReportsPage() {
         </div>
 
         {/* Data Grid */}
-        <div className="rounded-2xl border border-white/5 bg-[#0f1115] shadow-2xl flex flex-col h-[600px]">
-          <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-             <h3 className="text-sm font-bold text-white">Report Archives</h3>
+        <div className="rounded-2xl border border-border bg-surface shadow-card flex flex-col h-[600px]">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+             <h3 className="text-sm font-bold text-fg">Report Archives</h3>
              <div className="relative w-64">
-               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500" />
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />
                <input 
                  type="text" 
                  placeholder="Search reports..." 
                  value={searchQuery}
                  onChange={(e) => setSearchQuery(e.target.value)}
-                 className="w-full h-8 bg-black/40 border border-white/10 rounded-md pl-9 pr-3 text-xs text-white focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600"
+                 className="w-full h-8 bg-bg border border-border rounded-md pl-9 pr-3 text-xs text-fg focus:outline-none focus:border-accent transition-colors placeholder:text-dimmed"
                />
              </div>
           </div>
           
           <div className="flex-1 overflow-auto">
             <table className="w-full text-left text-xs">
-              <thead className="text-gray-500 border-b border-white/5 sticky top-0 bg-[#0f1115] z-10">
+              <thead className="text-muted border-b border-border sticky top-0 bg-surface z-10">
                 <tr>
                   <th className="px-5 py-3 font-medium">Report ID</th>
                   <th className="px-5 py-3 font-medium">Name</th>
@@ -159,11 +161,11 @@ export default function SandboxReportsPage() {
                   <th className="px-5 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border">
                 {filteredReports.map((report) => (
-                  <tr key={report.id} className="hover:bg-white/[0.02] transition-colors group">
-                    <td className="px-5 py-3 text-gray-400 font-mono">{report.id}</td>
-                    <td className="px-5 py-3 text-gray-200 font-medium group-hover:text-white transition-colors">{report.name}</td>
+                  <tr key={report.id} className="hover:bg-fg/3 transition-colors group">
+                    <td className="px-5 py-3 text-muted font-mono">{report.id}</td>
+                    <td className="px-5 py-3 text-secondary font-medium group-hover:text-fg transition-colors">{report.name}</td>
                     <td className="px-5 py-3">
                       <span className={cn(
                         "px-1.5 py-0.5 rounded text-[9px] font-bold border",
@@ -174,15 +176,15 @@ export default function SandboxReportsPage() {
                         {report.type}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-gray-400">{report.date}</td>
-                    <td className="px-5 py-3 text-gray-400 font-mono">{report.size}</td>
-                    <td className="px-5 py-3 text-gray-400">{report.author}</td>
+                    <td className="px-5 py-3 text-muted">{report.date}</td>
+                    <td className="px-5 py-3 text-muted font-mono">{report.size}</td>
+                    <td className="px-5 py-3 text-muted">{report.author}</td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors tooltip-trigger" title="View">
+                        <button className="p-1.5 rounded hover:bg-fg/5 text-muted hover:text-fg transition-colors tooltip-trigger" title="View">
                           <ExternalLink className="h-4 w-4" />
                         </button>
-                        <button className="p-1.5 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors tooltip-trigger" title="Download">
+                        <button className="p-1.5 rounded hover:bg-fg/5 text-muted hover:text-fg transition-colors tooltip-trigger" title="Download">
                           <Download className="h-4 w-4" />
                         </button>
                       </div>
@@ -194,6 +196,6 @@ export default function SandboxReportsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
