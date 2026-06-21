@@ -47,9 +47,13 @@ export function CustomTemplateBuilder({
   // Reset when re-opening for a different slot
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(existing?.name ?? "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDescription(existing?.description ?? "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedWidgets(existing?.widgets ?? []);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearch("");
       setActiveCategory("all");
     }

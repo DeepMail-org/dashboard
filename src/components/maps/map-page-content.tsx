@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -384,183 +386,185 @@ export default function MapPageContent() {
 	};
 
 	return (
-		<div className="flex h-[calc(100dvh-64px)] flex-col overflow-hidden">
-			{/* Header */}
-			<div className="flex items-center justify-between border-b border-border bg-surface/80 px-5 py-2.5 backdrop-blur-sm">
-				<div className="flex items-center gap-3">
-					<button
-						onClick={() => router.push("/dashboard")}
-						className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-fg"
-					>
-						<ArrowLeft className="h-3.5 w-3.5" />
-						Dashboard
-					</button>
-					<div className="flex items-center gap-2">
-						<Globe className="h-4 w-4 text-accent" />
-						<h1 className="font-display text-sm font-semibold text-fg">
-							Geo Threat Map
-						</h1>
-					</div>
-				</div>
-
-				<div className="flex items-center gap-3">
-					{/* Mode toggle */}
-					<div className="flex overflow-hidden rounded-lg border border-border bg-surface/90">
+		<div className="h-[calc(100dvh-64px)] w-full p-4 bg-[#0a0c10]">
+			<div className="flex h-full w-full flex-col overflow-hidden rounded-[20px] border border-border bg-surface shadow-sm relative">
+				{/* Header */}
+				<div className="flex items-center justify-between border-b border-border bg-surface/80 px-5 py-2.5 backdrop-blur-sm">
+					<div className="flex items-center gap-3">
 						<button
-							onClick={() => setMode("arcs")}
-							className={cn(
-								"px-3 py-1.5 text-[11px] font-medium transition-colors",
-								mode === "arcs"
-									? "bg-accent/15 text-accent"
-									: "text-muted hover:text-secondary",
-							)}
+							onClick={() => router.push("/dashboard")}
+							className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-surface-hover hover:text-fg"
 						>
-							Arcs
+							<ArrowLeft className="h-3.5 w-3.5" />
+							Dashboard
 						</button>
-						<button
-							onClick={() => setMode("2d")}
-							className={cn(
-								"px-3 py-1.5 text-[11px] font-medium transition-colors",
-								mode === "2d"
-									? "bg-accent/15 text-accent"
-									: "text-muted hover:text-secondary",
-							)}
-						>
-							2D
-						</button>
+						<div className="flex items-center gap-2">
+							<Globe className="h-4 w-4 text-accent" />
+							<h1 className="font-display text-sm font-semibold text-fg">
+								Geo Threat Map
+							</h1>
+						</div>
 					</div>
 
-					<MapToolbar
-						activeStyle={mapStyle}
-						onStyleChange={setMapStyle}
-						clustersEnabled={clustersEnabled}
-						onToggleClusters={() => setClustersEnabled((v) => !v)}
-						view3d={view3d}
-						onToggle3d={() => setView3d((v) => !v)}
-						onReset={handleReset}
-					/>
-				</div>
-			</div>
-
-			{/* Map + Sidebar */}
-			<div className="flex flex-1 overflow-hidden">
-				<ThreatSidebar
-					points={points}
-					selectedIp={selectedIp}
-					onSelect={handleSidebarSelect}
-					collapsed={sidebarCollapsed}
-					onToggle={() => setSidebarCollapsed((v) => !v)}
-				/>
-
-				<div className="relative flex-1">
-					<Map
-						center={[20, 25]}
-						zoom={2}
-						projection={{ type: "globe" } as any}
-						className="h-full w-full"
-						styles={{
-							dark:
-								MAP_STYLES[mapStyle]?.style ??
-								(resolvedTheme === "light"
-									? CARTO_LIGHT_STYLE
-									: CARTO_DARK_STYLE),
-						}}
-						theme="dark"
-					>
-						<MapInner
-							points={points}
-							mode={mode}
-							clustersEnabled={clustersEnabled}
-							view3d={view3d}
-							mapStyle={mapStyle}
-							onSelectPoint={handleSelectPoint}
-							selectedIp={selectedIp}
-						/>
-
-						{/* Bottom Left Controls: Stats & Legend */}
-						<div className="absolute bottom-4 left-4 z-10 flex flex-col gap-3 pointer-events-none">
-							{/* Stats overlay */}
-							<div className="grid grid-cols-2 gap-2">
-								{[
-									{
-										label: "Total Threats",
-										value: points
-											.reduce((s, p) => s + p.count, 0)
-											.toLocaleString(),
-										color: "text-fg",
-									},
-									{
-										label: "Critical Sources",
-										value: points
-											.filter(
-												(p) =>
-													p.severity === "critical",
-											)
-											.length.toString(),
-										color: "text-danger",
-									},
-									{
-										label: "Countries",
-										value: new Set(
-											points.map((p) => p.country),
-										).size.toString(),
-										color: "text-accent",
-									},
-									{
-										label: "Active Arcs",
-										value: points.length.toString(),
-										color: "text-info",
-									},
-								].map((s) => (
-									<div
-										key={s.label}
-										className="rounded-lg border border-border bg-surface/90 px-3 py-2 backdrop-blur-sm shadow-card pointer-events-auto"
-									>
-										<div
-											className={cn(
-												"font-display text-lg font-bold",
-												s.color,
-											)}
-										>
-											{s.value}
-										</div>
-										<div className="text-[9px] text-muted">
-											{s.label}
-										</div>
-									</div>
-								))}
-							</div>
-
-							{/* Severity legend */}
-							<div className="flex items-center gap-3 rounded-xl border border-border bg-surface/90 px-4 py-2.5 backdrop-blur-sm shadow-card pointer-events-auto">
-								{Object.entries(SEVERITY_COLORS).map(
-									([sev, color]) => (
-										<div
-											key={sev}
-											className="flex items-center gap-1.5"
-										>
-											<span
-												className="h-2.5 w-2.5 rounded-full"
-												style={{
-													backgroundColor: color,
-												}}
-											/>
-											<span className="text-[10px] capitalize text-muted">
-												{sev}
-											</span>
-										</div>
-									),
+					<div className="flex items-center gap-3">
+						{/* Mode toggle */}
+						<div className="flex overflow-hidden rounded-lg border border-border bg-surface/90">
+							<button
+								onClick={() => setMode("arcs")}
+								className={cn(
+									"px-3 py-1.5 text-[11px] font-medium transition-colors",
+									mode === "arcs"
+										? "bg-accent/15 text-accent"
+										: "text-muted hover:text-secondary",
 								)}
-								<span className="mx-1 h-3 w-px bg-border" />
-								<div className="flex items-center gap-1.5">
-									<Target className="h-3 w-3 text-accent" />
-									<span className="text-[10px] text-accent">
-										HQ
-									</span>
+							>
+								Arcs
+							</button>
+							<button
+								onClick={() => setMode("2d")}
+								className={cn(
+									"px-3 py-1.5 text-[11px] font-medium transition-colors",
+									mode === "2d"
+										? "bg-accent/15 text-accent"
+										: "text-muted hover:text-secondary",
+								)}
+							>
+								2D
+							</button>
+						</div>
+
+						<MapToolbar
+							activeStyle={mapStyle}
+							onStyleChange={setMapStyle}
+							clustersEnabled={clustersEnabled}
+							onToggleClusters={() => setClustersEnabled((v) => !v)}
+							view3d={view3d}
+							onToggle3d={() => setView3d((v) => !v)}
+							onReset={handleReset}
+						/>
+					</div>
+				</div>
+
+				{/* Map + Sidebar */}
+				<div className="flex flex-1 overflow-hidden">
+					<ThreatSidebar
+						points={points}
+						selectedIp={selectedIp}
+						onSelect={handleSidebarSelect}
+						collapsed={sidebarCollapsed}
+						onToggle={() => setSidebarCollapsed((v) => !v)}
+					/>
+
+					<div className="relative flex-1">
+						<Map
+							center={[20, 25]}
+							zoom={2}
+							projection={{ type: "globe" } as any}
+							className="h-full w-full"
+							styles={{
+								dark:
+									MAP_STYLES[mapStyle]?.style ??
+									(resolvedTheme === "light"
+										? CARTO_LIGHT_STYLE
+										: CARTO_DARK_STYLE),
+							}}
+							theme="dark"
+						>
+							<MapInner
+								points={points}
+								mode={mode}
+								clustersEnabled={clustersEnabled}
+								view3d={view3d}
+								mapStyle={mapStyle}
+								onSelectPoint={handleSelectPoint}
+								selectedIp={selectedIp}
+							/>
+
+							{/* Bottom Left Controls: Stats & Legend */}
+							<div className="absolute bottom-4 left-4 z-10 flex flex-col gap-3 pointer-events-none">
+								{/* Stats overlay */}
+								<div className="grid grid-cols-2 gap-2">
+									{[
+										{
+											label: "Total Threats",
+											value: points
+												.reduce((s, p) => s + p.count, 0)
+												.toLocaleString(),
+											color: "text-fg",
+										},
+										{
+											label: "Critical Sources",
+											value: points
+												.filter(
+													(p) =>
+														p.severity === "critical",
+												)
+												.length.toString(),
+											color: "text-danger",
+										},
+										{
+											label: "Countries",
+											value: new Set(
+												points.map((p) => p.country),
+											).size.toString(),
+											color: "text-accent",
+										},
+										{
+											label: "Active Arcs",
+											value: points.length.toString(),
+											color: "text-info",
+										},
+									].map((s) => (
+										<div
+											key={s.label}
+											className="rounded-lg border border-border bg-surface/90 px-3 py-2 backdrop-blur-sm shadow-card pointer-events-auto"
+										>
+											<div
+												className={cn(
+													"font-display text-lg font-bold",
+													s.color,
+												)}
+											>
+												{s.value}
+											</div>
+											<div className="text-[9px] text-muted">
+												{s.label}
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Severity legend */}
+								<div className="flex items-center gap-3 rounded-xl border border-border bg-surface/90 px-4 py-2.5 backdrop-blur-sm shadow-card pointer-events-auto">
+									{Object.entries(SEVERITY_COLORS).map(
+										([sev, color]) => (
+											<div
+												key={sev}
+												className="flex items-center gap-1.5"
+											>
+												<span
+													className="h-2.5 w-2.5 rounded-full"
+													style={{
+														backgroundColor: color,
+													}}
+												/>
+												<span className="text-[10px] capitalize text-muted">
+													{sev}
+												</span>
+											</div>
+										),
+									)}
+									<span className="mx-1 h-3 w-px bg-border" />
+									<div className="flex items-center gap-1.5">
+										<Target className="h-3 w-3 text-accent" />
+										<span className="text-[10px] text-accent">
+											HQ
+										</span>
+									</div>
 								</div>
 							</div>
-						</div>
-					</Map>
+						</Map>
+					</div>
 				</div>
 			</div>
 		</div>
