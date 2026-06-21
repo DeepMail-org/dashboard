@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { useState } from "react";
 import { Search, Network, ChevronRight, Filter, Download } from "lucide-react";
 import {
@@ -251,9 +253,10 @@ export default function GraphAnalysisPage() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-border px-6 py-3 bg-surface/80 shrink-0">
+    <PageWrapper
+      noPadding
+      header={
+        <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Network className="h-4 w-4 text-accent" />
@@ -311,11 +314,12 @@ export default function GraphAnalysisPage() {
             <span>Drag nodes to reposition</span>
           </div>
         </div>
-      </div>
-
+        </div>
+      }
+    >
       {/* Canvas + Detail panel */}
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-hidden p-6 bg-bg">
+      <div className="flex flex-1 overflow-hidden h-full">
+        <div className="flex-1 overflow-hidden">
           {activeTab === "investigation" && (
             <N8nWorkflowBlock
               initialNodes={INVESTIGATION_NODES}
@@ -343,6 +347,6 @@ export default function GraphAnalysisPage() {
         {/* IOC Detail Panel */}
         <IOCDetailPanel selectedType={selectedType} />
       </div>
-    </div>
+    </PageWrapper>
   );
 }

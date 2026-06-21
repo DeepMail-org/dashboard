@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { MITRE_MATRIX_DATA } from "@/lib/data-access/mitre";
 import { AttackHeatmap } from "@/components/mitre/attack-heatmap";
 import { ExportButton } from "@/components/ui/export-button";
@@ -28,9 +30,9 @@ export default function MitreAttackPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl px-6 py-6">
-      {/* Header */}
-      <div className="mb-6 flex items-end justify-between gap-4">
+    <PageWrapper
+      header={
+        <div className="flex items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <Grid3x3 className="h-5 w-5 text-accent" />
@@ -47,8 +49,9 @@ export default function MitreAttackPage() {
           }}
           formats={["csv", "json"]}
         />
-      </div>
-
+        </div>
+      }
+    >
       {/* Stats row */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {STATS.map((s) => (
@@ -60,9 +63,7 @@ export default function MitreAttackPage() {
       </div>
 
       {/* Heatmap */}
-      <div className="rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 p-5 shadow-card overflow-hidden">
-        <AttackHeatmap />
-      </div>
-    </div>
+      <AttackHeatmap />
+    </PageWrapper>
   );
 }

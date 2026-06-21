@@ -1,5 +1,6 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Plus, Search, Kanban, Clock, FolderOpen } from "lucide-react";
@@ -52,8 +53,9 @@ export default function CasesPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-6">
-      {/* Header */}
+    <PageWrapper noPadding>
+      <div className="mx-auto w-full px-6 py-6 overflow-y-auto">
+        {/* Header */}
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="dm-heading text-xl text-fg">Cases</h1>
@@ -203,6 +205,7 @@ export default function CasesPage() {
           </table>
         </div>
       )}
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

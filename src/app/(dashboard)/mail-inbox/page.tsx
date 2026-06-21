@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { MailSidebar } from "@/components/mail/sidebar/mail-sidebar";
 import { MailList } from "@/components/mail/list/mail-list";
@@ -47,7 +49,8 @@ export default function MailInboxPage() {
   if (!mounted) return null; // Wait for hydration to avoid mismatch on layout
 
   return (
-    <div className="flex h-[calc(100vh-64px)] w-full flex-col overflow-hidden relative">
+    <PageWrapper noPadding>
+      <div className="flex h-full w-full flex-col overflow-hidden relative">
       <ResizablePanelGroup
         orientation="horizontal"
         className="h-full w-full items-stretch"
@@ -155,5 +158,6 @@ export default function MailInboxPage() {
         </div>
       )}
     </div>
+    </PageWrapper>
   );
 }

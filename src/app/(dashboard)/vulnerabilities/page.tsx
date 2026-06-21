@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { useState } from "react";
 import { MOCK_VULNERABILITIES } from "@/lib/data-access/vulnerabilities";
 import { SeverityPill } from "@/components/ui/severity-pill";
@@ -25,16 +27,17 @@ export default function VulnerabilitiesPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-6">
-      {/* Header */}
-      <div className="mb-6 flex items-end justify-between gap-4">
+    <PageWrapper
+      header={
+        <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="dm-heading text-xl text-fg">Vulnerabilities</h1>
           <p className="mt-1 text-xs text-muted">{filtered.length} CVEs · Sorted by ExPRT rating</p>
         </div>
         <ExportButton onExport={(fmt) => { void fmt; return new Promise((r) => setTimeout(r, 600)); }} />
-      </div>
-
+        </div>
+      }
+    >
       {/* Stats */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
@@ -121,6 +124,6 @@ export default function VulnerabilitiesPage() {
           </tbody>
         </table>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

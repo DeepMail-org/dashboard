@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Search, X, Download, RefreshCw, ChevronDown, Copy, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { BarChart } from "@/components/charts/bar-chart";
+import { Grid } from "@/components/charts/grid";
+import { Bar } from "@/components/charts/bar";
+import { BarXAxis } from "@/components/charts/bar-x-axis";
+import { ChartTooltip } from "@/components/charts/tooltip";
+import { BarChartLoading } from "@/components/charts/bar-chart-loading";
+import { LinearGradient } from "@visx/gradient";
 
 interface FacetGroup {
   title: string;
@@ -50,7 +59,14 @@ const INITIAL_FACETS: FacetGroup[] = [
   },
 ];
 
-const HISTOGRAM = [15, 22, 35, 28, 45, 62, 78, 95, 88, 72, 55, 48, 38, 42, 52, 65, 58, 45, 35, 28, 32, 40, 55, 70, 82, 60, 45, 30, 25, 18];
+const dailyData = Array.from({ length: 90 }, (_, i) => {
+  const date = new Date(2024, 0, 1);
+  date.setDate(date.getDate() + i);
+  return {
+    day: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    value: Math.floor(50 + Math.sin(i / 7) * 30 + ((i * 7) % 37) - 18),
+  };
+});
 
 const ALL_LOG_ENTRIES = [
   { date: "May 16 20:58:11.715", host: "scan-node-01", service: "email-scanner", level: "error" as const, error: "SMTPConnectionError:", content: "Connection to upstream relay timed out after 30000ms" },
@@ -93,7 +109,12 @@ export default function LogExplorerPage() {
   const [collapsedFacets, setCollapsedFacets] = useState<Record<string, boolean>>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const [hoveredHistBar, setHoveredHistBar] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const removePill = useCallback((pill: string) => {
     setSearchPills((prev) => prev.filter((p) => p !== pill));
@@ -187,7 +208,8 @@ export default function LogExplorerPage() {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden">
+    <PageWrapper noPadding>
+      <div className="flex h-full overflow-hidden">
       {/* Facets Panel */}
       <div className="w-64 shrink-0 overflow-y-auto border-r border-border p-4">
         <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted">Facets</h3>
@@ -281,32 +303,21 @@ export default function LogExplorerPage() {
 
         {/* Histogram */}
         <div className="border-b border-border px-4 py-3">
-          <div className="flex h-12 items-end gap-px">
-            {HISTOGRAM.map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t-sm transition-all cursor-pointer"
-                style={{
-                  height: `${h}%`,
-                  backgroundColor: hoveredHistBar === i
-                    ? "oklch(60% 0.15 280)"
-                    : "oklch(50% 0.2 25 / 0.6)",
-                }}
-                onMouseEnter={() => setHoveredHistBar(i)}
-                onMouseLeave={() => setHoveredHistBar(null)}
-              />
-            ))}
-          </div>
-          <div className="mt-1 flex justify-between text-[10px] text-dimmed">
-            <span>14:54</span>
-            <span>14:56</span>
-            <span>14:58</span>
-            <span>15:00</span>
-            <span>15:02</span>
-            <span>15:04</span>
-            <span>15:06</span>
-            <span>15:08</span>
-          </div>
+          {isLoading ? (
+            <div className="h-24 w-full mt-2">
+              <BarChartLoading className="h-full" margin={{ top: 8, right: 8, bottom: 40, left: 8 }} />
+            </div>
+          ) : (
+            <div className="h-24 w-full mt-2" style={{ "--chart-line-primary": "#ef4444", "--chart-1": "#ef4444" } as React.CSSProperties}>
+              <BarChart className="h-full" barGap={0.1} data={dailyData} margin={{ top: 8, right: 8, bottom: 40, left: 8 }} xDataKey="day">
+                <LinearGradient id="logGradient" from="rgba(239,68,68,0.8)" to="rgba(239,68,68,0.2)" />
+                <Grid horizontal />
+                <Bar dataKey="value" lineCap="butt" fill="url(#logGradient)" stroke="rgba(239,68,68,0.5)" />
+                <BarXAxis maxLabels={8} />
+                <ChartTooltip />
+              </BarChart>
+            </div>
+          )}
         </div>
 
         {/* Tabs + Results count */}
@@ -473,5 +484,6 @@ export default function LogExplorerPage() {
         </div>
       </div>
     </div>
+    </PageWrapper>
   );
 }

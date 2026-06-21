@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { useState, useEffect, useRef } from "react";
 import { RotateCcw, X, Play, RefreshCw, Terminal, Clock, CheckCircle, AlertTriangle } from "lucide-react";
 import { MOCK_TASKS, cancelTask, retryTask, type Task, type TaskStatus, type TaskType } from "@/lib/data-access/tasks";
@@ -164,8 +166,9 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-6">
-      <div className="mb-6 flex items-end justify-between gap-4">
+    <PageWrapper
+      header={
+        <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="dm-heading text-xl text-fg">Tasks & Jobs</h1>
           <p className="mt-1 text-xs text-muted">Background pipeline operations and scheduled jobs</p>
@@ -174,8 +177,9 @@ export default function TasksPage() {
           <RefreshCw className="h-3.5 w-3.5" />
           Refresh
         </button>
-      </div>
-
+        </div>
+      }
+    >
       {/* Stats */}
       <div className="mb-5 grid grid-cols-4 gap-3">
         {[
@@ -221,6 +225,6 @@ export default function TasksPage() {
           <TaskRow key={task.id} task={task} onCancel={handleCancel} onRetry={handleRetry} />
         ))}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

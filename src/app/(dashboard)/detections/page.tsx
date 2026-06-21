@@ -1,5 +1,7 @@
 "use client";
 
+import { PageWrapper } from "@/components/layout/page-wrapper";
+
 import { useState, useMemo, useEffect, Fragment } from "react";
 import {
   ChevronDown, ChevronRight, Search, Plus, RefreshCw,
@@ -249,9 +251,9 @@ export default function DetectionsPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl px-6 py-6">
-      {/* Page header */}
-      <div className="mb-6 flex items-end justify-between gap-4">
+    <PageWrapper
+      header={
+        <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="dm-heading text-xl text-fg">Detections</h1>
           <div className="mt-1 flex items-center gap-2 text-xs text-muted">
@@ -279,8 +281,9 @@ export default function DetectionsPage() {
             New Detection Rule
           </button>
         </div>
-      </div>
-
+        </div>
+      }
+    >
       {/* Stats row */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {STATS.map((s) => (
@@ -473,6 +476,6 @@ export default function DetectionsPage() {
           </table>
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }
