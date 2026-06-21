@@ -8,7 +8,10 @@ export function useWsSubscription(
   onMessage: (data: unknown) => void,
 ): void {
   const handlerRef = useRef(onMessage);
-  handlerRef.current = onMessage;
+  
+  useEffect(() => {
+    handlerRef.current = onMessage;
+  }, [onMessage]);
 
   const stableHandler = useCallback((data: unknown) => {
     handlerRef.current(data);

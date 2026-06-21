@@ -52,7 +52,7 @@ export function MailList() {
   }, [allMails, selectedMailId, setSelectedMailId]);
 
   return (
-    <div className="flex h-full flex-col bg-bg border-r border-border">
+    <div className="flex h-full flex-col border-r border-border">
       {/* List Header */}
       <div className="border-b border-border px-4 py-3">
         <div className="flex items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5 focus-within:border-accent/40 focus-within:ring-1 focus-within:ring-accent/40 transition-all">

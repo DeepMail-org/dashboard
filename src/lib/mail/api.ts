@@ -3,7 +3,7 @@ import { DEMO_MAILS } from "./mock-data";
 
 // In-memory "database" to support optimistic updates and persistent modifications
 // during the lifetime of the dashboard
-let mockDatabase: MailItem[] = [...DEMO_MAILS];
+const mockDatabase: MailItem[] = [...DEMO_MAILS];
 
 // Utility to simulate network delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -69,7 +69,7 @@ export const mailApi = {
   },
 
   // Perform an action on an email (Quarantine, Release, Archive, etc)
-  async performAction(mailId: string, action: string, metadata?: any): Promise<{ success: boolean; message: string }> {
+  async performAction(mailId: string, action: string, metadata?: unknown): Promise<{ success: boolean; message: string }> {
     await delay(400); // simulate network
 
     const index = mockDatabase.findIndex(m => m.id === mailId);
@@ -102,7 +102,7 @@ export const mailApi = {
       case "case":
         return { success: true, message: `Created Case #${Math.floor(Math.random() * 10000)} for this threat.` };
       case "sandbox":
-        return { success: true, message: `Submitted ${metadata?.attachmentId || "email"} to Sandbox.` };
+        return { success: true, message: `Submitted ${(metadata as { attachmentId?: string })?.attachmentId || "email"} to Sandbox.` };
       case "rule":
         return { success: true, message: "Detection rule generated successfully." };
       case "ioc":

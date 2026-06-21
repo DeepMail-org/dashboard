@@ -16,18 +16,18 @@ export function useMailAction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ mailId, action, metadata }: { mailId: string; action: string; metadata?: any }) => 
+    mutationFn: ({ mailId, action, metadata }: { mailId: string; action: string; metadata?: unknown }) => 
       mailApi.performAction(mailId, action, metadata),
     onMutate: async ({ mailId, action }) => {
       await queryClient.cancelQueries({ queryKey: ["mails"] });
       const previousMails = queryClient.getQueriesData({ queryKey: ["mails"] });
 
       // Optimistically update the cache based on the action
-      queryClient.setQueriesData({ queryKey: ["mails"] }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: ["mails"] }, (old: unknown) => {
         if (!old) return old;
         return {
           ...old,
-          pages: old.pages.map((page: any) => ({
+          pages: (old as { pages: any[] }).pages.map((page: any) => ({
             ...page,
             data: page.data.map((mail: MailItem) => {
               if (mail.id === mailId) {
@@ -49,10 +49,10 @@ export function useMailAction() {
 
       return { previousMails };
     },
-    onError: (err, variables, context: any) => {
+    onError: (err, variables, context: unknown) => {
       toast.error(`Action failed: ${err.message}`);
-      if (context?.previousMails) {
-        context.previousMails.forEach(([queryKey, data]: any) => {
+      if ((context as any)?.previousMails) {
+        (context as { previousMails: [unknown[], unknown][] }).previousMails.forEach(([queryKey, data]: [unknown[], unknown]) => {
           queryClient.setQueryData(queryKey, data);
         });
       }

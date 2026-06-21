@@ -42,7 +42,7 @@ export function MailDetail() {
 
   if (!selected) {
     return (
-      <div className="flex h-full items-center justify-center bg-bg">
+      <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center text-muted">
           <ShieldAlert className="h-12 w-12 mb-4 opacity-20" />
           <p className="text-sm">Select an email to view threat details</p>
@@ -58,7 +58,7 @@ export function MailDetail() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-bg overflow-hidden relative">
+    <div className="flex h-full flex-col overflow-hidden relative">
       {/* Action Bar Header */}
       <div className="flex items-center justify-between border-b border-border px-6 py-3 shrink-0">
         <div className="flex items-center gap-1.5">

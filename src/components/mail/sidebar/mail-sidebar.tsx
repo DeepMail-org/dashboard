@@ -36,7 +36,7 @@ export function MailSidebar() {
   const resetFilters = { severity: [], labels: [], starred: false, important: false, hasAttachments: false };
 
   return (
-    <div className="flex h-full flex-col bg-bg border-r border-border py-4 relative">
+    <div className="flex h-full flex-col border-r border-border py-4 relative">
       <div className="px-4 mb-6">
         <button 
           onClick={() => setComposeState("open")}

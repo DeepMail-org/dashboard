@@ -50,6 +50,7 @@ export function useWidgetQuery(
     (wsData: unknown) => {
       queryClient.setQueryData(queryKey, wsData);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [queryClient, ...queryKey],
   );
 
