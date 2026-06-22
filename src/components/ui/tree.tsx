@@ -158,7 +158,7 @@ function TreeItemLabel<T = unknown>({
       {...props}
     >
       {item.isFolder() && (
-        <ChevronDownIcon className="text-muted-foreground size-4 in-aria-[expanded=false]:-rotate-90" />
+        <ChevronDownIcon className="tree-item-chevron text-muted-foreground size-4 in-aria-[expanded=false]:-rotate-90" />
       )}
       {children ||
         (typeof item.getItemName === "function" ? item.getItemName() : null)}

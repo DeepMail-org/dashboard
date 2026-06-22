@@ -70,12 +70,12 @@ export function CommandPalette() {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Search pages, actions, widgets..." />
-      <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5">
-        <span className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
-          <Globe className="h-2.5 w-2.5" />
+      <div className="flex items-center gap-1.5 border-b border-white/10 px-6 py-2">
+        <span className="flex items-center gap-1 rounded-[6px] bg-[#3b7ddd]/20 px-2 py-0.5 text-[10px] font-medium text-[#3b7ddd]">
+          <Globe className="h-3 w-3" />
           DeepMail Navigation
         </span>
-        <span className="text-[11px] text-muted">Quick actions and dashboard controls</span>
+        <span className="text-xs text-[#888888]">Quick actions and dashboard controls</span>
       </div>
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
