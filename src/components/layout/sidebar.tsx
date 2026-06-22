@@ -182,7 +182,7 @@ function NavTree({
 	});
 
 	return (
-		<Tree tree={tree} className="w-full space-y-0.5">
+		<Tree tree={tree} indent={collapsed ? 0 : 20} className="w-full space-y-0.5">
 			{tree.getItems().map((itemInstance) => {
 				const navItem = itemInstance.getItemData();
 				if (navItem.href === "root") return null;
@@ -199,6 +199,7 @@ function NavTree({
 					>
 						<Link
 							href={navItem.href}
+							title={collapsed ? navItem.label : undefined}
 							className={cn(
 								"group flex w-full items-center rounded-md text-[13px] transition-colors outline-none",
 								isActive
@@ -217,7 +218,7 @@ function NavTree({
 										? "bg-transparent text-fg"
 										: "text-muted",
 									collapsed &&
-										"justify-center px-0 [&>svg:first-child]:hidden",
+										"justify-center !px-0 [&>.tree-item-chevron]:hidden",
 								)}
 							>
 
@@ -301,7 +302,7 @@ export function Sidebar() {
 							</button>
 						)}
 						<AnimatePresence initial={false}>
-							{expandedGroups[group.id] && (
+							{(collapsed || expandedGroups[group.id]) && (
 								<motion.div
 									initial={{ height: 0, opacity: 0 }}
 									animate={{ height: "auto", opacity: 1 }}

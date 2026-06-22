@@ -291,38 +291,43 @@ export function Topbar() {
         <>
             <header
                 className={cn(
-                    "sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border px-6",
+                    "relative sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border px-6",
                     "dm-glass",
                 )}
             >
-                {/* Mobile menu button */}
-                <button
-                    onClick={() => setMobileOpen(true)}
-                    className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-fg hover:bg-fg/5 md:hidden"
-                >
-                    <Menu className="h-4 w-4" />
-                </button>
+                {/* Left section */}
+                <div className="flex items-center gap-4">
+                    {/* Mobile menu button */}
+                    <button
+                        onClick={() => setMobileOpen(true)}
+                        className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-fg hover:bg-fg/5 md:hidden"
+                    >
+                        <Menu className="h-4 w-4" />
+                    </button>
+                </div>
 
-                <div className="flex-1" />
+                {/* Center: Search bar (Absolute Centered) */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <button
+                        onClick={() => setCommandOpen(true)}
+                        className="relative hidden h-10 w-[400px] items-center gap-3 rounded-full border border-border bg-surface-2 pl-10 pr-3 text-sm text-dimmed transition-colors hover:border-accent/40 hover:text-muted md:flex shadow-sm"
+                    >
+                        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        <span>Search for anything...</span>
+                        <span className="ml-auto flex items-center gap-1">
+                            <Zap className="h-3 w-3 text-accent" />
+                            <span className="text-xs font-medium text-accent">AI</span>
+                        </span>
+                        <kbd className="ml-2 rounded-md border border-border bg-fg/5 px-1.5 py-0.5 text-[11px] font-medium text-muted">
+                            ⌘K
+                        </kbd>
+                    </button>
+                </div>
 
-                {/* Center: Search bar */}
-                <button
-                    onClick={() => setCommandOpen(true)}
-                    className="relative hidden h-8 w-64 items-center gap-2 rounded-2xl border border-border bg-surface-2 pl-9 pr-3 text-xs text-dimmed transition-colors hover:border-accent/40 hover:text-muted md:flex"
-                >
-                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
-                    <span>Search… </span>
-                    <span className="ml-auto flex items-center gap-0.5">
-                        <Zap className="h-2.5 w-2.5 text-accent" />
-                        <span className="text-[10px] text-accent">AI</span>
-                    </span>
-                    <kbd className="ml-1 rounded border border-border bg-fg/5 px-1 py-0.5 text-[10px]">
-                        ⌘K
-                    </kbd>
-                </button>
-
-                {/* Dynamic page actions portal target */}
-                <div id="page-actions" className="flex items-center gap-2 mx-4">
+                {/* Right section */}
+                <div className="flex items-center gap-4">
+                    {/* Dynamic page actions portal target */}
+                    <div id="page-actions" className="flex items-center gap-2">
                     {pathname === "/dashboard" && <DashboardToolbar />}
                     {pathname.startsWith("/sandbox") && (
                         <div className="flex items-center gap-2">
@@ -342,31 +347,32 @@ export function Topbar() {
                             </button>
                         </div>
                     )}
-                </div>
+                    </div>
 
-                {/* Right actions */}
-                <div className="flex items-center gap-2">
-                    {/* Org switcher */}
-                    <OrgSwitcher />
+                    {/* Right actions */}
+                    <div className="flex items-center gap-2">
+                        {/* Org switcher */}
+                        <OrgSwitcher />
 
-                    {/* Quick actions */}
-                    <QuickActionsMenu />
+                        {/* Quick actions */}
+                        <QuickActionsMenu />
 
-                    {/* Notification bell */}
-                    <button
-                        onClick={() => setNotifOpen(true)}
-                        className="relative flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-fg hover:bg-fg/5"
-                    >
-                        <Bell className="h-4 w-4" />
-                        {unreadCount > 0 && (
-                            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-0.5 text-[9px] font-bold text-white">
-                                {unreadCount}
-                            </span>
-                        )}
-                    </button>
+                        {/* Notification bell */}
+                        <button
+                            onClick={() => setNotifOpen(true)}
+                            className="relative flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-fg hover:bg-fg/5"
+                        >
+                            <Bell className="h-4 w-4" />
+                            {unreadCount > 0 && (
+                                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-0.5 text-[9px] font-bold text-white">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </button>
 
-                    {/* User avatar menu */}
-                    <UserMenu />
+                        {/* User avatar menu */}
+                        <UserMenu />
+                    </div>
                 </div>
             </header>
 
