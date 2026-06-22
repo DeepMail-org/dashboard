@@ -497,18 +497,16 @@ export function Gauge({
 
   return (
     <div
-      className={cn("relative w-full max-w-full", className)}
+      className={cn("relative w-full h-full max-w-full flex items-center justify-center", className)}
       style={{ minWidth }}
     >
-      <div className="mx-auto aspect-[21/16] w-full max-w-[560px]">
-        <ParentSize debounceTime={10}>
-          {({ width, height }) =>
-            width > 0 && height > 0 ? (
-              <GaugeInner height={height} width={width} {...props} />
-            ) : null
-          }
-        </ParentSize>
-      </div>
+      <ParentSize debounceTime={10}>
+        {({ width, height }) =>
+          width > 0 && height > 0 ? (
+            <GaugeInner height={height} width={width} {...props} />
+          ) : null
+        }
+      </ParentSize>
     </div>
   );
 }

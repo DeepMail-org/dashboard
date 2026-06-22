@@ -233,7 +233,7 @@ export function RadarChart({
 
   // Otherwise use ParentSize for responsive sizing
   return (
-    <div className={cn("relative aspect-square w-full", className)}>
+    <div className={cn("relative h-full w-full", className)}>
       <ParentSize debounceTime={10}>
         {({ width, height }) => (
           <RadarChartInner

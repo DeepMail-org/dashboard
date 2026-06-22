@@ -652,7 +652,7 @@ export function BarChart({
   animationEasing = DEFAULT_ANIMATION_EASING,
   enterTransition,
   revealSignature,
-  aspectRatio = "2 / 1",
+  aspectRatio,
   className = "",
   barGap = 0.2,
   barWidth,
@@ -668,9 +668,9 @@ export function BarChart({
 
   return (
     <div
-      className={cn("relative w-full overflow-visible", className)}
+      className={cn("relative w-full h-full overflow-visible", className)}
       ref={containerRef}
-      style={{ aspectRatio }}
+      style={aspectRatio ? { aspectRatio } : {}}
     >
       <ParentSize debounceTime={10}>
         {({ width, height }) => (

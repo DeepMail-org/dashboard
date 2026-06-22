@@ -656,9 +656,9 @@ export function LiveLineChart({
 
   return (
     <div
-      className={cn("relative w-full", className)}
+      className={cn("relative w-full h-full", className)}
       ref={containerRef}
-      style={{ height: 300, touchAction: "none", ...style }}
+      style={{ touchAction: "none", ...style }}
     >
       <ParentSize debounceTime={10}>
         {({ width, height }) => (

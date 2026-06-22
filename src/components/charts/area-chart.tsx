@@ -191,7 +191,7 @@ export function AreaChart({
   animationEasing,
   enterTransition,
   revealSignature,
-  aspectRatio = "2 / 1",
+  aspectRatio,
   className = "",
   status = DEFAULT_CHART_STATUS,
   loadingLabel,
@@ -227,9 +227,9 @@ export function AreaChart({
 
   return (
     <div
-      className={cn("relative w-full", className)}
+      className={cn("relative w-full h-full", className)}
       ref={containerRef}
-      style={{ aspectRatio, touchAction: "none", ...style }}
+      style={{ ...(aspectRatio ? { aspectRatio } : {}), touchAction: "none", ...style }}
     >
       <ParentSize debounceTime={10}>
         {({ width, height }) => (
