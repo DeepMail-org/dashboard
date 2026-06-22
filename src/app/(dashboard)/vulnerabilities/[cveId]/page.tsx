@@ -74,8 +74,8 @@ export default function CveDetailPage() {
     setSelected(new Set());
   };
 
-  const SortIcon = ({ key }: { key: SortKey }) => {
-    if (sortKey !== key) return <ArrowUpDown className="h-2.5 w-2.5 opacity-30" />;
+  const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
+    if (sortKey !== columnKey) return <ArrowUpDown className="h-2.5 w-2.5 opacity-30" />;
     return sortDir === "asc" ? <ArrowUp className="h-2.5 w-2.5 text-accent" /> : <ArrowDown className="h-2.5 w-2.5 text-accent" />;
   };
 
@@ -293,7 +293,7 @@ export default function CveDetailPage() {
                 >
                   <span className="flex items-center gap-1">
                     {label}
-                    {key && <SortIcon key={key} />}
+                    {key && <SortIcon columnKey={key} />}
                   </span>
                 </th>
               ))}
