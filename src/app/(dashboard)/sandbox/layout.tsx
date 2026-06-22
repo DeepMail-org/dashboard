@@ -17,7 +17,7 @@ export default function SandboxLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-bg">
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
 
         {/* 3. MAIN WORKSPACE */}
         <main className="flex-1 flex flex-col overflow-hidden relative">
