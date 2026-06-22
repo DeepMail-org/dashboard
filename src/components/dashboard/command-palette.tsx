@@ -25,8 +25,8 @@ const NAV_ITEMS = [
   { label: "Log Explorer", href: "/log-explorer", icon: FileText, shortcut: "⌘5" },
   { label: "Graph Analysis", href: "/graph-analysis", icon: Activity },
   { label: "Geo Map", href: "/map", icon: Globe },
-  { label: "Marketplace", href: "/marketplace", icon: Store },
-  { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Marketplace", href: "/settings?tab=marketplace", icon: Store },
+  { label: "Billing", href: "/settings?tab=usage", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

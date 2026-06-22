@@ -38,8 +38,6 @@ const ROUTE_TITLES: Record<string, string> = {
     "/sandbox": "Sandbox",
     "/log-explorer": "Log Explorer",
     "/graph-analysis": "Graph Analysis",
-    "/marketplace": "Marketplace",
-    "/billing": "Usage & Billing",
     "/settings": "Settings",
     "/reports": "Reports",
     "/threat-intel": "Threat Intelligence",
