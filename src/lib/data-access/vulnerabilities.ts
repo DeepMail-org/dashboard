@@ -28,7 +28,7 @@ export interface AffectedHost {
   daysOpen: number;
 }
 
-export const MOCK_VULNERABILITIES: Vulnerability[] = [
+const BASE_VULNERABILITIES: Vulnerability[] = [
   {
     cveId: "CVE-2024-55956",
     title: "Cleo Harmony/VLTrader/LexiCom Remote Code Execution",
@@ -72,6 +72,13 @@ export const MOCK_VULNERABILITIES: Vulnerability[] = [
     vulnerabilityType: "Vulnerability",
   },
 ];
+
+export const MOCK_VULNERABILITIES: Vulnerability[] = Array.from({ length: 15 }, (_, i) => 
+  BASE_VULNERABILITIES.map(v => ({
+    ...v,
+    cveId: `${v.cveId}-${i}`,
+  }))
+).flat();
 
 export const MOCK_AFFECTED_HOSTS: AffectedHost[] = [
   { hostname: "SE-EMO-RDP",    assetCriticality: "critical", remediation: "Update", vulnerableVersion: "5.8.0.22", patchVersion: "5.8.0.24", status: "open", daysOpen: 29 },

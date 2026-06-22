@@ -34,7 +34,7 @@ export interface DetectionFilters {
   timeRange?: "1h" | "6h" | "24h" | "7d" | "30d";
 }
 
-export const MOCK_DETECTIONS: Detection[] = [
+const BASE_DETECTIONS: Detection[] = [
   {
     id: "DET-2026-8841",
     severity: "critical",
@@ -167,6 +167,10 @@ export const MOCK_DETECTIONS: Detection[] = [
     relatedIocs: [],
   },
 ];
+
+export const MOCK_DETECTIONS: Detection[] = Array.from({ length: 6 }, (_, i) => 
+  BASE_DETECTIONS.map(d => ({ ...d, id: `${d.id}-${i}` }))
+).flat();
 
 export async function getDetections(filters?: DetectionFilters): Promise<Detection[]> {
   await sleep(400);
