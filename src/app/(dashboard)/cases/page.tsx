@@ -54,9 +54,9 @@ export default function CasesPage() {
 
   return (
     <PageWrapper noPadding>
-      <div className="mx-auto w-full px-6 py-6 overflow-y-auto">
+      <div className="flex flex-col h-full min-h-0 mx-auto w-full px-6 py-6">
         {/* Header */}
-      <div className="mb-6 flex items-end justify-between gap-4">
+      <div className="mb-6 flex items-end justify-between gap-4 shrink-0">
         <div>
           <h1 className="dm-heading text-xl text-fg">Cases</h1>
           <p className="mt-1 text-xs text-muted">{filtered.length} of {MOCK_CASES.length} cases</p>
@@ -78,7 +78,7 @@ export default function CasesPage() {
       </div>
 
       {/* Stats */}
-      <div className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
+      <div className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-5 shrink-0">
         {[
           { label: "Open",        value: counts.new + counts.in_progress + counts.pending, color: "text-danger" },
           { label: "New",         value: counts.new,         color: "text-accent" },
@@ -94,7 +94,7 @@ export default function CasesPage() {
       </div>
 
       {/* Filter tabs + search */}
-      <div className="mb-4 flex items-center gap-4 border-b border-border">
+      <div className="mb-4 flex items-center gap-4 border-b border-border shrink-0">
         <div className="flex">
           {FILTER_TABS.map((tab) => (
             <button
@@ -137,9 +137,10 @@ export default function CasesPage() {
           icon={FolderOpen}
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border shadow-card">
-          <table className="w-full text-left">
-            <thead>
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl border border-border shadow-card">
+          <div className="flex-1 min-h-0 overflow-auto relative">
+          <table className="w-full text-left relative">
+            <thead className="sticky top-0 z-10 bg-surface">
               <tr>
                 {["Case ID", "Severity", "Title", "Assignee", "Status", "SLA", "Source", "Tags"].map((col) => (
                   <th key={col} className="border-b border-border bg-fg/2 px-4 py-3 text-[10px] font-medium uppercase tracking-wider text-muted">
@@ -203,6 +204,7 @@ export default function CasesPage() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

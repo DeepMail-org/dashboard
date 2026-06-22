@@ -272,7 +272,7 @@ export default function SettingsPage() {
               </div>
               <div className="overflow-hidden rounded-xl border border-border">
                 <table className="w-full text-left">
-                  <thead>
+                  <thead className="sticky top-0 z-10 bg-surface">
                     <tr>
                       {["Name", "Key", "Created", "Last Used", ""].map((col) => (
                         <th key={col} className="border-b border-border bg-fg/2 px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider text-muted">{col}</th>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
                 <div className="rounded-xl border border-border bg-surface p-6">
                   <h2 className="mb-4 text-sm font-medium text-fg">Daily Usage Breakdown</h2>
                   <table className="w-full text-left text-sm">
-                    <thead>
+                    <thead className="sticky top-0 z-10 bg-surface">
                       <tr className="border-b border-border text-muted">
                         <th className="pb-2 font-medium">Date</th>
                         <th className="pb-2 font-medium">Service</th>
@@ -405,7 +405,7 @@ export default function SettingsPage() {
               </div>
               <div className="overflow-hidden rounded-xl border border-border">
                 <table className="w-full text-left">
-                  <thead>
+                  <thead className="sticky top-0 z-10 bg-surface">
                     <tr>
                       {["Name", "Email", "Role", "Last Active"].map((col) => (
                         <th key={col} className="border-b border-border bg-fg/2 px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider text-muted">{col}</th>

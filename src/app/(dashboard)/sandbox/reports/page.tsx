@@ -7,7 +7,7 @@ import ReactECharts from "echarts-for-react";
 import { cn } from "@/lib/utils";
 
 // Mock Data for Reports
-const MOCK_REPORTS = [
+const BASE_REPORTS = [
   { id: "REP-9921", name: "Executive Summary - Q3 Threat Landscape", type: "PDF", date: "2026-06-16", size: "2.4 MB", status: "Ready", author: "System" },
   { id: "REP-9920", name: "Deep Analysis: Emotet Campaign Tracking", type: "PDF", date: "2026-06-15", size: "8.1 MB", status: "Ready", author: "Analyst J.Doe" },
   { id: "REP-9919", name: "IOC Export (Last 7 Days)", type: "CSV", date: "2026-06-14", size: "125 KB", status: "Ready", author: "System" },
@@ -17,6 +17,10 @@ const MOCK_REPORTS = [
   { id: "REP-9915", name: "Incident Report: Suspicious Lateral Movement", type: "PDF", date: "2026-05-20", size: "3.5 MB", status: "Ready", author: "Analyst J.Doe" },
   { id: "REP-9914", name: "Phishing Campaign Aggregation", type: "PDF", date: "2026-05-15", size: "5.6 MB", status: "Archived", author: "System" },
 ];
+
+const MOCK_REPORTS = Array.from({ length: 6 }, (_, i) => 
+  BASE_REPORTS.map(r => ({ ...r, id: `${r.id}-${i}` }))
+).flat();
 
 export default function SandboxReportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,10 +78,10 @@ export default function SandboxReportsPage() {
         </div>
       }
     >
-      <div className="space-y-6 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col h-full min-h-0 gap-6 max-w-7xl mx-auto w-full">
         
         {/* Top Widgets */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
           <div className="rounded-2xl border border-border bg-surface p-5 shadow-card relative overflow-hidden">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -133,8 +137,8 @@ export default function SandboxReportsPage() {
         </div>
 
         {/* Data Grid */}
-        <div className="rounded-2xl border border-border bg-surface shadow-card flex flex-col h-[600px]">
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="rounded-2xl border border-border bg-surface shadow-card flex flex-col flex-1 min-h-0">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
              <h3 className="text-sm font-bold text-fg">Report Archives</h3>
              <div className="relative w-64">
                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />

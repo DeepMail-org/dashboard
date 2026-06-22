@@ -38,8 +38,9 @@ export default function VulnerabilitiesPage() {
         </div>
       }
     >
+      <div className="flex flex-col h-full min-h-0">
       {/* Stats */}
-      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4 shrink-0">
         {[
           { label: "Total CVEs",          value: "496",   color: "text-fg" },
           { label: "Critical",            value: "12",    color: "text-danger" },
@@ -54,7 +55,7 @@ export default function VulnerabilitiesPage() {
       </div>
 
       {/* Search */}
-      <div className="mb-4 flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5 w-fit">
+      <div className="mb-4 flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5 w-fit shrink-0">
         <Search className="h-3.5 w-3.5 text-muted" />
         <input
           type="text"
@@ -66,9 +67,10 @@ export default function VulnerabilitiesPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-border shadow-card">
-        <table className="w-full text-left">
-          <thead>
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl border border-border shadow-card">
+        <div className="flex-1 min-h-0 overflow-auto relative">
+        <table className="w-full text-left relative">
+          <thead className="sticky top-0 z-10 bg-surface">
             <tr>
               {["CVE ID", "Severity", "CVSS", "Exploit Status", "Title", "Affected", "Published"].map((col) => (
                 <th key={col} className="border-b border-border bg-fg/2 px-4 py-3 text-[10px] font-medium uppercase tracking-wider text-muted">
@@ -123,6 +125,8 @@ export default function VulnerabilitiesPage() {
             })}
           </tbody>
         </table>
+        </div>
+      </div>
       </div>
     </PageWrapper>
   );

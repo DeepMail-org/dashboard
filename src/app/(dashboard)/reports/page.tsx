@@ -19,8 +19,8 @@ const RECENT_EXPORTS = [
 
 export default function ReportsPage() {
   return (
-    <div className="mx-auto w-full max-w-350 p-8">
-      <div className="mb-6 flex items-end justify-between">
+    <div className="flex flex-col h-full min-h-0 mx-auto w-full max-w-350 p-8">
+      <div className="mb-6 flex items-end justify-between shrink-0">
         <h1 className="font-display text-lg font-medium text-fg">Reports</h1>
         <button className="flex items-center gap-2 rounded-md bg-fg px-4 py-2 text-[13px] font-medium text-bg transition-opacity hover:opacity-90">
           <Plus className="h-3.5 w-3.5" />
@@ -29,8 +29,8 @@ export default function ReportsPage() {
       </div>
 
       {/* Scheduled Reports */}
-      <h2 className="mb-3 text-sm font-medium text-fg">Scheduled Reports</h2>
-      <div className="mb-8 grid grid-cols-2 gap-4">
+      <h2 className="mb-3 text-sm font-medium text-fg shrink-0">Scheduled Reports</h2>
+      <div className="mb-8 grid grid-cols-2 gap-4 shrink-0">
         {SCHEDULED_REPORTS.map((r) => (
           <div key={r.name} className="rounded-xl border border-border bg-surface p-5 transition-colors hover:border-border-hover">
             <div className="mb-2 flex items-start justify-between">
@@ -56,10 +56,11 @@ export default function ReportsPage() {
       </div>
 
       {/* Recent Exports */}
-      <h2 className="mb-3 text-sm font-medium text-fg">Recent Exports</h2>
-      <div className="overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 shadow-card">
-        <table className="w-full text-left">
-          <thead>
+      <h2 className="mb-3 text-sm font-medium text-fg shrink-0">Recent Exports</h2>
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 shadow-card">
+        <div className="flex-1 min-h-0 overflow-auto relative">
+        <table className="w-full text-left relative">
+          <thead className="sticky top-0 z-10 bg-surface">
             <tr>
               {["Filename", "Generated", "Size", "Type", ""].map((col) => (
                 <th key={col} className="border-b border-border bg-fg/2 px-5 py-3 text-[10px] font-medium uppercase tracking-wider text-muted">{col}</th>
@@ -89,6 +90,7 @@ export default function ReportsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -68,7 +68,7 @@ const dailyData = Array.from({ length: 90 }, (_, i) => {
   };
 });
 
-const ALL_LOG_ENTRIES = [
+const BASE_LOG_ENTRIES = [
   { date: "May 16 20:58:11.715", host: "scan-node-01", service: "email-scanner", level: "error" as const, error: "SMTPConnectionError:", content: "Connection to upstream relay timed out after 30000ms" },
   { date: "May 16 20:58:11.534", host: "scan-node-02", service: "email-scanner", level: "error" as const, error: "SMTPConnectionError:", content: "Connection to upstream relay timed out after 30000ms" },
   { date: "May 16 20:58:11.387", host: "scan-node-01", service: "email-scanner", level: "error" as const, error: "ThreatIntelFeedError:", content: "Feed sync failed — provider returned 503 Unavailable" },
@@ -82,6 +82,8 @@ const ALL_LOG_ENTRIES = [
   { date: "May 16 20:58:09.503", host: "scan-node-02", service: "email-scanner", level: "error" as const, error: "AttachmentAnalyzerError:", content: "Email database shard for tenant tier: 'basic' returned 5xx" },
   { date: "May 16 20:58:09.334", host: "scan-node-01", service: "email-scanner", level: "error" as const, error: "SMTPConnectionError:", content: "Connection to upstream relay timed out after 30000ms" },
 ];
+
+const ALL_LOG_ENTRIES = Array.from({ length: 6 }, () => BASE_LOG_ENTRIES).flat();
 
 const PATTERNS = [
   { matches: "≈15.6K", service: "email-scanner", text: "ThreatIntelFeedError: Feed sync failed — provider returned 503" },
@@ -262,7 +264,7 @@ export default function LogExplorerPage() {
       {/* Log Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Search Bar */}
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+        <div className="flex items-center gap-2 border-b border-border px-4 py-3 shrink-0">
           <Search className="h-3.5 w-3.5 shrink-0 text-muted" />
           {searchPills.map((pill) => (
             <span
@@ -302,7 +304,7 @@ export default function LogExplorerPage() {
         </div>
 
         {/* Histogram */}
-        <div className="border-b border-border px-4 py-3">
+        <div className="border-b border-border px-4 py-3 shrink-0">
           {isLoading ? (
             <div className="h-24 w-full mt-2">
               <BarChartLoading className="h-full" margin={{ top: 8, right: 8, bottom: 40, left: 8 }} />
@@ -321,7 +323,7 @@ export default function LogExplorerPage() {
         </div>
 
         {/* Tabs + Results count */}
-        <div className="flex items-center justify-between border-b border-border px-4">
+        <div className="flex items-center justify-between border-b border-border px-4 shrink-0">
           <div className="flex gap-1 py-2">
             {tabs.map((tab) => (
               <button
@@ -351,7 +353,7 @@ export default function LogExplorerPage() {
         </div>
 
         {/* Log Table / Patterns */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {activeTab === "logs" && (
             <div className="divide-y divide-border">
               {filteredLogs.map((entry, i) => {

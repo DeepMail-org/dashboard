@@ -336,7 +336,7 @@ export default function SandboxOverviewPage() {
                             </button>
                         </div>
                         <table className="w-full text-left text-xs">
-                            <thead className="text-muted border-b border-border">
+                            <thead className="text-muted border-b border-border sticky top-0 z-10 bg-surface">
                                 <tr>
                                     <th className="py-2 font-medium">
                                         Filename
@@ -389,7 +389,7 @@ export default function SandboxOverviewPage() {
                             </button>
                         </div>
                         <table className="w-full text-left text-xs">
-                            <thead className="text-muted border-b border-border">
+                            <thead className="text-muted border-b border-border sticky top-0 z-10 bg-surface">
                                 <tr>
                                     <th className="py-2 font-medium">Tenant</th>
                                     <th className="py-2 font-medium text-right">

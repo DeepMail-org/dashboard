@@ -156,7 +156,7 @@ export default function BillingPage() {
 				</h2>
 				<div className="overflow-hidden rounded-xl border border-border">
 					<table className="w-full text-left">
-						<thead>
+						<thead className="sticky top-0 z-10 bg-surface">
 							<tr>
 								{[
 									"Invoice",

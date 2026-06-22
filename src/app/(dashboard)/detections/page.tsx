@@ -284,8 +284,9 @@ export default function DetectionsPage() {
         </div>
       }
     >
-      {/* Stats row */}
-      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="flex flex-col h-full min-h-0">
+        {/* Stats row */}
+        <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4 shrink-0">
         {STATS.map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 px-4 py-3 shadow-card">
             <div className={cn("font-display text-2xl font-bold", s.color)}>{s.value}</div>
@@ -294,8 +295,8 @@ export default function DetectionsPage() {
         ))}
       </div>
 
-      {/* Filter bar + search */}
-      <div className="mb-4 space-y-3 rounded-xl border border-border bg-surface/60 px-5 py-3">
+        {/* Filter bar + search */}
+        <div className="mb-4 space-y-3 rounded-xl border border-border bg-surface/60 px-5 py-3 shrink-0">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 rounded-md border border-border bg-fg/2 px-3 py-1.5">
             <Search className="h-3.5 w-3.5 text-muted" />
@@ -322,10 +323,10 @@ export default function DetectionsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      {loading ? (
-        <SkeletonTable rows={7} cols={8} />
-      ) : filtered.length === 0 ? (
+        {/* Table */}
+        {loading ? (
+          <SkeletonTable rows={7} cols={8} />
+        ) : filtered.length === 0 ? (
         <EmptyState
           title="No detections match your filters"
           description="Try adjusting your filter criteria or clearing all filters."
@@ -339,12 +340,13 @@ export default function DetectionsPage() {
             </button>
           }
         />
-      ) : (
-        <div className="overflow-hidden rounded-xl border border-border shadow-card">
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="w-8 border-b border-border bg-fg/2 px-3 py-3" />
+        ) : (
+          <div className="flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl border border-border shadow-card">
+            <div className="flex-1 min-h-0 overflow-auto relative">
+              <table className="w-full text-left relative">
+                <thead className="sticky top-0 z-10 bg-surface">
+                  <tr>
+                    <th className="w-8 border-b border-border bg-[#131315] px-3 py-3" />
                 {COL_HEADER("severity", "Sev")}
                 {COL_HEADER("detectTime", "Detect Time")}
                 {COL_HEADER("name", "Name")}
@@ -474,8 +476,10 @@ export default function DetectionsPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+            </div>
+          </div>
+        )}
+      </div>
     </PageWrapper>
   );
 }

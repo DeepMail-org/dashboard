@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, MoreHorizontal } from "lucide-react";
 import { getCveDetail, getAffectedHosts, type Vulnerability, type AffectedHost } from "@/lib/data-access/vulnerabilities";
 import { CvssGauge } from "@/components/vulnerabilities/cvss-gauge";
+import { PageWrapper } from "@/components/layout/page-wrapper";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { SeverityPill } from "@/components/ui/severity-pill";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -89,45 +90,53 @@ export default function CveDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto w-full max-w-screen-xl px-6 py-6 space-y-6">
-        <div className="h-6 w-48 animate-pulse rounded bg-surface" />
-        <div className="h-8 w-64 animate-pulse rounded bg-surface" />
-        <SkeletonTable rows={10} cols={7} />
-      </div>
+      <PageWrapper>
+        <div className="space-y-6">
+          <div className="h-6 w-48 animate-pulse rounded bg-surface" />
+          <div className="h-8 w-64 animate-pulse rounded bg-surface" />
+          <SkeletonTable rows={10} cols={7} />
+        </div>
+      </PageWrapper>
     );
   }
 
   if (!vuln) {
     return (
-      <div className="px-6 py-12 text-center text-muted">CVE not found: {cveId}</div>
+      <PageWrapper>
+        <div className="px-6 py-12 text-center text-muted">CVE not found: {cveId}</div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-6">
-      {/* Breadcrumb */}
-      <BreadcrumbNav
-        items={[
-          { label: "Exposure Management" },
-          { label: "Vulnerabilities", href: "/vulnerabilities" },
-          { label: vuln.cveId },
-        ]}
-        className="mb-4"
-      />
+    <PageWrapper
+      header={
+        <div>
+          {/* Breadcrumb */}
+          <BreadcrumbNav
+            items={[
+              { label: "Exposure Management" },
+              { label: "Vulnerabilities", href: "/vulnerabilities" },
+              { label: vuln.cveId },
+            ]}
+            className="mb-4"
+          />
 
-      {/* CVE Header */}
-      <div className="mb-6 flex items-start gap-3">
-        <h1 className="dm-heading text-2xl text-fg">{vuln.cveId}</h1>
-        <SeverityPill severity={vuln.severity} />
-        <div className="ml-2 flex items-center gap-3 text-xs text-muted">
-          <a href="#" className="flex items-center gap-1 hover:text-accent">Vendor advisory <ExternalLink className="h-3 w-3" /></a>
-          <span>·</span>
-          <a href={`https://nvd.nist.gov/vuln/detail/${vuln.cveId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-accent">NVD <ExternalLink className="h-3 w-3" /></a>
+          {/* CVE Header */}
+          <div className="flex items-start gap-3">
+            <h1 className="dm-heading text-2xl text-fg">{vuln.cveId}</h1>
+            <SeverityPill severity={vuln.severity} />
+            <div className="ml-2 flex items-center gap-3 text-xs text-muted">
+              <a href="#" className="flex items-center gap-1 hover:text-accent">Vendor advisory <ExternalLink className="h-3 w-3" /></a>
+              <span>·</span>
+              <a href={`https://nvd.nist.gov/vuln/detail/${vuln.cveId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-accent">NVD <ExternalLink className="h-3 w-3" /></a>
+            </div>
+          </div>
         </div>
-      </div>
-
+      }
+    >
       {/* Status + Details grid */}
-      <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div className="mb-6 grid shrink-0 grid-cols-1 gap-5 lg:grid-cols-3">
         {/* Status card */}
         <div className="rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 p-5 space-y-5">
           <h2 className="text-[11px] font-medium uppercase tracking-wider text-muted">Status</h2>
@@ -149,9 +158,9 @@ export default function CveDetailPage() {
         </div>
 
         {/* Detail tabs */}
-        <div className="col-span-2 overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1">
+        <div className="col-span-2 overflow-hidden rounded-xl border border-border bg-linear-to-b from-fg/5 to-fg/1 flex flex-col">
           {/* Tab bar */}
-          <div className="flex border-b border-border">
+          <div className="flex border-b border-border shrink-0">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
@@ -168,7 +177,7 @@ export default function CveDetailPage() {
             ))}
           </div>
 
-          <div className="p-5">
+          <div className="p-5 flex-1 min-h-0 overflow-y-auto">
             {activeTab === "details" && (
               <div className="space-y-4">
                 <div>
@@ -247,9 +256,9 @@ export default function CveDetailPage() {
       </div>
 
       {/* Affected hosts table */}
-      <div className="rounded-xl border border-border shadow-card overflow-hidden">
+      <div className="flex flex-1 min-h-0 flex-col rounded-xl border border-border shadow-card overflow-hidden">
         {/* Table header */}
-        <div className="flex items-center justify-between border-b border-border bg-fg/2 px-5 py-3">
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-fg/2 px-5 py-3">
           <div className="flex items-center gap-3">
             <h2 className="text-[13px] font-semibold text-fg">Vulnerabilities</h2>
             <span className="rounded-full bg-fg/8 px-2 py-0.5 text-[10px] text-muted">{hosts.length} items</span>
@@ -270,84 +279,86 @@ export default function CveDetailPage() {
           </div>
         </div>
 
-        <table className="w-full text-left">
-          <thead>
-            <tr>
-              <th className="border-b border-border bg-fg/2 px-4 py-3 w-8" />
-              {[
-                { key: "hostname" as SortKey, label: "Hostname" },
-                { key: "assetCriticality" as SortKey, label: "Asset Criticality" },
-                { key: null, label: "Remediation" },
-                { key: null, label: "Vulnerable Version" },
-                { key: "status" as SortKey, label: "Status" },
-                { key: "daysOpen" as SortKey, label: "Days Open" },
-                { key: null, label: "Actions" },
-              ].map(({ key, label }) => (
-                <th
-                  key={label}
-                  onClick={key ? () => toggleSort(key) : undefined}
-                  className={cn(
-                    "border-b border-border bg-fg/2 px-4 py-3 text-[10px] font-medium uppercase tracking-wider text-muted",
-                    key && "cursor-pointer select-none hover:text-fg",
-                  )}
-                >
-                  <span className="flex items-center gap-1">
-                    {label}
-                    {key && <SortIcon columnKey={key} />}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedHosts.map((host) => (
-              <tr key={host.hostname} className="border-b border-fg/5 transition-colors hover:bg-fg/4">
-                <td className="px-4 py-3.5">
-                  <input
-                    type="checkbox"
-                    checked={selected.has(host.hostname)}
-                    onChange={() => toggleSelect(host.hostname)}
-                    className="accent-accent"
-                  />
-                </td>
-                <td className="px-4 py-3.5">
-                  <span className="font-mono text-[12px] text-fg">{host.hostname}</span>
-                </td>
-                <td className="px-4 py-3.5">
-                  <SeverityPill severity={host.assetCriticality} size="xs" />
-                </td>
-                <td className="px-4 py-3.5">
-                  <span className="rounded bg-info/10 px-2 py-0.5 text-[10px] font-medium text-info">
-                    {host.remediation}
-                  </span>
-                </td>
-                <td className="px-4 py-3.5">
-                  <div className="flex flex-col">
-                    <span className="font-mono text-[11px] text-fg">{host.vulnerableVersion}</span>
-                    <span className="text-[10px] text-muted">→ {host.patchVersion}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3.5">
-                  <StatusBadge status={host.status} />
-                </td>
-                <td className="px-4 py-3.5">
-                  <span className={cn(
-                    "font-mono text-[12px] font-semibold",
-                    host.daysOpen > 30 ? "text-danger" : host.daysOpen > 14 ? "text-orange" : "text-muted",
-                  )}>
-                    {host.daysOpen}d
-                  </span>
-                </td>
-                <td className="px-4 py-3.5">
-                  <button className="flex h-7 w-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-hover hover:text-fg">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                </td>
+        <div className="flex-1 min-h-0 overflow-auto">
+          <table className="w-full text-left relative">
+            <thead className="sticky top-0 z-10 bg-surface">
+              <tr>
+                <th className="border-b border-border bg-[#131315] px-4 py-3 w-8" />
+                {[
+                  { key: "hostname" as SortKey, label: "Hostname" },
+                  { key: "assetCriticality" as SortKey, label: "Asset Criticality" },
+                  { key: null, label: "Remediation" },
+                  { key: null, label: "Vulnerable Version" },
+                  { key: "status" as SortKey, label: "Status" },
+                  { key: "daysOpen" as SortKey, label: "Days Open" },
+                  { key: null, label: "Actions" },
+                ].map(({ key, label }) => (
+                  <th
+                    key={label}
+                    onClick={key ? () => toggleSort(key) : undefined}
+                    className={cn(
+                      "border-b border-border bg-[#131315] px-4 py-3 text-[10px] font-medium uppercase tracking-wider text-muted",
+                      key && "cursor-pointer select-none hover:text-fg",
+                    )}
+                  >
+                    <span className="flex items-center gap-1">
+                      {label}
+                      {key && <SortIcon columnKey={key} />}
+                    </span>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sortedHosts.map((host) => (
+                <tr key={host.hostname} className="border-b border-fg/5 transition-colors hover:bg-fg/4">
+                  <td className="px-4 py-3.5">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(host.hostname)}
+                      onChange={() => toggleSelect(host.hostname)}
+                      className="accent-accent"
+                    />
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <span className="font-mono text-[12px] text-fg">{host.hostname}</span>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <SeverityPill severity={host.assetCriticality} size="xs" />
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <span className="rounded bg-info/10 px-2 py-0.5 text-[10px] font-medium text-info">
+                      {host.remediation}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-[11px] text-fg">{host.vulnerableVersion}</span>
+                      <span className="text-[10px] text-muted">→ {host.patchVersion}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <StatusBadge status={host.status} />
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <span className={cn(
+                      "font-mono text-[12px] font-semibold",
+                      host.daysOpen > 30 ? "text-danger" : host.daysOpen > 14 ? "text-orange" : "text-muted",
+                    )}>
+                      {host.daysOpen}d
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-hover hover:text-fg">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
