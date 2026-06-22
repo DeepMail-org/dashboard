@@ -35,7 +35,7 @@ export default function SeverityBreakdown({ data, isLoading }: WidgetProps) {
   return (
     <div className="flex h-full">
       <div className="min-h-0 flex-1 flex items-center justify-center p-2">
-        <PieChart data={pieData} innerRadius={55} padAngle={0.05} cornerRadius={4} className="h-full w-full max-h-[160px] max-w-[160px]">
+        <PieChart data={pieData} innerRadius={55} padAngle={0.05} cornerRadius={4} className="h-full w-full">
           {pieData.map((_, i) => (
             <PieSlice key={i} index={i} />
           ))}

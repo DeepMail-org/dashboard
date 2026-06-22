@@ -27,7 +27,7 @@ export default function ThreatRadar({ isLoading, containerWidth }: WidgetProps) 
 
   return (
     <div className="relative flex h-full items-center justify-center overflow-hidden">
-      <svg viewBox="0 0 200 200" className="h-full max-h-full w-auto">
+      <svg viewBox="0 0 200 200" className="h-full max-h-full w-full max-w-full">
         <defs>
           <radialGradient id="sweepGrad">
             <stop offset="0%" stopColor="#a855f7" stopOpacity="0.3" />

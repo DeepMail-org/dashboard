@@ -44,7 +44,7 @@ export default function IncidentReport({ isLoading }: WidgetProps) {
       </div>
 
       {/* Timeline */}
-      <div className="flex-1 space-y-0 overflow-y-auto">
+      <div className="min-h-0 flex-1 space-y-0 overflow-y-auto">
         {TIMELINE.map((event, i) => (
           <div key={i} className="relative flex gap-3 pb-3">
             {/* Connector line */}

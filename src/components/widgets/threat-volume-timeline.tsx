@@ -103,7 +103,7 @@ export default function ThreatVolumeTimeline({ isLoading, containerWidth }: Widg
         ))}
       </div>
 
-      <div className="relative mb-2 flex flex-1 items-end justify-around border-b border-border">
+      <div className="relative mb-2 min-h-0 flex flex-1 items-end justify-around border-b border-border">
         {[25, 50, 75].map((pct) => (
           <div
             key={pct}
