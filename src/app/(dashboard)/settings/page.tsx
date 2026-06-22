@@ -2,7 +2,8 @@
 
 import { PageWrapper } from "@/components/layout/page-wrapper";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Settings, Bell, Key, Shield, Users, Palette, Box, Search, Download, Star, Check } from "lucide-react";
 import { TemplateAppearanceTab } from "@/components/settings/template-appearance-tab";
 import { CreditCard } from "lucide-react";
@@ -193,22 +194,31 @@ function MarketplaceTabContent() {
   );
 }
 
-export default function SettingsPage() {
+function SettingsTabsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabParam = searchParams.get("tab") as SettingsTab | null;
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
 
+  useEffect(() => {
+    if (tabParam && TABS.some(t => t.key === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabClick = (key: SettingsTab) => {
+    setActiveTab(key);
+    router.push(`?tab=${key}`, { scroll: false });
+  };
+
   return (
-    <PageWrapper
-      header={
-        <h1 className="font-display text-lg font-medium text-fg">Settings</h1>
-      }
-    >
-      <div className="flex gap-8">
+    <div className="flex gap-8">
         {/* Sidebar */}
         <div className="w-48 shrink-0 space-y-1">
           {TABS.map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => handleTabClick(tab.key)}
               className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs transition-colors ${
                 activeTab === tab.key
                   ? "bg-fg/8 text-fg"
@@ -310,88 +320,103 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "usage" && (
-            <div className="space-y-6">
-              <div className="rounded-xl border border-border bg-surface p-6">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h2 className="text-lg font-medium text-fg">Current Usage</h2>
-                    <p className="text-sm text-muted">Billing cycle: May 1 - May 31, 2026</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-fg">$1,452.80</div>
-                    <div className="text-sm text-muted">Estimated next bill</div>
+            <div className="space-y-8">
+              <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+                <div className="shrink-0 xl:w-72">
+                  <div className="grid grid-cols-1 gap-3">
+                    {QUOTA_ITEMS.map((item) => {
+                      const pct = (item.used / item.total) * 100;
+                      const isHigh = pct > 80;
+                      return (
+                        <div
+                          key={item.label}
+                          className="rounded-xl border border-border bg-surface p-4.5"
+                        >
+                          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
+                            {item.label}
+                          </div>
+                          <div className="mb-2 flex items-baseline gap-1.5">
+                            <span className="font-display text-base font-bold text-fg">
+                              {typeof item.used === "number" ? formatNumber(item.used) : item.used}
+                            </span>
+                            <span className="text-[10px] text-dimmed">
+                              / {typeof item.total === "number" ? formatNumber(item.total) : item.total} {item.unit}
+                            </span>
+                          </div>
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-fg/5">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${Math.min(pct, 100)}%`,
+                                background: isHigh
+                                  ? "linear-gradient(90deg, #f97316, #ef4444)"
+                                  : "linear-gradient(90deg, rgba(168,85,247,0.5), rgba(168,85,247,0.9))",
+                              }}
+                            />
+                          </div>
+                          <div className="mt-1 text-right text-[10px] font-mono text-dimmed">
+                            {pct.toFixed(1)}%
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {QUOTA_ITEMS.map((item) => (
-                    <div key={item.label} className="rounded-lg border border-border bg-surface-2 p-4">
-                      <div className="mb-2 flex items-center justify-between text-sm">
-                        <span className="font-medium text-fg">{item.label}</span>
-                        <span className="text-muted">
-                          {formatNumber(item.used)} / {formatNumber(item.total)} {item.unit}
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
-                        <div
-                          className={`h-full rounded-full ${(item.used / item.total) > 0.85 ? "bg-orange" : "bg-accent"}`}
-                          style={{ width: `${(item.used / item.total) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <div className="min-w-0 flex-1">
+                  <CreditUsageCard
+                    usedCreditsPercent={85.7}
+                    totalCreditsLabel="50K EMAILS"
+                    creditsUsedLabel="42.8K"
+                    creditsLeftLabel="7.2K"
+                    usageHistory={USAGE_HISTORY}
+                    onManagePlan={() => {}}
+                    onViewAll={() => {}}
+                    wrapperClassName="flex w-full flex-col font-sans"
+                  />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="rounded-xl border border-border bg-surface p-6">
-                  <h2 className="mb-4 text-sm font-medium text-fg">Daily Usage Breakdown</h2>
-                  <table className="w-full text-left text-sm">
+              
+              <div>
+                <h2 className="mb-3 text-sm font-medium text-fg">Recent Invoices</h2>
+                <div className="overflow-hidden rounded-xl border border-border">
+                  <table className="w-full text-left">
                     <thead className="sticky top-0 z-10 bg-surface">
-                      <tr className="border-b border-border text-muted">
-                        <th className="pb-2 font-medium">Date</th>
-                        <th className="pb-2 font-medium">Service</th>
-                        <th className="pb-2 text-right font-medium">Cost</th>
+                      <tr>
+                        {["Invoice", "Date", "Amount", "Status", ""].map((col) => (
+                          <th key={col} className="border-b border-border bg-fg/2 px-4 py-2.5 text-[10px] font-medium uppercase tracking-wider text-muted">
+                            {col}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border">
-                      {USAGE_HISTORY.map((row, i) => (
-                        <tr key={i}>
-                          <td className="py-2.5 text-fg">{row.date}</td>
-                          <td className="py-2.5 text-muted">{row.model}</td>
-                          <td className="py-2.5 text-right font-medium text-fg">{row.cost}</td>
+                    <tbody>
+                      {INVOICES.map((inv) => (
+                        <tr key={inv.id} className="hover:bg-fg/3 transition-colors">
+                          <td className="border-b border-fg/3 px-4 py-3 font-mono text-xs text-accent">{inv.id}</td>
+                          <td className="border-b border-fg/3 px-4 py-3 text-xs text-muted">{inv.date}</td>
+                          <td className="border-b border-fg/3 px-4 py-3 font-mono text-xs text-fg">{inv.amount}</td>
+                          <td className="border-b border-fg/3 px-4 py-3">
+                            <span className="rounded bg-success/10 px-2 py-0.5 text-[10px] text-success">{inv.status}</span>
+                          </td>
+                          <td className="border-b border-fg/3 px-4 py-3 text-right">
+                            <button className="text-[11px] text-muted hover:text-fg transition-colors">Download</button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <div className="space-y-6">
-                  <div className="rounded-xl border border-border bg-surface p-6">
-                    <h2 className="mb-4 text-sm font-medium text-fg">Recent Invoices</h2>
-                    <div className="space-y-3">
-                      {INVOICES.map((inv) => (
-                        <div key={inv.id} className="flex items-center justify-between rounded-lg border border-border bg-surface-2 p-3">
-                          <div>
-                            <div className="text-sm font-medium text-fg">{inv.id}</div>
-                            <div className="text-xs text-muted">{inv.date}</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-medium text-fg">{inv.amount}</div>
-                            <div className="text-xs text-success">{inv.status}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-surface p-4">
+                <h2 className="mb-3 text-sm font-medium text-fg">Payment Method</h2>
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-5 w-5 text-muted" />
+                  <div>
+                    <div className="text-xs text-fg">Visa ending in 4242</div>
+                    <div className="text-[11px] text-muted">Expires 12/2027</div>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface p-4">
-                    <h2 className="mb-3 text-sm font-medium text-fg">Payment Method</h2>
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-5 w-5 text-muted" />
-                      <div>
-                        <div className="text-xs text-fg">Visa ending in 4242</div>
-                        <div className="text-[11px] text-muted">Expires 12/2027</div>
-                      </div>
-                      <button className="ml-auto text-[11px] text-accent hover:underline">Update</button>
-                    </div>
-                  </div>
+                  <button className="ml-auto text-[11px] text-accent hover:underline">Update</button>
                 </div>
               </div>
             </div>
@@ -433,6 +458,17 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <PageWrapper
+      header={<h1 className="font-display text-lg font-medium text-fg">Settings</h1>}
+    >
+      <Suspense fallback={<div className="text-sm text-muted">Loading settings...</div>}>
+        <SettingsTabsContent />
+      </Suspense>
     </PageWrapper>
   );
 }
