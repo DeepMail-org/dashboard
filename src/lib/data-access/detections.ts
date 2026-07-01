@@ -1,5 +1,3 @@
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 export type Severity = "critical" | "high" | "medium" | "low";
 export type DetectionStatus = "new" | "in_progress" | "resolved" | "closed";
 
@@ -22,16 +20,6 @@ export interface Detection {
   description: string;
   relatedIocs: string[];
   adversary?: string;
-}
-
-export interface DetectionFilters {
-  severity?: Severity[];
-  status?: DetectionStatus[];
-  assignedTo?: string;
-  category?: string;
-  adversary?: string;
-  search?: string;
-  timeRange?: "1h" | "6h" | "24h" | "7d" | "30d";
 }
 
 const BASE_DETECTIONS: Detection[] = [
@@ -171,41 +159,3 @@ const BASE_DETECTIONS: Detection[] = [
 export const MOCK_DETECTIONS: Detection[] = Array.from({ length: 6 }, (_, i) => 
   BASE_DETECTIONS.map(d => ({ ...d, id: `${d.id}-${i}` }))
 ).flat();
-
-export async function getDetections(filters?: DetectionFilters): Promise<Detection[]> {
-  await sleep(400);
-  let results = [...MOCK_DETECTIONS];
-  if (filters?.severity?.length) {
-    results = results.filter((d) => filters.severity!.includes(d.severity));
-  }
-  if (filters?.status?.length) {
-    results = results.filter((d) => filters.status!.includes(d.status));
-  }
-  if (filters?.search) {
-    const q = filters.search.toLowerCase();
-    results = results.filter(
-      (d) =>
-        d.name.toLowerCase().includes(q) ||
-        d.hostname.toLowerCase().includes(q) ||
-        d.id.toLowerCase().includes(q) ||
-        d.adversary?.toLowerCase().includes(q),
-    );
-  }
-  return results;
-}
-
-export async function assignDetection(id: string, assignee: string): Promise<void> {
-  await sleep(200);
-  void id; void assignee;
-}
-
-export async function resolveDetection(id: string, resolution: string): Promise<void> {
-  await sleep(200);
-  void id; void resolution;
-}
-
-export async function createCaseFromDetection(detectionId: string): Promise<string> {
-  await sleep(400);
-  void detectionId;
-  return `CASE-2026-${Math.floor(Math.random() * 9999).toString().padStart(4, "0")}`;
-}

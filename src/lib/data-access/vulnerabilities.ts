@@ -93,11 +93,6 @@ export const MOCK_AFFECTED_HOSTS: AffectedHost[] = [
   { hostname: "SE-MAL-RDP",    assetCriticality: "critical", remediation: "Update", vulnerableVersion: "5.8.0.22", patchVersion: "5.8.0.24", status: "open", daysOpen: 4 },
 ];
 
-export async function getVulnerabilities(): Promise<Vulnerability[]> {
-  await sleep(400);
-  return MOCK_VULNERABILITIES;
-}
-
 export async function getCveDetail(cveId: string): Promise<Vulnerability | null> {
   await sleep(300);
   return MOCK_VULNERABILITIES.find((v) => v.cveId === cveId) ?? null;
@@ -106,8 +101,4 @@ export async function getCveDetail(cveId: string): Promise<Vulnerability | null>
 export async function getAffectedHosts(_cveId: string): Promise<AffectedHost[]> {
   await sleep(400);
   return MOCK_AFFECTED_HOSTS;
-}
-
-export async function suppressVulnerability(_hostnames: string[], _cveId: string): Promise<void> {
-  await sleep(300);
 }

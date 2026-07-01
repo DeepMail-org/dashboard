@@ -131,11 +131,6 @@ export const MITRE_MATRIX_DATA: MitreMatrix = {
   ],
 };
 
-export async function getAttackMatrix(): Promise<MitreMatrix> {
-  await sleep(500);
-  return MITRE_MATRIX_DATA;
-}
-
 export async function getTechniqueDetections(techniqueId: string): Promise<Array<{ id: string; name: string; severity: string; time: string }>> {
   await sleep(300);
   void techniqueId;

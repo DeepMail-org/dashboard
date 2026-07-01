@@ -24,36 +24,3 @@ export interface PipelineStage {
   latency: number;
   errorRate: number;
 }
-
-export interface SenderEntry {
-  email: string;
-  domain: string;
-  threatCount: number;
-  lastSeen: string;
-  riskScore: number;
-}
-
-export interface IocEntry {
-  id: string;
-  type: "ip" | "domain" | "hash" | "url" | "email";
-  value: string;
-  severity: "critical" | "high" | "medium" | "low";
-  source: string;
-  firstSeen: string;
-  lastSeen: string;
-}
-
-export interface AuthHealthStatus {
-  dkim: { pass: number; fail: number; total: number };
-  spf: { pass: number; fail: number; total: number };
-  dmarc: { pass: number; fail: number; total: number };
-}
-
-export interface GeoThreat {
-  lat: number;
-  lng: number;
-  country: string;
-  city: string;
-  count: number;
-  severity: "critical" | "high" | "medium" | "low";
-}

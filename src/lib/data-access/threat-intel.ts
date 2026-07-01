@@ -1,5 +1,3 @@
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 export interface ThreatFeed {
   id: string;
   name: string;
@@ -8,7 +6,6 @@ export interface ThreatFeed {
   count: number;
   lastUpdated: string;
   status: "active" | "disabled" | "testing";
-  apiKey?: string;
 }
 
 export interface IOC {
@@ -53,35 +50,3 @@ const BASE_IOCS: IOC[] = [
 export const MOCK_IOCS: IOC[] = Array.from({ length: 6 }, (_, i) =>
   BASE_IOCS.map(ioc => ({ ...ioc, id: `${ioc.id}-${i}` }))
 ).flat();
-
-export async function getFeeds(): Promise<ThreatFeed[]> {
-  await sleep(400);
-  return MOCK_FEEDS;
-}
-
-export async function getIOCs(): Promise<IOC[]> {
-  await sleep(500);
-  return MOCK_IOCS;
-}
-
-export async function searchIOC(value: string): Promise<IOC | null> {
-  await sleep(300);
-  return MOCK_IOCS.find((ioc) => ioc.value.toLowerCase().includes(value.toLowerCase())) ?? null;
-}
-
-export async function addIOC(ioc: Partial<IOC>): Promise<IOC> {
-  await sleep(400);
-  return {
-    id: `ioc-${Date.now()}`,
-    value: ioc.value ?? "",
-    type: ioc.type ?? "ip",
-    severity: ioc.severity ?? "medium",
-    confidence: 70,
-    tags: ioc.tags ?? [],
-    source: "Manual",
-    firstSeen: new Date().toISOString(),
-    lastSeen: new Date().toISOString(),
-    description: ioc.description ?? "",
-    relatedCount: 0,
-  };
-}

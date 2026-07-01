@@ -1,5 +1,4 @@
 export type Severity = "critical" | "high" | "medium" | "clean";
-export type ActionType = "quarantine" | "release" | "case" | "sandbox" | "rule" | "ioc" | "share" | "block_sender" | "block_domain";
 
 export interface MailAttachment {
   id: string;

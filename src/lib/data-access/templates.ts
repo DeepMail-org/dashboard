@@ -22,16 +22,6 @@ export interface SaveCustomTemplatePayload {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// ── MOCK DATA ─────────────────────────────────────────────────────────────────
-// Replace these function bodies with real fetch() calls when API is ready.
-// The contract (types + function signatures) stays the same.
-
-export async function getTemplates(): Promise<DashboardTemplate[]> {
-  await sleep(300);
-  // Returns empty custom slots — real API will populate from user profile
-  return [];
-}
-
 export async function saveCustomTemplate(
   payload: SaveCustomTemplatePayload,
 ): Promise<DashboardTemplate> {
@@ -51,12 +41,5 @@ export async function saveCustomTemplate(
 
 export async function deleteCustomTemplate(id: string): Promise<void> {
   await sleep(200);
-  // DELETE /api/templates/:id
   void id;
-}
-
-export async function applyTemplate(templateId: string): Promise<void> {
-  await sleep(150);
-  // POST /api/templates/:id/apply
-  void templateId;
 }
