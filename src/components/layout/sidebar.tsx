@@ -271,9 +271,11 @@ export function Sidebar() {
 					collapsed && "justify-center px-0",
 				)}
 			>
-				<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#a855f7] to-[#6366f1] shadow-glow">
-					<Shield className="h-4 w-4 text-fg" />
-				</div>
+				<img
+					src="/logo.svg"
+					alt="DeepMail"
+					className="h-8 w-8 shrink-0"
+				/>
 				{!collapsed && (
 					<span className="font-display text-lg font-semibold text-fg">
 						DeepMail
