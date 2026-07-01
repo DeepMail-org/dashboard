@@ -78,9 +78,7 @@ export default function SignupPage() {
 			>
 				{/* Logo */}
 				<Link href="/" className="flex items-center gap-2.5 mb-10 w-fit mx-auto group">
-					<div className="w-9 h-9 rounded-xl glass-strong flex items-center justify-center border border-white/10 group-hover:border-white/25 transition-colors duration-200">
-						<span className="font-display font-bold text-white text-[16px]">D</span>
-					</div>
+					<img src="/logo.svg" alt="DeepMail" className="h-9 w-9" />
 					<span className="font-display font-semibold text-[19px] text-white/90">DeepMail</span>
 				</Link>
 

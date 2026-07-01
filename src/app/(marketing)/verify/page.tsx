@@ -132,9 +132,7 @@ export default function VerifyPage() {
 					href="/"
 					className="group mx-auto mb-10 flex w-fit items-center gap-2.5"
 				>
-					<div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 glass-strong transition-colors duration-200 group-hover:border-white/25">
-						<span className="font-display text-[16px] font-bold text-white">D</span>
-					</div>
+					<img src="/logo.svg" alt="DeepMail" className="h-9 w-9" />
 					<span className="font-display text-[19px] font-semibold text-white/90">
 						DeepMail
 					</span>

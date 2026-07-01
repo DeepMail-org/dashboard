@@ -2,9 +2,13 @@
 import dynamic from "next/dynamic";
 import { ArrowUpRight } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+import Link from "next/link";
 
 const EtheralShadow = dynamic(
-	() => import("@/components/marketing/ui/etheral-shadow").then((m) => m.EtheralShadow),
+	() =>
+		import("@/components/marketing/ui/etheral-shadow").then(
+			(m) => m.EtheralShadow,
+		),
 	{ ssr: false, loading: () => null },
 );
 
@@ -70,33 +74,34 @@ export function LandingHero({ onUploadClick }: { onUploadClick: () => void }) {
 
 				<motion.p
 					variants={itemVariants}
-					className="text-[18px] text-[#D1D5DB] font-body opacity-80 leading-8 max-w-md mt-4 py-5"
+					className="text-[18px] text-[#D1D5DB] font-body opacity-80 leading-8 max-w-md mt-4 py-2"
 				>
-					The most powerful Email Threat
+					Advanced Email Threat
 					<br />
 					Intelligence Engine.
 				</motion.p>
 
 				<motion.div
 					variants={itemVariants}
-					className="mt-6.25 flex items-center justify-center"
+					className="mt-6 flex items-center justify-center"
 				>
-					<ButtonWithIcon onConsultClick={onUploadClick} />
+					<ScheduleConsultButton />
 				</motion.div>
 			</motion.div>
 		</section>
 	);
 }
 
-function ButtonWithIcon({ onConsultClick }: { onConsultClick: () => void }) {
+function ScheduleConsultButton() {
 	return (
-		<button
-			onClick={onConsultClick}
+		<Link
+			href="/contact"
 			className="group relative rounded-full h-14 p-1 ps-8 pe-[60px] text-[15px] font-medium text-white overflow-hidden cursor-pointer transition-all duration-500 hover:ps-[60px] hover:pe-8 border border-white/20 inline-flex items-center"
 			style={{
 				background: "rgba(255,255,255,0.06)",
 				backdropFilter: "blur(12px) saturate(1.4)",
-				boxShadow: "inset 0 0 6px 6px rgba(255,255,255,0.12), inset 0 0 2px 2px rgba(255,255,255,0.06), 0 0 12px rgba(255,255,255,0.15)",
+				boxShadow:
+					"inset 0 0 6px 6px rgba(255,255,255,0.12), inset 0 0 2px 2px rgba(255,255,255,0.06), 0 0 12px rgba(255,255,255,0.15)",
 			}}
 		>
 			<span className="relative z-10 transition-all duration-500 group-hover:tracking-wider whitespace-nowrap">
@@ -105,6 +110,6 @@ function ButtonWithIcon({ onConsultClick }: { onConsultClick: () => void }) {
 			<div className="absolute right-1 top-1 z-20 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-52px)] group-hover:rotate-45">
 				<ArrowUpRight size={20} />
 			</div>
-		</button>
+		</Link>
 	);
 }

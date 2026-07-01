@@ -17,9 +17,6 @@ export function FeaturesAndBenefits() {
 			<div className="relative mx-auto max-w-6xl px-6">
 				{/* Heading */}
 				<header className="mb-12 text-center">
-					<p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
-						Features &amp; benefits
-					</p>
 					<h2 className="mt-3 font-display text-3xl md:text-5xl font-semibold tracking-tight text-white">
 						Adopted by analysts. Loved by SOCs.
 					</h2>
@@ -47,13 +44,27 @@ function UserAdoptionCard() {
 		{ Icon: Code2, label: "GitHub" },
 	];
 
+	const [contributors, setContributors] = React.useState<any[]>([]);
+
+	React.useEffect(() => {
+		fetch(
+			"https://api.github.com/repos/DeepMail-org/dashboard/contributors",
+		)
+			.then((res) => res.json())
+			.then((data) => {
+				if (Array.isArray(data)) {
+					setContributors(data.slice(0, 5));
+				}
+			})
+			.catch(console.error);
+	}, []);
+
 	const avatars = [
 		{ initials: "JS", tone: "from-rose-400 to-amber-400" },
 		{ initials: "MA", tone: "from-cyan-400 to-violet-400" },
 		{ initials: "EK", tone: "from-emerald-400 to-cyan-400" },
 		{ initials: "TR", tone: "from-violet-400 to-pink-400" },
 		{ initials: "AL", tone: "from-amber-400 to-rose-400" },
-		{ initials: "+", tone: "from-white/30 to-white/10" },
 	];
 
 	return (
@@ -73,7 +84,10 @@ function UserAdoptionCard() {
 							className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/4 transition-colors hover:border-white/20"
 							title={label}
 						>
-							<Icon className="h-4 w-4 text-white/70" strokeWidth={1.6} />
+							<Icon
+								className="h-4 w-4 text-white/70"
+								strokeWidth={1.6}
+							/>
 						</motion.div>
 					))}
 				</div>
@@ -81,28 +95,55 @@ function UserAdoptionCard() {
 				{/* Big number */}
 				<div className="text-right">
 					<div className="font-display text-3xl md:text-4xl font-semibold leading-none text-white">
-						542,000
+						50,000+
 					</div>
 					<div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-						Analysts onboarded
+						Security analysts onboarded
 					</div>
 				</div>
 			</div>
 
 			{/* Avatars row */}
 			<div className="mt-7 flex -space-x-2">
-				{avatars.map((a, i) => (
-					<motion.div
-						key={i}
-						initial={{ opacity: 0, x: -10 }}
-						whileInView={{ opacity: 1, x: 0 }}
-						viewport={{ once: true }}
-						transition={{ delay: 0.3 + i * 0.05 }}
-						className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-linear-to-br ${a.tone} text-[11px] font-semibold text-white/95 ring-0 transition-all duration-200 hover:z-10 hover:scale-110`}
-					>
-						{a.initials}
-					</motion.div>
-				))}
+				{contributors.length > 0
+					? contributors.map((c, i) => (
+							<motion.div
+								key={c.id}
+								initial={{ opacity: 0, x: -10 }}
+								whileInView={{ opacity: 1, x: 0 }}
+								viewport={{ once: true }}
+								transition={{ delay: 0.3 + i * 0.05 }}
+								className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-black ring-0 transition-all duration-200 hover:z-10 hover:scale-110 overflow-hidden"
+								title={c.login}
+							>
+								<img
+									src={c.avatar_url}
+									alt={c.login}
+									className="h-full w-full object-cover"
+								/>
+							</motion.div>
+						))
+					: avatars.map((a, i) => (
+							<motion.div
+								key={i}
+								initial={{ opacity: 0, x: -10 }}
+								whileInView={{ opacity: 1, x: 0 }}
+								viewport={{ once: true }}
+								transition={{ delay: 0.3 + i * 0.05 }}
+								className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-linear-to-br ${a.tone} text-[11px] font-semibold text-white/95 ring-0 transition-all duration-200 hover:z-10 hover:scale-110`}
+							>
+								{a.initials}
+							</motion.div>
+						))}
+				<motion.div
+					initial={{ opacity: 0, x: -10 }}
+					whileInView={{ opacity: 1, x: 0 }}
+					viewport={{ once: true }}
+					transition={{ delay: 0.3 + 5 * 0.05 }}
+					className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-linear-to-br from-white/30 to-white/10 text-[11px] font-semibold text-white/95 ring-0 transition-all duration-200 hover:z-10 hover:scale-110"
+				>
+					+
+				</motion.div>
 			</div>
 
 			{/* Footer text */}
@@ -113,8 +154,9 @@ function UserAdoptionCard() {
 					User Adoption
 				</h3>
 				<p className="mt-3 max-w-md text-sm leading-relaxed text-white/45">
-					Join a community of 500,000+ analysts and incident-response teams who
-					trust DeepMail to triage their inboxes — at scale, every day.
+					Join a community of analysts and IR teams who trust DeepMail
+					to triage every suspicious email — in seconds, at scale,
+					every shift.
 				</p>
 			</div>
 		</div>
@@ -122,21 +164,21 @@ function UserAdoptionCard() {
 }
 
 // ============================================================
-// RIGHT CARD — People love us / Testimonial
+// RIGHT CARD — Creator & Testimonial
 // ============================================================
 function TestimonialCard() {
 	return (
-		<div className="group/card relative overflow-hidden rounded-3xl border border-white/8 bg-white/2 p-7 transition-all duration-300 hover:border-white/15 hover:bg-white/4">
+		<div className="group/card relative overflow-hidden rounded-3xl border border-white/8 bg-white/2 p-7 transition-all duration-300 hover:border-white/15 hover:bg-white/4 shadow-[0_8px_40px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]">
 			{/* Header */}
 			<div>
 				<h3 className="font-display text-3xl md:text-4xl font-semibold leading-[1.05] text-white">
-					People
+					Designed by
 					<br />
-					love us
+					practitioners
 				</h3>
 				<p className="mt-4 max-w-md text-sm leading-relaxed text-white/45">
-					See what analysts are saying about our pipeline and why they keep
-					coming back to DeepMail every shift — quaerendi consequat elementum.
+					Built from the ground up to solve real email analysis
+					challenges and speed up threat triaging.
 				</p>
 			</div>
 
@@ -155,26 +197,27 @@ function TestimonialCard() {
 				>
 					{/* Avatar + name */}
 					<div className="flex items-center gap-3">
-						<div className="flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-cyan-400 text-[12px] font-semibold text-black">
-							TD
-						</div>
+						<img
+							src="/me.jpg"
+							alt="Vyom Jain"
+							className="h-10 w-10 rounded-full object-cover border border-white/10 shrink-0"
+						/>
 						<div>
-							<p className="text-sm font-medium text-white/90">Tyler Durden</p>
-							<p className="text-[11px] text-white/35">Senior IR analyst</p>
+							<p className="text-sm font-medium text-white/90">
+								Vyom Jain
+							</p>
+							<p className="text-[11px] text-white/35">
+								Security Engineer & Creator of DeepMail
+							</p>
 						</div>
 					</div>
 
 					{/* Quote */}
 					<p className="mt-4 text-sm leading-relaxed text-white/60">
-						The first rule of{" "}
-						<span className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-1.5 py-0.5 font-mono text-[12px] font-semibold text-emerald-300">
-							DeepMail
-						</span>{" "}
-						is that you triage faster than your queue grows. The second rule of{" "}
-						<span className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-1.5 py-0.5 font-mono text-[12px] font-semibold text-emerald-300">
-							DeepMail
-						</span>{" "}
-						is — well, you get the idea. Ship it.
+						&ldquo;DeepMail was built out of frustration with slow,
+						manual email analysis pipelines. My goal is to give
+						security analysts immediate, rich threat intelligence
+						without any overhead.&rdquo;
 					</p>
 				</motion.div>
 			</div>

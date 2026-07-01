@@ -20,10 +20,10 @@ export function CallToAction() {
 
 			<div className="space-y-2">
 				<h2 className="text-center font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
-					Start analysing threats today.
+					Start triaging threats in 60 seconds.
 				</h2>
 				<p className="text-center text-sm text-white/40">
-					Drop your first .eml and get a verdict in seconds. No credit card required.
+					Drop your first .eml — no credit card, no setup. A full threat verdict in under 5 seconds.
 				</p>
 			</div>
 

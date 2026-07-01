@@ -7,13 +7,13 @@ import {
 	IconBolt,
 	IconWorldWww,
 	IconHash,
-	IconBrandGithub,
+	IconMessage,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
 export default function BentoGridClass() {
 	return (
-		<BentoGrid className="mx-auto max-w-5xl px-6 md:auto-rows-[20rem]">
+		<BentoGrid className="mx-auto max-w-5xl px-6 md:auto-rows-[20rem] [&>*]:shadow-[0_8px_32px_rgba(0,0,0,0.5),0_2px_8px_rgba(0,0,0,0.3)]">
 			{items.map((item, i) => (
 				<BentoGridItem
 					key={i}
@@ -155,7 +155,7 @@ const SkeletonFour = () => {
 		hover: { x: 0, rotate: 0 },
 	};
 	const card =
-		"flex h-full w-1/3 flex-col items-center justify-center rounded-2xl border border-white/8 bg-black/50 p-4";
+		"flex h-full w-1/3 flex-col items-center justify-center rounded-2xl border border-white/8 bg-black/50 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.4)]";
 	return (
 		<motion.div
 			initial="initial"
@@ -166,19 +166,19 @@ const SkeletonFour = () => {
 			<motion.div variants={first} className={card}>
 				<IconWorldWww className="h-8 w-8 text-rose-400" stroke={1.4} />
 				<p className="mt-3 text-center text-xs font-semibold text-white/70">
-					RU · 185.220.x
+					RU · 185.220.101
 				</p>
 				<p className="mt-2 rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 text-[10px] text-rose-300">
 					Hostile
 				</p>
 			</motion.div>
-			<motion.div className="relative z-20 flex h-full w-1/3 flex-col items-center justify-center rounded-2xl border border-white/15 bg-black/70 p-4">
+			<motion.div className="relative z-20 flex h-full w-1/3 flex-col items-center justify-center rounded-2xl border border-white/15 bg-black/70 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.5)]">
 				<IconShieldCheck
 					className="h-8 w-8 text-emerald-400"
 					stroke={1.4}
 				/>
 				<p className="mt-3 text-center text-xs font-semibold text-white/70">
-					US · CDN edge
+					US · Cloudflare CDN
 				</p>
 				<p className="mt-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300">
 					Trusted
@@ -187,7 +187,7 @@ const SkeletonFour = () => {
 			<motion.div variants={second} className={card}>
 				<IconBolt className="h-8 w-8 text-amber-400" stroke={1.4} />
 				<p className="mt-3 text-center text-xs font-semibold text-white/70">
-					CN · 39.x.x.x
+					CN · 91.108.56
 				</p>
 				<p className="mt-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-300">
 					Watchlist
@@ -220,16 +220,16 @@ const SkeletonFive = () => {
 			>
 				<div className="h-7 w-7 shrink-0 rounded-full bg-linear-to-br from-cyan-500 to-violet-500" />
 				<p className="text-[11px] leading-snug text-white/55">
-					IOC{" "}
-					<span className="font-mono text-white/75">a1b2c3d4</span>{" "}
-					matches a known credential-stealer family.
+					Hash{" "}
+					<span className="font-mono text-white/75">3f7a91b2</span>{" "}
+					matches <span className="text-rose-300 font-semibold">Emotet</span> loader v4 — confidence 94%. Geo: Moldova (AS42926).
 				</p>
 			</motion.div>
 			<motion.div
 				variants={variantsSecond}
 				className="ml-auto flex w-3/4 flex-row items-center justify-end gap-2 rounded-full border border-white/8 bg-black/40 p-2"
 			>
-				<p className="text-[11px] text-white/55">Quarantine, please.</p>
+				<p className="text-[11px] text-white/55">Quarantine and escalate to Tier 2.</p>
 				<div className="h-6 w-6 shrink-0 rounded-full bg-linear-to-r from-emerald-500 to-cyan-500" />
 			</motion.div>
 		</motion.div>
@@ -241,7 +241,7 @@ const items = [
 		title: "Live IOC tagging",
 		description: (
 			<span className="text-sm">
-				Every artifact gets a verdict the moment it lands.
+				Instant severity verdicts (CRIT, HIGH, MED, SAFE) for all artifacts upon ingestion.
 			</span>
 		),
 		header: <SkeletonOne />,
@@ -252,7 +252,7 @@ const items = [
 		title: "Six-stage pipeline",
 		description: (
 			<span className="text-sm">
-				PARSE · IOC · GEO · URL · FILES · SCORE — streamed end to end.
+				Real-time WebSocket streaming from PARSE to SCORE. Zero polling required.
 			</span>
 		),
 		header: <SkeletonTwo />,
@@ -263,7 +263,7 @@ const items = [
 		title: "Threat confidence",
 		description: (
 			<span className="text-sm">
-				One number, six signals. Calibrated for SOCs.
+				Unified 0–100 score based on six MITRE ATT&CK calibrated signals.
 			</span>
 		),
 		header: <SkeletonThree />,
@@ -274,8 +274,7 @@ const items = [
 		title: "Geo-aware verdicts",
 		description: (
 			<span className="text-sm">
-				Reputation is regional. We pin every artifact to its origin so
-				you can spot the campaign, not just the message.
+				Pinpoint IOCs to country and ASN instantly to spot cross-border campaigns.
 			</span>
 		),
 		header: <SkeletonFour />,
@@ -283,14 +282,14 @@ const items = [
 		icon: <IconWorldWww className="h-4 w-4 text-white/45" />,
 	},
 	{
-		title: "Analyst-friendly notes",
+		title: "Analyst-ready context",
 		description: (
 			<span className="text-sm">
-				Plain-English context for every flag.
+				Clear, actionable insights. One-click export to SIEM or PDF.
 			</span>
 		),
 		header: <SkeletonFive />,
 		className: "md:col-span-1",
-		icon: <IconBrandGithub className="h-4 w-4 text-white/45" />,
+		icon: <IconMessage className="h-4 w-4 text-white/45" />,
 	},
 ];

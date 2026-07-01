@@ -360,26 +360,24 @@ export function CinematicFooter() {
 						ref={linksRef}
 						className="relative z-10 flex flex-1 flex-col justify-center px-8 md:px-16 mt-28 w-full max-w-6xl mx-auto"
 					>
-						<div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-6 pb-10 border-b border-foreground/6">
-							{/* Brand column */}
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6 pb-10 border-b border-foreground/6">
 							<div className="col-span-2 md:col-span-1 flex flex-col gap-4">
 								<a
 									href="/"
 									className="flex items-center gap-2.5 w-fit group"
 								>
-									<div className="w-9 h-9 rounded-xl flex items-center justify-center bg-foreground/8 border border-foreground/10 group-hover:border-foreground/20 transition-colors">
-										<span className="font-display font-bold text-foreground text-[15px]">
-											D
-										</span>
-									</div>
+									<img
+										src="/logo.svg"
+										alt="DeepMail"
+										className="h-9 w-9"
+									/>
 									<span className="font-display font-semibold text-[16px] text-foreground/90">
 										DeepMail
 									</span>
 								</a>
 								<p className="text-xs text-muted-foreground leading-relaxed max-w-40">
-									© {new Date().getFullYear()} DeepMail.
-									<br />
-									All rights reserved.
+									Advance email threat intelligence.
+									<br />© {new Date().getFullYear()} DeepMail.
 								</p>
 							</div>
 
@@ -388,10 +386,8 @@ export function CinematicFooter() {
 								title="Pages"
 								links={[
 									{ label: "Home", href: "/" },
-									{ label: "Analysis", href: "/analysis" },
-									{ label: "Reports", href: "/reports" },
-									{ label: "Upload", href: "/upload" },
-									{ label: "Settings", href: "/settings" },
+									{ label: "Contact", href: "/contact" },
+									{ label: "Pricing", href: "/payments" },
 								]}
 							/>
 
@@ -399,10 +395,18 @@ export function CinematicFooter() {
 							<FooterColumn
 								title="Socials"
 								links={[
-									{ label: "Twitter / X", href: "#" },
-									{ label: "LinkedIn", href: "#" },
-									{ label: "GitHub", href: "#" },
-									{ label: "Discord", href: "#" },
+									{
+										label: "Twitter / X",
+										href: "https://x.com/deepmail",
+									},
+									{
+										label: "LinkedIn",
+										href: "https://linkedin.com/company/deepmail",
+									},
+									{
+										label: "GitHub",
+										href: "https://github.com/deepmail",
+									},
 								]}
 							/>
 
@@ -410,19 +414,18 @@ export function CinematicFooter() {
 							<FooterColumn
 								title="Legal"
 								links={[
-									{ label: "Privacy Policy", href: "#" },
-									{ label: "Terms of Service", href: "#" },
-									{ label: "Cookie Policy", href: "#" },
-								]}
-							/>
-
-							{/* Account */}
-							<FooterColumn
-								title="Register"
-								links={[
-									{ label: "Sign Up", href: "/signup" },
-									{ label: "Login", href: "/login" },
-									{ label: "Forgot Password", href: "#" },
+									{
+										label: "Privacy Policy",
+										href: "/privacy",
+									},
+									{
+										label: "Terms of Service",
+										href: "/terms",
+									},
+									{
+										label: "Cookie Policy",
+										href: "/cookies",
+									},
 								]}
 							/>
 						</div>

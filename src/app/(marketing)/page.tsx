@@ -8,7 +8,10 @@ import { useToast, ToastContainer } from "@/components/marketing/LandingModals";
 // Heavy below-the-fold sections — lazy-loaded on scroll. Each is rendered inside
 // a FadeIn so loading happens just before it enters the viewport.
 const LandingStats = dynamic(
-	() => import("@/components/marketing/LandingStats").then((m) => m.LandingStats),
+	() =>
+		import("@/components/marketing/LandingStats").then(
+			(m) => m.LandingStats,
+		),
 	{ loading: () => <SectionSkeleton h="h-72" />, ssr: false },
 );
 
@@ -17,15 +20,21 @@ const HoverBrandLogo = dynamic(
 	{ loading: () => <SectionSkeleton h="h-64" />, ssr: false },
 );
 
-const FeaturesSection = dynamic(() => import("@/components/marketing/features"), {
-	loading: () => <SectionSkeleton h="h-[640px]" />,
-	ssr: false,
-});
+const FeaturesSection = dynamic(
+	() => import("@/components/marketing/features"),
+	{
+		loading: () => <SectionSkeleton h="h-[640px]" />,
+		ssr: false,
+	},
+);
 
-const Features = dynamic(() => import("@/components/marketing/features_section"), {
-	loading: () => <SectionSkeleton h="h-[720px]" />,
-	ssr: false,
-});
+const Features = dynamic(
+	() => import("@/components/marketing/features_section"),
+	{
+		loading: () => <SectionSkeleton h="h-[720px]" />,
+		ssr: false,
+	},
+);
 
 const BentoGrid = dynamic(() => import("@/components/marketing/bento-grid"), {
 	loading: () => <SectionSkeleton h="h-[720px]" />,
@@ -53,19 +62,27 @@ const CallToAction = dynamic(
 	{ loading: () => <SectionSkeleton h="h-48" />, ssr: false },
 );
 
-const FAQWithSpiral = dynamic(() => import("@/components/marketing/ui/faq-section"), {
-	loading: () => <SectionSkeleton h="h-[640px]" />,
-	ssr: false,
-});
+const FAQWithSpiral = dynamic(
+	() => import("@/components/marketing/ui/faq-section"),
+	{
+		loading: () => <SectionSkeleton h="h-[640px]" />,
+		ssr: false,
+	},
+);
 
 const CinematicFooter = dynamic(
 	() =>
-		import("@/components/marketing/ui/motion-footer").then((m) => m.CinematicFooter),
+		import("@/components/marketing/ui/motion-footer").then(
+			(m) => m.CinematicFooter,
+		),
 	{ loading: () => null, ssr: false },
 );
 
 const UploadModal = dynamic(
-	() => import("@/components/marketing/LandingModals").then((m) => m.UploadModal),
+	() =>
+		import("@/components/marketing/LandingModals").then(
+			(m) => m.UploadModal,
+		),
 	{ ssr: false },
 );
 
@@ -175,13 +192,13 @@ export default function DeepMailLandingPage() {
 				</FadeIn>
 
 				<FadeIn>
-					<section className="border-y border-white/5 py-12">
+					<section
+						id="capabilities"
+						className="border-y border-white/5 py-12"
+					>
 						<div className="mx-auto mb-2 max-w-7xl px-6 text-center">
-							<p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
-								Capabilities
-							</p>
 							<h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white md:text-5xl">
-								Everything You needs in one pipeline
+								Everything you need in one pipeline
 							</h2>
 						</div>
 						<FeaturesSection />
@@ -189,27 +206,21 @@ export default function DeepMailLandingPage() {
 				</FadeIn>
 
 				<FadeIn>
-					<Features />
+					<div id="how-it-works">
+						<Features />
+					</div>
 				</FadeIn>
 
 				<FadeIn>
 					<section className="border-t border-white/5 py-20">
 						<div className="mx-auto mb-12 max-w-5xl px-6 text-center">
-							<p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
-								Inside the engine
-							</p>
 							<h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white md:text-5xl">
 								See how the pieces fit together
 							</h2>
-							<p className="mx-auto mt-4 max-w-xl text-sm text-white/40 md:text-base">
-								Five interlocking layers turn a raw .eml into a
-								verdict you can act on. Hover any tile.
-							</p>
 						</div>
 						<BentoGrid />
 					</section>
 				</FadeIn>
-
 				<FadeIn>
 					<FeaturesAndBenefits />
 				</FadeIn>
@@ -221,7 +232,7 @@ export default function DeepMailLandingPage() {
 				</FadeIn>
 
 				<FadeIn>
-					<div className="py-12">
+					<div id="faq" className="py-12">
 						<FAQWithSpiral />
 					</div>
 				</FadeIn>

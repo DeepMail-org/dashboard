@@ -128,7 +128,7 @@ const CreditCardForm = ({
 					>
 						<div className="card__header">
 							<div className="card__brand">
-								<span className="card__brand-mark">D</span>
+								<img src="/logo.svg" alt="DeepMail" className="h-5 w-5" />
 								<span>DeepMail</span>
 							</div>
 							<svg

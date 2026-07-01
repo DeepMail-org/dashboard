@@ -14,14 +14,14 @@ import {
 } from "react-icons/si";
 
 const brands = [
-	{ id: "bun", name: "Frontend API", Icon: SiBun },
-	{ id: "react", name: "React", Icon: SiReact },
-	{ id: "redis", name: "Redis", Icon: SiRedis },
-	{ id: "rust", name: "Rust", Icon: SiRust },
-	{ id: "vt", name: "Virus Total", Icon: SiVirustotal },
+	{ id: "bun", name: "Bun API Runtime", Icon: SiBun },
+	{ id: "react", name: "Next.js Frontend", Icon: SiReact },
+	{ id: "redis", name: "Redis Streams", Icon: SiRedis },
+	{ id: "rust", name: "Rust Workers", Icon: SiRust },
+	{ id: "vt", name: "VirusTotal", Icon: SiVirustotal },
 	{ id: "kali", name: "Kali Linux", Icon: SiKalilinux },
-	{ id: "aws", name: "Cloudflare", Icon: SiCloudflare },
-	{ id: "sandbox", name: "Sandbox", Icon: SiCodesandbox },
+	{ id: "cloudflare", name: "Cloudflare", Icon: SiCloudflare },
+	{ id: "sandbox", name: "Isolated Sandbox", Icon: SiCodesandbox },
 	{ id: "docker", name: "Docker", Icon: SiDocker },
 	{ id: "kubernetes", name: "Kubernetes", Icon: SiKubernetes },
 ];
@@ -36,7 +36,7 @@ export default function HoverBrandLogo() {
 				{/* Left: text */}
 				<div className="shrink-0 w-full sm:w-auto text-center sm:text-left">
 					<p className="text-sm sm:text-base text-muted-foreground font-medium mb-0 tracking-tight">
-						Powered By
+						Powered by a battle-tested stack
 					</p>
 					<div className="relative">
 						<p

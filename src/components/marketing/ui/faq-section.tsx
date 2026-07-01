@@ -7,27 +7,31 @@ import { Plus, HelpCircle } from "lucide-react";
 const faqs = [
 	{
 		q: "What does DeepMail do?",
-		a: "DeepMail is a multi-layered email threat intelligence engine. It parses raw .eml files, extracts IOCs (IPs, domains, URLs, hashes), runs geo-intelligence enrichment, scores payloads and delivers a full threat report in seconds.",
+		a: "DeepMail is a multi-layered email threat intelligence engine. It parses raw .eml files, extracts IOCs (IPs, domains, URLs, hashes), runs geo-intelligence enrichment via MaxMind, scores payloads against MITRE ATT&CK TTP patterns, and delivers a full threat report with a 0–100 confidence score — in seconds.",
 	},
 	{
 		q: "What file types are supported?",
-		a: "We support standard .eml (RFC 822) email files. You can upload individual messages or drag-and-drop multiple files at once. Each file is processed through our full pipeline independently.",
+		a: "We support standard .eml (RFC 822) email files, including MIME-encoded and base64-encoded payloads. You can upload individual messages or drag-and-drop multiple files at once. Each file is processed through our full 6-stage pipeline independently.",
 	},
 	{
 		q: "How does the scoring system work?",
-		a: "Our engine aggregates signals across PARSE, IOC TRIGGER, GEO-INTEL, URL REG, FILE analysis and SCORING stages. Each stage contributes weighted sub-scores to a final threat confidence rating from 0–100.",
+		a: "Our engine aggregates signals across six stages: PARSE, IOC TRIGGER, GEO-INTEL, URL REP, FILE analysis, and SCORING. Each stage contributes weighted sub-scores — calibrated against known MITRE ATT&CK techniques — that collapse into a final threat confidence rating from 0–100.",
 	},
 	{
 		q: "Is my data stored after analysis?",
-		a: "Email data is processed ephemerally in an isolated sandbox. Results are retained only for the duration of your session and purged on logout. We never store raw email payloads beyond the analysis window.",
+		a: "Email data is processed ephemerally in an isolated, network-segmented sandbox. Results are retained only for the duration of your session and purged on logout. We never store raw email payloads beyond the analysis window. Our architecture is designed with SOC-2 compliance principles in mind.",
 	},
 	{
 		q: "Which threat intel sources do you integrate?",
-		a: "DeepMail currently integrates MaxMind for geo-IP, AbuseIPDB for reputation checks, and VirusTotal for file hash and URL lookups — all cached for performance via Redis Streams.",
+		a: "DeepMail currently integrates MaxMind for geo-IP enrichment, AbuseIPDB for IP reputation checks, VirusTotal for file hash and URL lookups, and MalwareBazaar for emerging malware signatures — all cached for performance via Redis Streams to minimise external API latency.",
 	},
 	{
 		q: "Can I use the API directly?",
-		a: "Yes. Our REST API exposes endpoints for upload, IOC extraction and results retrieval. WebSocket support is available for real-time pipeline progress. Contact us for API keys and rate limit tiers.",
+		a: "Yes. Our REST API exposes endpoints for upload, IOC extraction, geo enrichment and results retrieval, with a full OpenAPI specification available. WebSocket support provides real-time pipeline progress events. Contact us for API keys, webhook configuration and rate limit tiers.",
+	},
+	{
+		q: "Do you support bulk analysis or batch uploads?",
+		a: "Yes. The drag-and-drop UI accepts multiple .eml files simultaneously — each is processed as an independent task through the full 6-stage pipeline. Our API also supports batch endpoints for automated ingestion directly from mail gateways, SIEM connectors or CI pipelines.",
 	},
 ];
 

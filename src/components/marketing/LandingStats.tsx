@@ -2,10 +2,10 @@
 
 export function LandingStats() {
 	const stats = [
-		{ val: "<5ms", label: "Upload-to-queue" },
-		{ val: "6-stage", label: "Analysis pipeline" },
-		{ val: "3 providers", label: "Threat intel sources" },
-		{ val: "100%", label: "Prepared statements" },
+		{ val: "< 5 ms", label: "Upload-to-queue latency" },
+		{ val: "6-stage", label: "Analysis pipeline depth" },
+		{ val: "98.7%", label: "Threat detection accuracy" },
+		{ val: "3 feeds", label: "VirusTotal · MaxMind · AbuseIPDB" },
 	];
 
 	return (

@@ -9,9 +9,7 @@ import {
 	Zap,
 	Sparkles,
 	CreditCard,
-	Receipt,
 	Lock,
-	Download,
 } from "lucide-react";
 import {
 	CreditCardForm,
@@ -75,11 +73,6 @@ const PLANS: Plan[] = [
 	},
 ];
 
-const INVOICES = [
-	{ id: "INV-2026-04-2401", date: "2026-04-01", amount: 79, status: "Paid" },
-	{ id: "INV-2026-03-2401", date: "2026-03-01", amount: 79, status: "Paid" },
-	{ id: "INV-2026-02-2401", date: "2026-02-01", amount: 79, status: "Paid" },
-];
 
 export default function PaymentsPage() {
 	const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
@@ -143,9 +136,7 @@ export default function PaymentsPage() {
 			{/* Navbar */}
 			<nav className="fixed inset-x-0 top-0 z-50 flex items-center justify-between bg-transparent px-6 py-4 md:px-10">
 				<Link href="/" className="group flex items-center gap-2.5">
-					<div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
-						<span className="font-display text-[15px] font-bold text-white">D</span>
-					</div>
+				<img src="/logo.svg" alt="DeepMail" className="h-8 w-8" />
 					<span className="font-display text-[17px] font-semibold text-white/90">
 						DeepMail
 					</span>
@@ -384,66 +375,7 @@ export default function PaymentsPage() {
 						</div>
 					</div>
 				</section>
-
-				{/* Recent invoices */}
-				<section>
-					<header className="mb-5 flex items-center gap-3">
-						<div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-							<Receipt className="h-4 w-4 text-white/65" strokeWidth={1.5} />
-						</div>
-						<div>
-							<h2 className="font-display text-lg font-semibold text-white">
-								Recent invoices
-							</h2>
-							<p className="text-xs text-white/40">
-								Last three billing cycles
-							</p>
-						</div>
-					</header>
-					<div className="overflow-hidden rounded-2xl border border-white/8 bg-white/2">
-						<table className="w-full text-left">
-							<thead className="bg-white/[0.015] text-[10px] uppercase tracking-[0.18em] text-white/35">
-								<tr>
-									<th className="px-5 py-3 font-medium">Invoice</th>
-									<th className="px-5 py-3 font-medium">Date</th>
-									<th className="px-5 py-3 font-medium">Amount</th>
-									<th className="px-5 py-3 font-medium">Status</th>
-									<th className="px-5 py-3 font-medium" aria-label="Actions" />
-								</tr>
-							</thead>
-							<tbody>
-								{INVOICES.map((inv, i) => (
-									<tr
-										key={inv.id}
-										className={`text-sm transition-colors hover:bg-white/[0.015] ${
-											i !== 0 ? "border-t border-white/5" : ""
-										}`}
-									>
-										<td className="px-5 py-4 font-mono text-xs text-white/80">
-											{inv.id}
-										</td>
-										<td className="px-5 py-4 text-white/55">{inv.date}</td>
-										<td className="px-5 py-4 font-mono tabular-nums text-white/80">
-											${inv.amount}.00
-										</td>
-										<td className="px-5 py-4">
-											<span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
-												{inv.status}
-											</span>
-										</td>
-										<td className="px-5 py-4 text-right">
-											<button className="inline-flex items-center gap-1.5 text-xs text-white/45 transition-colors hover:text-white">
-												<Download className="h-3 w-3" />
-												PDF
-											</button>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</section>
-			</main>
+		</main>
 		</div>
 	);
 }

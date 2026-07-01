@@ -67,9 +67,7 @@ export default function ContactPage() {
 			{/* Navbar */}
 			<nav className="fixed top-0 inset-x-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between bg-transparent">
 				<Link href="/" className="flex items-center gap-2.5 group">
-					<div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
-						<span className="font-display font-bold text-white text-[15px]">D</span>
-					</div>
+					<img src="/logo.svg" alt="DeepMail" className="h-8 w-8" />
 					<span className="font-display font-semibold text-[17px] text-white/90">
 						DeepMail
 					</span>
