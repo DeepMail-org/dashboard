@@ -1,7 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useMailStore } from "@/stores/mail-store";
 import { useMails, useMailAction } from "@/hooks/use-mail";
-import { toast } from "sonner";
 
 export function useKeyboardShortcuts() {
   const filters = useMailStore((s) => s.filters);
@@ -11,7 +10,7 @@ export function useKeyboardShortcuts() {
   const { data } = useMails(filters);
   const actionMutation = useMailAction();
 
-  const allMails = data ? data.pages.flatMap((d) => d.data) : [];
+  const allMails = useMemo(() => data ? data.pages.flatMap((d) => d.data) : [], [data]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { useWsSubscription } from "./use-ws-subscription";
 import type { DataSourceConfig } from "@/lib/dashboard/types";
@@ -29,9 +29,9 @@ export function useWidgetQuery(
   const wsChannel = isWs ? dataSource.channel : null;
   const initialEndpoint = isWs ? dataSource.initialFetchEndpoint : null;
 
-  const queryKey = isRest
+  const queryKey = useMemo(() => isRest
     ? ["widgets", "rest", restEndpoint]
-    : ["widgets", "ws", wsChannel];
+    : ["widgets", "ws", wsChannel], [isRest, restEndpoint, wsChannel]);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey,
@@ -50,8 +50,7 @@ export function useWidgetQuery(
     (wsData: unknown) => {
       queryClient.setQueryData(queryKey, wsData);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queryClient, ...queryKey],
+    [queryClient, queryKey],
   );
 
   useWsSubscription(wsChannel, handleWsMessage);

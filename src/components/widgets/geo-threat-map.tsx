@@ -122,7 +122,7 @@ export default function GeoThreatMap({ data, isLoading }: WidgetProps) {
       <Map
         center={[30, 25]}
         zoom={1.5}
-        projection={{ type: "globe" } as any}
+        projection={{ type: "globe" } as { type: "globe" }}
         className="h-full w-full"
         loading={isLoading}
         styles={{ dark: currentStyle }}

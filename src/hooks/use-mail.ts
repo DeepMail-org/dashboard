@@ -27,7 +27,7 @@ export function useMailAction() {
         if (!old) return old;
         return {
           ...old,
-          pages: (old as { pages: any[] }).pages.map((page: any) => ({
+          pages: (old as { pages: { data: MailItem[], nextCursor?: number }[] }).pages.map((page) => ({
             ...page,
             data: page.data.map((mail: MailItem) => {
               if (mail.id === mailId) {
@@ -51,7 +51,7 @@ export function useMailAction() {
     },
     onError: (err, variables, context: unknown) => {
       toast.error(`Action failed: ${err.message}`);
-      if ((context as any)?.previousMails) {
+      if (context && typeof context === 'object' && 'previousMails' in context) {
         (context as { previousMails: [unknown[], unknown][] }).previousMails.forEach(([queryKey, data]: [unknown[], unknown]) => {
           queryClient.setQueryData(queryKey, data);
         });
