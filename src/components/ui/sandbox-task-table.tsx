@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
-import { X, Power, Pause, Play, RotateCcw } from "lucide-react";
+import { X } from "lucide-react";
 import {
 	SandboxTask,
 	SandboxTaskStatus,
@@ -32,44 +32,16 @@ export function SandboxTaskTable({
 	const storeTasks = useSandboxStore((s) => s.tasks);
 	const displayTasks = initialTasks || storeTasks;
 
-	const [hoveredTask, setHoveredTask] = useState<string | null>(null);
-	const [selectedTask, setSelectedTask] = useState<SandboxTask | null>(null);
+	const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+	const selectedTask = displayTasks.find((s) => s.id === selectedTaskId) || null;
 	const [activeTab, setActiveTab] = useState("overview");
-	const shouldReduceMotion = useReducedMotion();
-	const { theme } = useTheme();
-	const isDark = theme === "dark";
-
-	// Handle Escape key to close modal
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "Escape") {
-				closeTaskModal();
-			}
-		};
-		if (selectedTask) {
-			document.addEventListener("keydown", handleKeyDown);
-		}
-		return () => {
-			document.removeEventListener("keydown", handleKeyDown);
-		};
-	}, [selectedTask]);
-
-	const handleStatusChange = (
-		taskId: string,
-		newStatus: SandboxTaskStatus,
-	) => {
-		if (onStatusChange) {
-			onStatusChange(taskId, newStatus);
-		}
-		// Alternatively call useSandboxStore().updateTaskStatus(taskId, event) depending on parent logic
-	};
 
 	const openTaskModal = (task: SandboxTask) => {
-		setSelectedTask(task);
+		setSelectedTaskId(task.id);
 	};
 
 	const closeTaskModal = () => {
-		setSelectedTask(null);
+		setSelectedTaskId(null);
 	};
 
 	useEffect(() => {
@@ -81,18 +53,6 @@ export function SandboxTaskTable({
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [selectedTask]);
-
-	// Update selected task when tasks change (for real-time updates)
-	useEffect(() => {
-		if (selectedTask) {
-			const updatedTask = displayTasks.find(
-				(s) => s.id === selectedTask.id,
-			);
-			if (updatedTask) {
-				setSelectedTask(updatedTask);
-			}
-		}
-	}, [displayTasks, selectedTask]);
 
 	const getOSIcon = (osType?: string) => {
 		const os = (osType || "windows").toLowerCase();
@@ -324,8 +284,6 @@ export function SandboxTaskTable({
 								},
 							}}
 							className="relative cursor-pointer"
-							onMouseEnter={() => setHoveredTask(task.id)}
-							onMouseLeave={() => setHoveredTask(null)}
 							onClick={() => openTaskModal(task)}
 						>
 							<motion.div

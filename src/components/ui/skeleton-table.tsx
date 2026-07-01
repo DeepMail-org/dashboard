@@ -43,7 +43,7 @@ export function SkeletonTable({ rows = 8, cols = 6, className }: SkeletonTablePr
   );
 }
 
-export function SkeletonCard({ className }: { className?: string }) {
+function SkeletonCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(

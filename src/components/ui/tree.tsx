@@ -30,8 +30,8 @@ interface TreeProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function Tree({ indent = 20, tree, className, ...props }: TreeProps) {
   const containerProps =
-    tree && typeof (tree as any).getContainerProps === "function"
-      ? (tree as any).getContainerProps()
+    tree && typeof (tree as Record<string, unknown>).getContainerProps === "function"
+      ? ((tree as Record<string, unknown>).getContainerProps as () => Record<string, unknown>)()
       : {}
   const mergedProps = { ...props, ...containerProps }
 
@@ -84,47 +84,68 @@ function TreeItem<T = unknown>({
     "--tree-padding": `${item.getItemMeta().level * indent}px`,
   } as React.CSSProperties
 
-  const Comp = asChild ? Slot.Root : "button"
+  const treeClassName = cn(
+    "z-10 ps-(--tree-padding) outline-hidden select-none not-last:pb-0.5 focus:z-20 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+    className
+  )
+
+  const treeDataAttrs = {
+    "data-slot": "tree-item" as const,
+    "data-focus": typeof item.isFocused === "function" ? item.isFocused() || false : undefined,
+    "data-folder": typeof item.isFolder === "function" ? item.isFolder() || false : undefined,
+    "data-selected": typeof item.isSelected === "function" ? item.isSelected() || false : undefined,
+    "data-drag-target": typeof item.isDragTarget === "function" ? item.isDragTarget() || false : undefined,
+    "data-search-match": typeof item.isMatchingSearch === "function" ? item.isMatchingSearch() || false : undefined,
+    "aria-expanded": item.isExpanded(),
+  }
 
   return (
-    <TreeContext.Provider value={{ indent, currentItem: item as any }}>
-      <Comp
-        data-slot="tree-item"
-        style={mergedStyle}
-        className={cn(
-          "z-10 ps-(--tree-padding) outline-hidden select-none not-last:pb-0.5 focus:z-20 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-          className
-        )}
-        data-focus={
-          typeof item.isFocused === "function"
-            ? item.isFocused() || false
-            : undefined
-        }
-        data-folder={
-          typeof item.isFolder === "function"
-            ? item.isFolder() || false
-            : undefined
-        }
-        data-selected={
-          typeof item.isSelected === "function"
-            ? item.isSelected() || false
-            : undefined
-        }
-        data-drag-target={
-          typeof item.isDragTarget === "function"
-            ? item.isDragTarget() || false
-            : undefined
-        }
-        data-search-match={
-          typeof item.isMatchingSearch === "function"
-            ? item.isMatchingSearch() || false
-            : undefined
-        }
-        aria-expanded={item.isExpanded()}
-        {...otherProps}
-      >
-        {children}
-      </Comp>
+    <TreeContext.Provider value={{ indent, currentItem: item as ItemInstance<unknown> }}>
+      {asChild ? (
+        <Slot.Root
+          style={mergedStyle}
+          className={treeClassName}
+          {...treeDataAttrs}
+          {...(otherProps as React.HTMLAttributes<HTMLElement>)}
+        >
+          {children}
+        </Slot.Root>
+      ) : (
+        <button
+          data-slot="tree-item"
+          style={mergedStyle}
+          className={treeClassName}
+          data-focus={
+            typeof item.isFocused === "function"
+              ? item.isFocused() || false
+              : undefined
+          }
+          data-folder={
+            typeof item.isFolder === "function"
+              ? item.isFolder() || false
+              : undefined
+          }
+          data-selected={
+            typeof item.isSelected === "function"
+              ? item.isSelected() || false
+              : undefined
+          }
+          data-drag-target={
+            typeof item.isDragTarget === "function"
+              ? item.isDragTarget() || false
+              : undefined
+          }
+          data-search-match={
+            typeof item.isMatchingSearch === "function"
+              ? item.isMatchingSearch() || false
+              : undefined
+          }
+          aria-expanded={item.isExpanded()}
+          {...otherProps}
+        >
+          {children}
+        </button>
+      )}
     </TreeContext.Provider>
   )
 }
@@ -166,29 +187,4 @@ function TreeItemLabel<T = unknown>({
   )
 }
 
-function TreeDragLine({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const { tree } = useTreeContext()
-
-  if (!tree || typeof (tree as any).getDragLineStyle !== "function") {
-    console.warn(
-      "TreeDragLine: No tree provided via context or tree does not have getDragLineStyle method"
-    )
-    return null
-  }
-
-  return (
-    <div
-      style={(tree as any).getDragLineStyle()}
-      className={cn(
-        "bg-primary before:bg-background before:border-primary absolute z-30 -mt-px h-0.5 w-[unset] before:absolute before:-top-[3px] before:left-0 before:size-2 before:rounded-full before:border-2",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Tree, TreeItem, TreeItemLabel, TreeDragLine }
+export { Tree, TreeItem, TreeItemLabel }
