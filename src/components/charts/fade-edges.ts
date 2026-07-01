@@ -22,7 +22,7 @@ export function resolveFadeSides(fade: FadeEdges): FadeSides {
   return { left: true, right: true, any: true };
 }
 
-export interface FadeGradientStop {
+interface FadeGradientStop {
   offset: string;
   opacity: number;
 }

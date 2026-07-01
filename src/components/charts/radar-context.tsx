@@ -44,12 +44,12 @@ export interface RadarData {
 	values: Record<string, number>;
 }
 
-export interface RadarHoverContextValue {
+interface RadarHoverContextValue {
 	hoveredIndex: number | null;
 	setHoveredIndex: (index: number | null) => void;
 }
 
-export interface RadarStableContextValue {
+interface RadarStableContextValue {
 	// Data
 	data: RadarData[];
 	metrics: RadarMetric[];

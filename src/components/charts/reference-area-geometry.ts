@@ -1,13 +1,13 @@
-export type ReferenceAreaIfOverflow = "hidden" | "visible" | "discard";
+type ReferenceAreaIfOverflow = "hidden" | "visible" | "discard";
 
-export interface ReferenceAreaRect {
+interface ReferenceAreaRect {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-export interface ComputeReferenceAreaRectOptions {
+interface ComputeReferenceAreaRectOptions {
   innerWidth: number;
   innerHeight: number;
   x1?: Date | number;
@@ -76,7 +76,7 @@ function isFullyInsidePlot(
 }
 
 /** Map data bounds to plot pixels for a reference rectangle. */
-export function computeReferenceAreaRect(
+function computeReferenceAreaRect(
   options: ComputeReferenceAreaRectOptions
 ): ReferenceAreaRect | null {
   const {

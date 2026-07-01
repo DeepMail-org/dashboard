@@ -53,12 +53,12 @@ export interface PieArcData {
   value: number;
 }
 
-export interface PieHoverContextValue {
+interface PieHoverContextValue {
   hoveredIndex: number | null;
   setHoveredIndex: (index: number | null) => void;
 }
 
-export interface PieStableContextValue {
+interface PieStableContextValue {
   // Data
   data: PieData[];
   arcs: PieArcData[];

@@ -21,7 +21,7 @@ export function resolveVerticalFadeSides(
   return { top: false, bottom: true, any: true };
 }
 
-export interface IndicatorFadeGradientStop {
+interface IndicatorFadeGradientStop {
   offset: string;
   opacity: number;
 }

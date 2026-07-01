@@ -146,7 +146,7 @@ export function getEchartsTheme() {
 }
 
 // Keep static export for backward compat during SSR — but prefer getEchartsTheme()
-export const DEEPMAIL_ECHARTS_THEME = {
+const DEEPMAIL_ECHARTS_THEME = {
 	backgroundColor: "transparent",
 	textStyle: {
 		fontFamily: "'Inter', system-ui, sans-serif",
