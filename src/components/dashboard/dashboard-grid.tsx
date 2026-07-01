@@ -84,6 +84,7 @@ export function DashboardGrid() {
           resizeConfig={{
             enabled: !isLocked,
           }}
+
           autoSize={false}
           onLayoutChange={handleLayoutChange}
         >

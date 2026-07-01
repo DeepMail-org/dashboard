@@ -32,13 +32,37 @@ export function generateLayoutForAllBreakpoints(
     const w = Math.min(size.default.w, cols);
     const minW = Math.min(size.min.w, cols);
     const maxW = Math.min(size.max.w, cols);
+    const h = size.default.h;
+
+    let targetX = 0;
+    let targetY = 0;
+    let found = false;
+    for (let y = 0; y <= Math.max(0, maxY); y++) {
+      for (let x = 0; x <= cols - w; x++) {
+        const overlaps = items.some(item => 
+          x < item.x + item.w && x + w > item.x &&
+          y < item.y + item.h && y + h > item.y
+        );
+        if (!overlaps) {
+          targetX = x;
+          targetY = y;
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+    if (!found) {
+      targetX = 0;
+      targetY = maxY;
+    }
 
     items.push({
       i: widgetId,
-      x: 0,
-      y: maxY,
+      x: targetX,
+      y: targetY,
       w,
-      h: size.default.h,
+      h,
       minW,
       minH: size.min.h,
       maxW,
