@@ -33,8 +33,8 @@ export default function SeverityBreakdown({ data, isLoading }: WidgetProps) {
   if (isLoading) return <div className="h-full w-full animate-pulse rounded-lg bg-surface" />;
 
   return (
-    <div className="flex h-full">
-      <div className="min-h-0 flex-1 flex items-center justify-center p-2">
+    <div className="flex h-full flex-wrap">
+      <div className="relative min-h-[120px] min-w-[120px] flex-1 p-2 flex items-center justify-center">
         <PieChart data={pieData} innerRadius={55} padAngle={0.05} cornerRadius={4} className="h-full w-full">
           {pieData.map((_, i) => (
             <PieSlice key={i} index={i} />
@@ -42,7 +42,7 @@ export default function SeverityBreakdown({ data, isLoading }: WidgetProps) {
           <PieCenter defaultLabel="TOTAL" className="font-mono" />
         </PieChart>
       </div>
-      <div className="flex w-28 flex-col justify-center gap-1.5 shrink-0 pl-2">
+      <div className="flex min-w-[110px] flex-1 flex-col justify-center gap-1.5 p-2">
         {dashboard.severityBreakdown.map((d) => (
           <div key={d.severity} className="flex items-center gap-2 text-xs">
             <div

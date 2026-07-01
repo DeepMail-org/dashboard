@@ -484,7 +484,7 @@ export function Gauge({
   width: widthProp,
   height: heightProp,
   className,
-  minWidth = 300,
+  minWidth = 0,
   ...props
 }: GaugeProps) {
   if (widthProp != null && heightProp != null) {
@@ -497,7 +497,7 @@ export function Gauge({
 
   return (
     <div
-      className={cn("relative w-full h-full max-w-full flex items-center justify-center", className)}
+      className={cn("relative w-full h-full max-w-full", className)}
       style={{ minWidth }}
     >
       <ParentSize debounceTime={10}>

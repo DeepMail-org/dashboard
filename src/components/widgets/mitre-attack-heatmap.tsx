@@ -40,7 +40,7 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
       xAxis: {
         type: "category" as const,
         data: WEEKS,
-        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
+        axisLabel: { fontSize: 9, color: "#888" },
         axisTick: { show: false },
         axisLine: { show: false },
         splitArea: { show: false },
@@ -48,7 +48,7 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
       yAxis: {
         type: "category" as const,
         data: TACTICS,
-        axisLabel: { fontSize: 9, color: "var(--color-dimmed, #888)" },
+        axisLabel: { fontSize: 9, color: "#888" },
         axisTick: { show: false },
         axisLine: { show: false },
         splitArea: { show: false },
@@ -66,8 +66,8 @@ export default function MitreAttackHeatmap({ isLoading }: WidgetProps) {
         type: "heatmap" as const,
         data,
         label: { show: false },
-        itemStyle: { borderRadius: 3, borderWidth: 2, borderColor: "var(--color-bg, #111)" },
-        emphasis: { itemStyle: { borderColor: "var(--color-fg, #fff)", borderWidth: 1 } },
+        itemStyle: { borderRadius: 3, borderWidth: 2, borderColor: "#131316" },
+        emphasis: { itemStyle: { borderColor: "#fff", borderWidth: 1 } },
       }],
     };
   }, []);

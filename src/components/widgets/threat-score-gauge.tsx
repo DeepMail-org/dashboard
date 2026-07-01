@@ -11,7 +11,7 @@ export default function ThreatScoreGauge({ data, isLoading }: WidgetProps) {
   if (isLoading) return <div className="h-full w-full animate-pulse rounded-lg bg-surface" />;
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
+    <div className="flex h-full w-full min-w-0 min-h-0 items-center justify-center">
       <Gauge
         activeGradient={["#a855f7", "#06b6d4"]}
         centerValue={dashboard.threatScore}

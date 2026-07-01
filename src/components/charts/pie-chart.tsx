@@ -89,11 +89,13 @@ export function PieChart({
     const centerX = width / 2;
     const centerY = height / 2;
 
+    const actualInnerRadius = Math.min(innerRadius, Math.max(0, outerRadius * 0.8));
+
     const contextValue: PieChartContextValue = {
       data,
       arcs,
       outerRadius,
-      innerRadius,
+      innerRadius: actualInnerRadius,
       cornerRadius,
       hoveredIndex,
       setHoveredIndex,
@@ -111,7 +113,7 @@ export function PieChart({
   };
 
   return (
-    <div className={cn("relative flex h-full w-full items-center justify-center", className)}>
+    <div className={cn("relative h-full w-full", className)}>
       {size ? (
         renderContent(size, size)
       ) : (
