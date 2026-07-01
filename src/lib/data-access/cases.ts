@@ -1,5 +1,3 @@
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 export type CaseStatus = "new" | "in_progress" | "pending" | "resolved" | "closed";
 export type CaseSeverity = "critical" | "high" | "medium" | "low";
 
@@ -27,28 +25,9 @@ export const MOCK_CASES: Case[] = [
   { id: "CASE-2026-0880", title: "Spam Campaign — 312 Mailboxes", severity: "low", status: "closed", assignee: "Admin", assigneeInitials: "AD", source: "email", createdAt: "2026-06-10T09:00:00Z", slaDeadlineHours: 72, tags: ["Spam"] },
 ];
 
-export async function getCases(): Promise<Case[]> {
-  await sleep(400);
-  return MOCK_CASES;
-}
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function updateCaseStatus(id: string, status: CaseStatus): Promise<void> {
   await sleep(200);
   void id; void status;
-}
-
-export async function createCase(data: Partial<Case>): Promise<Case> {
-  await sleep(400);
-  return {
-    id: `CASE-2026-${Math.floor(Math.random() * 9999).toString().padStart(4, "0")}`,
-    title: data.title ?? "Untitled Case",
-    severity: data.severity ?? "medium",
-    status: "new",
-    assignee: "Unassigned",
-    assigneeInitials: "?",
-    source: data.source ?? "manual",
-    createdAt: new Date().toISOString(),
-    slaDeadlineHours: 24,
-    tags: data.tags ?? [],
-  };
 }

@@ -49,13 +49,9 @@ export interface SandboxWorker {
 interface SandboxState {
   tasks: SandboxTask[];
   workers: SandboxWorker[];
-  activeTaskId: string | null;
   addTask: (task: Omit<SandboxTask, "id" | "status" | "config" | "createdAt" | "iocCount" | "confidence" | "verdict">) => string;
   updateTaskConfig: (id: string, config: Partial<SandboxConfig>) => void;
   updateTaskStatus: (id: string, event: "LAUNCH" | "COMPLETE" | "FAIL" | "RETRY" | "CANCEL") => void;
-  removeTask: (id: string) => void;
-  setActiveTask: (id: string | null) => void;
-  bulkAction: (ids: string[], action: "delete" | "retry" | "cancel") => void;
 }
 
 const DEFAULT_CONFIG: SandboxConfig = {
@@ -77,7 +73,6 @@ export const useSandboxStore = create<SandboxState>()(
     (set) => ({
       tasks: mockTasks as SandboxTask[],
       workers: INITIAL_WORKERS,
-      activeTaskId: null,
       
       addTask: (taskData) => {
         const id = `sbx-${Math.random().toString(36).substring(2, 9)}`;
@@ -95,7 +90,6 @@ export const useSandboxStore = create<SandboxState>()(
         };
         set((state) => ({
           tasks: [newTask, ...state.tasks],
-          activeTaskId: id,
         }));
         return id;
       },
@@ -147,40 +141,6 @@ export const useSandboxStore = create<SandboxState>()(
           };
         });
       },
-      
-      removeTask: (id) => {
-        set((state) => ({
-          tasks: state.tasks.filter((t) => t.id !== id),
-          activeTaskId: state.activeTaskId === id ? null : state.activeTaskId,
-        }));
-      },
-      
-      setActiveTask: (id) => set({ activeTaskId: id }),
-      
-      bulkAction: (ids, action) => {
-        set((state) => {
-          if (action === "delete") {
-            return {
-              tasks: state.tasks.filter((t) => !ids.includes(t.id)),
-              activeTaskId: ids.includes(state.activeTaskId!) ? null : state.activeTaskId,
-            };
-          }
-          
-          return {
-            tasks: state.tasks.map(t => {
-              if (!ids.includes(t.id)) return t;
-              
-              if (action === "retry" && (t.status === "failed" || t.status === "cancelled")) {
-                return { ...t, status: "pending" };
-              }
-              if (action === "cancel" && (t.status === "pending" || t.status === "running")) {
-                return { ...t, status: "cancelled", completedAt: Date.now() };
-              }
-              return t;
-            })
-          };
-        });
-      }
     }),
     {
       name: "deepmail-sandbox-operations",

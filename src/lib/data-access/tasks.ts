@@ -1,5 +1,3 @@
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 export type TaskStatus = "pending" | "running" | "completed" | "failed";
 export type TaskType = "scan" | "sandbox" | "report" | "sync" | "cleanup" | "train";
 
@@ -26,10 +24,7 @@ export const MOCK_TASKS: Task[] = [
   { id: "task-006", type: "cleanup", name: "Log Archive Rotation", description: "Archive logs older than 90 days to cold storage", status: "failed", progress: 22, createdAt: "2026-06-15T18:00:00Z", completedAt: "2026-06-15T18:04:10Z", triggeredBy: "system", error: "S3 bucket access denied: permission error on arn:aws:s3:::deepmail-archive" },
 ];
 
-export async function getTasks(): Promise<Task[]> {
-  await sleep(400);
-  return MOCK_TASKS;
-}
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function cancelTask(id: string): Promise<void> {
   await sleep(200);
@@ -39,18 +34,4 @@ export async function cancelTask(id: string): Promise<void> {
 export async function retryTask(id: string): Promise<void> {
   await sleep(200);
   void id;
-}
-
-export async function triggerTask(type: TaskType, params: Record<string, string>): Promise<Task> {
-  await sleep(600);
-  return {
-    id: `task-${Date.now()}`,
-    type,
-    name: `Manual ${type} task`,
-    description: "User-triggered task",
-    status: "pending",
-    progress: 0,
-    createdAt: new Date().toISOString(),
-    triggeredBy: "admin",
-  };
 }

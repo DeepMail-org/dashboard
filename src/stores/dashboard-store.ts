@@ -15,11 +15,9 @@ interface DashboardState {
 
   addWidget: (widgetId: string) => void;
   removeWidget: (widgetId: string) => void;
-  updateLayouts: (layouts: BreakpointLayouts) => void;
   updateBreakpointLayout: (breakpoint: Breakpoint, layout: import("@/lib/dashboard/types").LayoutItem[]) => void;
   resetToDefault: () => void;
   syncFromTemplate: () => void;
-  setLocked: (locked: boolean) => void;
   toggleLocked: () => void;
   setMarketplaceOpen: (open: boolean) => void;
   setHydrated: () => void;
@@ -62,17 +60,6 @@ export const useDashboardStore = create<DashboardState>()(
           });
         },
 
-        updateLayouts: (newLayouts: BreakpointLayouts) => {
-          const { activeWidgets } = get();
-          const filtered = {} as BreakpointLayouts;
-          for (const bp of Object.keys(newLayouts) as Breakpoint[]) {
-            filtered[bp] = newLayouts[bp].filter((item) =>
-              activeWidgets.includes(item.i),
-            );
-          }
-          set({ layouts: filtered });
-        },
-
         updateBreakpointLayout: (breakpoint, layout) => {
           const { layouts, activeWidgets } = get();
           set({
@@ -100,7 +87,6 @@ export const useDashboardStore = create<DashboardState>()(
           });
         },
 
-        setLocked: (locked) => set({ isLocked: locked }),
         toggleLocked: () => set((s) => ({ isLocked: !s.isLocked })),
         setMarketplaceOpen: (open) => set({ marketplaceOpen: open }),
         setHydrated: () => set({ isHydrated: true }),
