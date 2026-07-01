@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage, subscribeWithSelector } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/storage";
 import type { Breakpoint, BreakpointLayouts } from "@/lib/dashboard/types";
 import { generateLayoutForAllBreakpoints, removeFromAllBreakpoints } from "@/lib/dashboard/breakpoints";
 import { widgetRegistry } from "@/lib/dashboard/registry";
@@ -93,7 +94,7 @@ export const useDashboardStore = create<DashboardState>()(
       }),
       {
         name: "deepmail_dashboard_v4",
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => safeLocalStorage),
         version: 4,
         partialize: (state) => ({
           activeWidgets: state.activeWidgets,

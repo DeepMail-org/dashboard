@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/storage";
 
 interface AuthState {
   token: string | null;
@@ -18,7 +19,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "deepmail_auth",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => safeLocalStorage),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated();
       },

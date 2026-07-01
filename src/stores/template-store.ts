@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { safeLocalStorage } from "@/lib/storage";
 import type { BreakpointLayouts } from "@/lib/dashboard/types";
 import {
   ADMIN_WIDGETS,
@@ -165,7 +166,7 @@ export const useTemplateStore = create<TemplateState>()(
     }),
     {
       name: "deepmail_template_store_v1",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         activeTemplateId: state.activeTemplateId,
         customTemplates: state.customTemplates,
