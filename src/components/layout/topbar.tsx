@@ -39,7 +39,6 @@ const ROUTE_TITLES: Record<string, string> = {
     "/log-explorer": "Log Explorer",
     "/graph-analysis": "Graph Analysis",
     "/settings": "Settings",
-    "/reports": "Reports",
     "/threat-intel": "Threat Intelligence",
     "/mitre-attack": "MITRE ATT&CK",
     "/vulnerabilities": "Vulnerabilities",

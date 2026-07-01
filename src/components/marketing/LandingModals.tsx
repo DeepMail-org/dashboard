@@ -216,7 +216,7 @@ export function UploadModal({
 	);
 }
 
-export function ContactModal({
+function ContactModal({
 	isOpen,
 	onClose,
 	onToast,

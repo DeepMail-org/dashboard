@@ -107,7 +107,7 @@ function ScheduleConsultButton() {
 			<span className="relative z-10 transition-all duration-500 group-hover:tracking-wider whitespace-nowrap">
 				Schedule a Consult
 			</span>
-			<div className="absolute right-1 top-1 z-20 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-52px)] group-hover:rotate-45">
+			<div className="absolute right-[3px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-51px)] group-hover:rotate-45">
 				<ArrowUpRight size={20} />
 			</div>
 		</Link>

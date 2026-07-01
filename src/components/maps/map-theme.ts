@@ -7,7 +7,7 @@ export const SEVERITY_COLORS: Record<string, string> = {
 	low: "#7c6fcd",
 };
 
-export const SEVERITY_BG: Record<string, string> = {
+const SEVERITY_BG: Record<string, string> = {
 	critical: "oklch(65% 0.2 25 / 0.1)",
 	high: "oklch(70% 0.17 45 / 0.1)",
 	medium: "oklch(75% 0.15 70 / 0.1)",
@@ -62,7 +62,7 @@ export const CARTO_LIGHT_STYLE: StyleSpecification = {
 	],
 };
 
-export const MAPTILER_STYLE = `https://api.maptiler.com/maps/019ed3d3-0a11-7b7d-9ce5-007e1e0f07c5/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY || ""}`;
+const MAPTILER_STYLE = `https://api.maptiler.com/maps/019ed3d3-0a11-7b7d-9ce5-007e1e0f07c5/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY || ""}`;
 
 export type MapStyleId = "carto" | "carto-light" | "maptiler";
 
