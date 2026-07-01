@@ -23,7 +23,7 @@ export interface CustomTemplate {
   updatedAt: string;
 }
 
-export interface BuiltinTemplate {
+interface BuiltinTemplate {
   id: "administrator" | "analyst";
   name: string;
   description: string;

@@ -13,7 +13,7 @@ export interface MitreTactic {
   techniques: MitreTechnique[];
 }
 
-export interface MitreMatrix {
+interface MitreMatrix {
   totalEvents: number;
   maxCount: number;
   tactics: MitreTactic[];

@@ -30,20 +30,20 @@ export interface WidgetSizeConstraints {
   max: { w: number; h: number };
 }
 
-export interface RestDataSource {
+interface RestDataSource {
   type: "rest";
   endpoint: string;
   pollInterval: number;
   staleTime?: number;
 }
 
-export interface WebSocketDataSource {
+interface WebSocketDataSource {
   type: "websocket";
   channel: string;
   initialFetchEndpoint?: string;
 }
 
-export interface StaticDataSource {
+interface StaticDataSource {
   type: "static";
 }
 

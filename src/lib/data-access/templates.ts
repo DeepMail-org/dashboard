@@ -1,6 +1,6 @@
 import type { BreakpointLayouts } from "@/lib/dashboard/types";
 
-export interface DashboardTemplate {
+interface DashboardTemplate {
   id: string;
   name: string;
   description: string;
@@ -12,7 +12,7 @@ export interface DashboardTemplate {
   updatedAt: string;
 }
 
-export interface SaveCustomTemplatePayload {
+interface SaveCustomTemplatePayload {
   id?: string; // if provided, update; else create
   name: string;
   description?: string;

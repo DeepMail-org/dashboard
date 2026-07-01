@@ -1,4 +1,4 @@
-export interface ThreatFeed {
+interface ThreatFeed {
   id: string;
   name: string;
   provider: string;
@@ -8,7 +8,7 @@ export interface ThreatFeed {
   status: "active" | "disabled" | "testing";
 }
 
-export interface IOC {
+interface IOC {
   id: string;
   value: string;
   type: "ip" | "domain" | "hash" | "url" | "email";

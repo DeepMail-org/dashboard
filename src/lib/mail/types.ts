@@ -1,6 +1,6 @@
 export type Severity = "critical" | "high" | "medium" | "clean";
 
-export interface MailAttachment {
+interface MailAttachment {
   id: string;
   name: string;
   size: number;
@@ -12,7 +12,7 @@ export interface MailAttachment {
   };
 }
 
-export interface MailThreat {
+interface MailThreat {
   classification: string;
   confidence: number; // 0-100
   originIp: string;

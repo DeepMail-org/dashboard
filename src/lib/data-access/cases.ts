@@ -1,5 +1,5 @@
 export type CaseStatus = "new" | "in_progress" | "pending" | "resolved" | "closed";
-export type CaseSeverity = "critical" | "high" | "medium" | "low";
+type CaseSeverity = "critical" | "high" | "medium" | "low";
 
 export interface Case {
   id: string;

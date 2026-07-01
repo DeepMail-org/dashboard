@@ -1,4 +1,4 @@
-export type Severity = "critical" | "high" | "medium" | "low";
+type Severity = "critical" | "high" | "medium" | "low";
 
 export interface GeoMapPoint {
   ip: string;

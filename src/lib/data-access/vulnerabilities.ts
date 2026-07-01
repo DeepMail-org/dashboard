@@ -1,7 +1,7 @@
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export type VulnSeverity = "critical" | "high" | "medium" | "low";
-export type VulnStatus = "open" | "in_remediation" | "resolved" | "suppressed";
+type VulnSeverity = "critical" | "high" | "medium" | "low";
+type VulnStatus = "open" | "in_remediation" | "resolved" | "suppressed";
 
 export interface Vulnerability {
   cveId: string;
@@ -80,7 +80,7 @@ export const MOCK_VULNERABILITIES: Vulnerability[] = Array.from({ length: 15 }, 
   }))
 ).flat();
 
-export const MOCK_AFFECTED_HOSTS: AffectedHost[] = [
+const MOCK_AFFECTED_HOSTS: AffectedHost[] = [
   { hostname: "SE-EMO-RDP",    assetCriticality: "critical", remediation: "Update", vulnerableVersion: "5.8.0.22", patchVersion: "5.8.0.24", status: "open", daysOpen: 29 },
   { hostname: "SE-SMO-RDP",    assetCriticality: "critical", remediation: "Update", vulnerableVersion: "5.8.0.22", patchVersion: "5.8.0.24", status: "open", daysOpen: 36 },
   { hostname: "FRUGAL-ANT-DC", assetCriticality: "critical", remediation: "Update", vulnerableVersion: "5.8.0.22", patchVersion: "5.8.0.24", status: "open", daysOpen: 29 },

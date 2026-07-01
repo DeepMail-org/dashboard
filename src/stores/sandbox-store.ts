@@ -34,7 +34,7 @@ export interface SandboxTask {
   confidence?: number;
 }
 
-export interface SandboxWorker {
+interface SandboxWorker {
   id: string;
   name: string;
   status: "healthy" | "busy" | "offline";
