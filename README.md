@@ -219,8 +219,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ### Stargazers
 
-<a href="https://github.com/DeepMail-org/dashboard/stargazers">
-  <img src="https://starchart.cc/DeepMail-org/dashboard.svg?background=dark&axis=left&labels=false" alt="Stargazers">
+<a href="https://www.star-history.com/?repos=deepmail-org%2Fdashboard&type=date&logscale=&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=deepmail-org/dashboard&type=date&theme=dark&logscale&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=deepmail-org/dashboard&type=date&logscale&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=deepmail-org/dashboard&type=date&logscale&legend=top-left" />
+ </picture>
 </a>
 
 ### Connect
