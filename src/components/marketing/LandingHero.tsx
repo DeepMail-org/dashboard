@@ -96,18 +96,17 @@ function ScheduleConsultButton() {
 	return (
 		<Link
 			href="/contact"
-			className="group relative rounded-full h-14 p-1 ps-8 pe-[60px] text-[15px] font-medium text-white overflow-hidden cursor-pointer transition-all duration-500 hover:ps-[60px] hover:pe-8 border border-white/20 inline-flex items-center"
+			className="group relative rounded-full h-[52px] p-1 ps-8 pe-[60px] text-[15px] font-medium text-white overflow-hidden cursor-pointer transition-all duration-500 hover:ps-[60px] hover:pe-8 border border-white/20 inline-flex items-center"
 			style={{
 				background: "rgba(255,255,255,0.06)",
 				backdropFilter: "blur(12px) saturate(1.4)",
-				boxShadow:
-					"inset 0 0 6px 6px rgba(255,255,255,0.12), inset 0 0 2px 2px rgba(255,255,255,0.06), 0 0 12px rgba(255,255,255,0.15)",
+				boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1), 0 0 12px rgba(255,255,255,0.15)",
 			}}
 		>
 			<span className="relative z-10 transition-all duration-500 group-hover:tracking-wider whitespace-nowrap">
 				Schedule a Consult
 			</span>
-			<div className="absolute right-[3px] top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-51px)] group-hover:rotate-45">
+			<div className="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white text-black rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-48px)] group-hover:rotate-45 shadow-sm">
 				<ArrowUpRight size={20} />
 			</div>
 		</Link>

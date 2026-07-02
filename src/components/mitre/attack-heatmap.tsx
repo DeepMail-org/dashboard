@@ -20,10 +20,10 @@ function getHeatStyle(count: number, maxCount: number): React.CSSProperties {
   return { backgroundColor: "rgba(244, 63, 94, 1.0)" };
 }
 
-function getTextStyle(count: number, maxCount: number): string {
+function getTextStyle(count: number, maxCount: number, isSubtext = false): string {
   if (count === 0) return "text-muted";
   const ratio = count / maxCount;
-  if (ratio < 0.6) return "text-danger";
+  if (ratio < 0.6) return isSubtext ? "text-danger" : "text-fg/80 group-hover:text-fg";
   return "text-white";
 }
 
@@ -50,13 +50,13 @@ function TechniqueCell({
       style={hasCount ? getHeatStyle(technique.count, maxCount) : {}}
       title={`${technique.name} (${technique.id}): ${technique.count} events`}
     >
-      <div className="text-[10px] font-medium leading-tight text-fg/80 group-hover:text-fg line-clamp-2">
+      <div className={cn("text-[10px] font-medium leading-tight line-clamp-2", hasCount ? getTextStyle(technique.count, maxCount, false) : "text-fg/80 group-hover:text-fg")}>
         {technique.name}
       </div>
       <div className="mt-1 flex items-center justify-between">
-        <span className="font-mono text-[9px] text-muted">{technique.id}</span>
+        <span className={cn("font-mono text-[9px]", hasCount ? getTextStyle(technique.count, maxCount, true) : "text-muted")}>{technique.id}</span>
         {hasCount && (
-          <span className={cn("font-mono text-[10px] font-semibold", getTextStyle(technique.count, maxCount))}>
+          <span className={cn("font-mono text-[10px] font-semibold", getTextStyle(technique.count, maxCount, true))}>
             {technique.count}
           </span>
         )}
@@ -77,10 +77,17 @@ function TechniqueDetailDrawer({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!technique || technique.count === 0) { setDetections([]); return; }
+    if (!technique || technique.count === 0) { 
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDetections([]); 
+      return; 
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     getTechniqueDetections(technique.id).then((r) => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDetections(r);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
     });
   }, [technique]);

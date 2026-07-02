@@ -135,7 +135,9 @@ export default function SandboxOverviewPage() {
     ];
 
     const volumeData = Array.from({ length: 7 }, (_, i) => ({
+        // eslint-disable-next-line react-hooks/purity
         name: new Date(Date.now() - (6 - i) * 86400000).toLocaleDateString("en-US", { weekday: "short" }),
+        // eslint-disable-next-line react-hooks/purity
         volume: Math.floor(10 + Math.random() * 40)
     }));
 
@@ -433,6 +435,7 @@ export default function SandboxOverviewPage() {
                                                 )}
                                             >
                                                 {i % 2 === 0 ? "+" : "-"}
+                                                {/* eslint-disable-next-line react-hooks/purity */}
                                                 {(Math.random() * 10).toFixed(
                                                     1,
                                                 )}

@@ -44,7 +44,12 @@ function UserAdoptionCard() {
 		{ Icon: Code2, label: "GitHub" },
 	];
 
-	const [contributors, setContributors] = React.useState<any[]>([]);
+	interface Contributor {
+		id: number;
+		login: string;
+		avatar_url: string;
+	}
+	const [contributors, setContributors] = React.useState<Contributor[]>([]);
 
 	React.useEffect(() => {
 		fetch(

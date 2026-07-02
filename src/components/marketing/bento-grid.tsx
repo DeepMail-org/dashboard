@@ -85,6 +85,7 @@ const SkeletonTwo = () => {
 	};
 	const arr = new Array(6).fill(0);
 	const widths = useMemo(
+		// eslint-disable-next-line react-hooks/purity
 		() => arr.map(() => Math.random() * (100 - 40) + 40 + "%"),
 		[]
 	);
@@ -222,14 +223,14 @@ const SkeletonFive = () => {
 				<p className="text-[11px] leading-snug text-white/55">
 					Hash{" "}
 					<span className="font-mono text-white/75">3f7a91b2</span>{" "}
-					matches <span className="text-rose-300 font-semibold">Emotet</span> loader v4 — confidence 94%. Geo: Moldova (AS42926).
+					= <span className="text-rose-300 font-semibold">Emotet</span> (94%).
 				</p>
 			</motion.div>
 			<motion.div
 				variants={variantsSecond}
 				className="ml-auto flex w-3/4 flex-row items-center justify-end gap-2 rounded-full border border-white/8 bg-black/40 p-2"
 			>
-				<p className="text-[11px] text-white/55">Quarantine and escalate to Tier 2.</p>
+				<p className="text-[11px] text-white/55">Quarantine & escalate.</p>
 				<div className="h-6 w-6 shrink-0 rounded-full bg-linear-to-r from-emerald-500 to-cyan-500" />
 			</motion.div>
 		</motion.div>
@@ -241,7 +242,7 @@ const items = [
 		title: "Live IOC tagging",
 		description: (
 			<span className="text-sm">
-				Instant severity verdicts (CRIT, HIGH, MED, SAFE) for all artifacts upon ingestion.
+				Instant severity verdicts on ingestion.
 			</span>
 		),
 		header: <SkeletonOne />,
@@ -252,7 +253,7 @@ const items = [
 		title: "Six-stage pipeline",
 		description: (
 			<span className="text-sm">
-				Real-time WebSocket streaming from PARSE to SCORE. Zero polling required.
+				Real-time WebSocket streaming. Zero polling.
 			</span>
 		),
 		header: <SkeletonTwo />,
@@ -263,7 +264,7 @@ const items = [
 		title: "Threat confidence",
 		description: (
 			<span className="text-sm">
-				Unified 0–100 score based on six MITRE ATT&CK calibrated signals.
+				Unified scoring based on MITRE ATT&CK.
 			</span>
 		),
 		header: <SkeletonThree />,
@@ -274,7 +275,7 @@ const items = [
 		title: "Geo-aware verdicts",
 		description: (
 			<span className="text-sm">
-				Pinpoint IOCs to country and ASN instantly to spot cross-border campaigns.
+				Pinpoint IOC origins to track campaigns.
 			</span>
 		),
 		header: <SkeletonFour />,
@@ -285,7 +286,7 @@ const items = [
 		title: "Analyst-ready context",
 		description: (
 			<span className="text-sm">
-				Clear, actionable insights. One-click export to SIEM or PDF.
+				Clear insights, ready for SIEM export.
 			</span>
 		),
 		header: <SkeletonFive />,

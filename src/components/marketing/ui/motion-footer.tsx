@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // Register ScrollTrigger safely for React
 if (typeof window !== "undefined") {
@@ -212,13 +213,13 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 					});
 				};
 
-				element.addEventListener("mousemove", handleMouseMove as any);
+				element.addEventListener("mousemove", handleMouseMove as EventListener);
 				element.addEventListener("mouseleave", handleMouseLeave);
 
 				return () => {
 					element.removeEventListener(
 						"mousemove",
-						handleMouseMove as any,
+						handleMouseMove as EventListener,
 					);
 					element.removeEventListener("mouseleave", handleMouseLeave);
 				};
@@ -230,9 +231,9 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 		return (
 			<Component
 				ref={(node: HTMLElement) => {
-					(localRef as any).current = node;
+					(localRef as React.MutableRefObject<HTMLElement | null>).current = node;
 					if (typeof forwardedRef === "function") forwardedRef(node);
-					else if (forwardedRef) (forwardedRef as any).current = node;
+					else if (forwardedRef) (forwardedRef as React.MutableRefObject<HTMLElement | null>).current = node;
 				}}
 				className={cn("cursor-pointer", className)}
 				{...props}
@@ -362,7 +363,7 @@ export function CinematicFooter() {
 					>
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6 pb-10 border-b border-foreground/6">
 							<div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-								<a
+								<Link
 									href="/"
 									className="flex items-center gap-2.5 w-fit group"
 								>
@@ -374,7 +375,7 @@ export function CinematicFooter() {
 									<span className="font-display font-semibold text-[16px] text-foreground/90">
 										DeepMail
 									</span>
-								</a>
+								</Link>
 								<p className="text-xs text-muted-foreground leading-relaxed max-w-40">
 									Advance email threat intelligence.
 									<br />© {new Date().getFullYear()} DeepMail.

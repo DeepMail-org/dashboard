@@ -103,7 +103,7 @@ function TreeItem<T = unknown>({
     <TreeContext.Provider value={{ indent, currentItem: item as ItemInstance<unknown> }}>
       {asChild ? (
         <Slot.Root
-          style={mergedStyle}
+          style={mergedStyle as any}
           className={treeClassName}
           {...treeDataAttrs}
           {...(otherProps as React.HTMLAttributes<HTMLElement>)}
@@ -113,7 +113,7 @@ function TreeItem<T = unknown>({
       ) : (
         <button
           data-slot="tree-item"
-          style={mergedStyle}
+          style={mergedStyle as any}
           className={treeClassName}
           data-focus={
             typeof item.isFocused === "function"

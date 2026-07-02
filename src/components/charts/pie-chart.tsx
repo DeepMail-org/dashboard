@@ -166,7 +166,7 @@ export function PieSlice({
     <motion.path
       d={path}
       fill={resolvedFill}
-      initial={animate ? { opacity: 0, scale: 0.8 } : false}
+      initial={false}
       animate={{ 
         opacity: isOtherHovered ? 0.4 : 1, 
         scale: isHovered && hoverEffect === "grow" ? 1.05 : 1,

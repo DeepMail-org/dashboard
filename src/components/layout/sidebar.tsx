@@ -151,20 +151,26 @@ function NavTree({
 	pathname: string;
 	collapsed: boolean;
 }) {
-	const tree = useTree<any>({
+	const tree = useTree<NavItem>({
 		features: [syncDataLoaderFeature],
 		rootItemId: "root",
 		getItemName: (item) => item.getItemData().label,
 		isItemFolder: (item) =>
-			!!item.getItemData().children && item.getItemData().children.length > 0,
+			!!(item.getItemData() as NavItem).children &&
+			((item.getItemData() as NavItem).children?.length ?? 0) > 0,
 		dataLoader: {
 			getItem: (itemId) => {
-				if (itemId === "root") return { label: "Root", href: "root" };
+				if (itemId === "root")
+					return {
+						label: "Root",
+						href: "root",
+						icon: () => null,
+					} as unknown as NavItem;
 				for (const item of items) {
 					if (item.href === itemId) return item;
 					if (item.children) {
 						for (const child of item.children) {
-							if (child.href === itemId) return child;
+							if (child.href === itemId) return child as NavItem;
 						}
 					}
 				}
@@ -182,7 +188,11 @@ function NavTree({
 	});
 
 	return (
-		<Tree tree={tree} indent={collapsed ? 0 : 20} className="w-full space-y-0.5">
+		<Tree
+			tree={tree}
+			indent={collapsed ? 0 : 20}
+			className="w-full space-y-0.5"
+		>
 			{tree.getItems().map((itemInstance) => {
 				const navItem = itemInstance.getItemData();
 				if (navItem.href === "root") return null;
@@ -221,7 +231,6 @@ function NavTree({
 										"justify-center !px-0 [&>.tree-item-chevron]:hidden",
 								)}
 							>
-
 								<Icon
 									className={cn(
 										"shrink-0",

@@ -1,7 +1,5 @@
 "use client";
 
-import { PageWrapper } from "@/components/layout/page-wrapper";
-
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -96,6 +94,7 @@ function MapInner({
 				duration: 1500,
 				essential: true,
 			});
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setSelectedPopup({ coords: [p.lon, p.lat], data: p });
 		}
 	}, [selectedIp, isLoaded, map, points]);
@@ -367,6 +366,7 @@ export default function MapPageContent() {
 
 	// Sync map style with theme
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setMapStyle(getDefaultMapStyle(resolvedTheme));
 	}, [resolvedTheme]);
 
@@ -437,7 +437,9 @@ export default function MapPageContent() {
 							activeStyle={mapStyle}
 							onStyleChange={setMapStyle}
 							clustersEnabled={clustersEnabled}
-							onToggleClusters={() => setClustersEnabled((v) => !v)}
+							onToggleClusters={() =>
+								setClustersEnabled((v) => !v)
+							}
 							view3d={view3d}
 							onToggle3d={() => setView3d((v) => !v)}
 							onReset={handleReset}
@@ -488,7 +490,10 @@ export default function MapPageContent() {
 										{
 											label: "Total Threats",
 											value: points
-												.reduce((s, p) => s + p.count, 0)
+												.reduce(
+													(s, p) => s + p.count,
+													0,
+												)
 												.toLocaleString(),
 											color: "text-fg",
 										},
@@ -497,7 +502,8 @@ export default function MapPageContent() {
 											value: points
 												.filter(
 													(p) =>
-														p.severity === "critical",
+														p.severity ===
+														"critical",
 												)
 												.length.toString(),
 											color: "text-danger",

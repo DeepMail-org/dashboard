@@ -41,7 +41,7 @@ function Badge({
         data-slot="badge"
         data-variant={variant}
         className={classNames}
-        {...(props as any)}
+        {...(props as Record<string, unknown>)}
       />
     )
   }

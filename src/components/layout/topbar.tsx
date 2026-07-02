@@ -306,17 +306,17 @@ export function Topbar() {
                     <div className="hidden md:flex">
                         <button
                             onClick={() => setCommandOpen(true)}
-                            className="relative flex h-10 w-full min-w-[300px] max-w-[400px] items-center gap-3 rounded-full border border-border bg-surface-2 pl-10 pr-3 text-sm text-dimmed transition-colors hover:border-accent/40 hover:text-muted shadow-sm"
+                            className="relative flex h-10 w-full min-w-[300px] max-w-[400px] items-center gap-3 rounded-full border border-border bg-surface-2 pl-4 pr-3 text-sm text-dimmed transition-colors hover:border-accent/40 hover:text-muted shadow-sm"
                         >
-                            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                            <Search className="h-4 w-4 text-muted" />
+                            <kbd className="shrink-0 rounded-md border border-border bg-fg/5 px-1.5 py-0.5 text-[11px] font-medium text-muted">
+                                ⌘K
+                            </kbd>
                             <span className="truncate">Search for anything...</span>
                             <span className="ml-auto flex shrink-0 items-center gap-1">
                                 <Zap className="h-3 w-3 text-accent" />
                                 <span className="text-xs font-medium text-accent">AI</span>
                             </span>
-                            <kbd className="ml-2 shrink-0 rounded-md border border-border bg-fg/5 px-1.5 py-0.5 text-[11px] font-medium text-muted">
-                                ⌘K
-                            </kbd>
                         </button>
                     </div>
                 </div>

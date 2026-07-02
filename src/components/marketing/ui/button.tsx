@@ -46,7 +46,7 @@ function Button({
 
   if (asChild) {
     return (
-      <Slot.Root className={classNames} {...(props as any)} />
+      <Slot.Root className={classNames} {...(props as Record<string, unknown>)} />
     )
   }
 

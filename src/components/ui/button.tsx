@@ -57,7 +57,7 @@ function Button({
         data-variant={variant}
         data-size={size}
         className={classNames}
-        {...(props as any)}
+        {...(props as Record<string, unknown>)}
       />
     )
   }

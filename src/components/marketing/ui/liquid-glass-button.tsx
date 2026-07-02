@@ -50,7 +50,7 @@ function Button({
 
   if (asChild) {
     return (
-      <Slot.Root className={classNames} {...(props as any)} />
+      <Slot.Root className={classNames} {...(props as Record<string, unknown>)} />
     )
   }
 
@@ -136,7 +136,7 @@ function LiquidButton({
       <Slot.Root
         data-slot="button"
         className={finalClassName}
-        {...(props as any)}
+        {...(props as Record<string, unknown>)}
       >
         {glassInner}
       </Slot.Root>
@@ -334,6 +334,7 @@ const MetalButton = React.forwardRef<
   const [isTouchDevice, setIsTouchDevice] = React.useState(false);
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 

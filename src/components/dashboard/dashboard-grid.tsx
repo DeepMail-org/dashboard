@@ -86,6 +86,8 @@ export function DashboardGrid() {
           }}
 
           autoSize={false}
+          // @ts-expect-error compactType exists but is not typed
+          compactType="horizontal"
           onLayoutChange={handleLayoutChange}
         >
           {children}
