@@ -26,13 +26,6 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js">
-  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React">
-  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss" alt="Tailwind">
-</p>
-
 ---
 
 DeepMail unifies threat detection, sandboxing, MITRE ATT&CK mapping, and incident response into a single browser-based dashboard -- eliminating the need for fragmented security tools.
@@ -168,29 +161,6 @@ src/
 └── public/                 # Static assets (logos, favicons)
 ```
 
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push to GitHub
-2. Import on [vercel.com/new](https://vercel.com/new)
-3. Set environment variables
-4. Deploy
-
-### Docker
-
-```bash
-docker build -t deepmail-dashboard .
-docker run -p 3000:3000 deepmail-dashboard
-```
-
-### Environment Variables
-
-| Variable              | Required | Description                                                    |
-| --------------------- | -------- | -------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL` | Yes      | Backend REST API URL (default: `http://localhost:8000/api/v1`) |
-| `NEXT_PUBLIC_WS_URL`  | Yes      | Backend WebSocket URL (default: `ws://localhost:8000/ws`)      |
-
 ## Contributing
 
 Contributions are welcome. Please follow these steps:
@@ -214,7 +184,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ### Contributors
 
 <a href="https://github.com/DeepMail-org/dashboard/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=DeepMail-org/dashboard" />
+  <img src="https://contrib.rocks/image?repo=DeepMail-org/dashboard" width="150" />
 </a>
 
 ### Stargazers
