@@ -9,20 +9,20 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/DeepMail-org/deepmail-dashboard/blob/main/LICENSE">
+  <a href="https://github.com/DeepMail-org/dashboard/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   </a>
-  <a href="https://github.com/DeepMail-org/deepmail-dashboard/stargazers">
-    <img src="https://img.shields.io/github/stars/DeepMail-org/deepmail-dashboard?style=social" alt="Stars">
+  <a href="https://github.com/DeepMail-org/dashboard/stargazers">
+    <img src="https://img.shields.io/github/stars/DeepMail-org/dashboard?style=social" alt="Stars">
   </a>
-  <a href="https://github.com/DeepMail-org/deepmail-dashboard/network/members">
-    <img src="https://img.shields.io/github/forks/DeepMail-org/deepmail-dashboard?style=social" alt="Forks">
+  <a href="https://github.com/DeepMail-org/dashboard/network/members">
+    <img src="https://img.shields.io/github/forks/DeepMail-org/dashboard?style=social" alt="Forks">
   </a>
-  <a href="https://github.com/DeepMail-org/deepmail-dashboard/issues">
-    <img src="https://img.shields.io/github/issues/DeepMail-org/deepmail-dashboard" alt="Issues">
+  <a href="https://github.com/DeepMail-org/dashboard/issues">
+    <img src="https://img.shields.io/github/issues/DeepMail-org/dashboard" alt="Issues">
   </a>
-  <a href="https://github.com/DeepMail-org/deepmail-dashboard/commits/main">
-    <img src="https://img.shields.io/github/last-commit/DeepMail-org/deepmail-dashboard" alt="Last Commit">
+  <a href="https://github.com/DeepMail-org/dashboard/commits/main">
+    <img src="https://img.shields.io/github/last-commit/DeepMail-org/dashboard" alt="Last Commit">
   </a>
 </p>
 
@@ -118,7 +118,7 @@ DeepMail unifies threat detection, sandboxing, MITRE ATT&CK mapping, and inciden
 
 ```bash
 # Clone the repository
-git clone https://github.com/DeepMail-org/deepmail-dashboard.git
+git clone https://github.com/DeepMail-org/dashboard.git
 cd deepmail-dashboard
 
 # Install dependencies
@@ -213,14 +213,14 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ### Contributors
 
-<a href="https://github.com/DeepMail-org/deepmail-dashboard/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=DeepMail-org/deepmail-dashboard" />
+<a href="https://github.com/DeepMail-org/dashboard/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=DeepMail-org/dashboard" />
 </a>
 
 ### Stargazers
 
-<a href="https://github.com/DeepMail-org/deepmail-dashboard/stargazers">
-  <img src="https://starchart.cc/DeepMail-org/deepmail-dashboard.svg?background=dark&axis=left&labels=false" alt="Stargazers">
+<a href="https://github.com/DeepMail-org/dashboard/stargazers">
+  <img src="https://starchart.cc/DeepMail-org/dashboard.svg?background=dark&axis=left&labels=false" alt="Stargazers">
 </a>
 
 ### Connect
