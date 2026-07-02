@@ -134,7 +134,11 @@ coverage/
 # -----------------------------------------------------------------------------
 # Public assets (default Next SVGs, regenerate if needed)
 # -----------------------------------------------------------------------------
-public/
+public/file.svg
+public/globe.svg
+public/next.svg
+public/vercel.svg
+public/window.svg
 
 # -----------------------------------------------------------------------------
 # AI/Agent tooling files

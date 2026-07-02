@@ -1,334 +1,238 @@
-# DeepMail Dashboard
+<p align="center">
+  <img src="public/logo.svg" alt="DeepMail" width="80">
+</p>
 
-The frontend application for the [DeepMail](../README.md) email threat intelligence platform. Built with Next.js 16, React 19, and TypeScript — provides real-time threat monitoring, analysis dashboards, and security operations tooling.
+<h1 align="center">DeepMail Dashboard</h1>
 
-> **Architecture Context:** This dashboard communicates with the DeepMail backend services via REST (`http://localhost:8000/api/v1`) and WebSocket (`ws://localhost:8000/ws`). All backend services (auth, parser, header, geo, intel, ioc, scoring, graph, report, billing, notify) run on the internal network behind `deepmail-gateway`. See the [root README](../README.md) for the full system architecture.
+<p align="center">
+  Open-source email threat intelligence platform with a customizable SOC dashboard
+</p>
+
+<p align="center">
+  <a href="https://github.com/DeepMail-org/deepmail-dashboard/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+  </a>
+  <a href="https://github.com/DeepMail-org/deepmail-dashboard/stargazers">
+    <img src="https://img.shields.io/github/stars/DeepMail-org/deepmail-dashboard?style=social" alt="Stars">
+  </a>
+  <a href="https://github.com/DeepMail-org/deepmail-dashboard/network/members">
+    <img src="https://img.shields.io/github/forks/DeepMail-org/deepmail-dashboard?style=social" alt="Forks">
+  </a>
+  <a href="https://github.com/DeepMail-org/deepmail-dashboard/issues">
+    <img src="https://img.shields.io/github/issues/DeepMail-org/deepmail-dashboard" alt="Issues">
+  </a>
+  <a href="https://github.com/DeepMail-org/deepmail-dashboard/commits/main">
+    <img src="https://img.shields.io/github/last-commit/DeepMail-org/deepmail-dashboard" alt="Last Commit">
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss" alt="Tailwind">
+</p>
 
 ---
 
-## Tech Stack
+DeepMail unifies threat detection, sandboxing, MITRE ATT&CK mapping, and incident response into a single browser-based dashboard -- eliminating the need for fragmented security tools.
 
-| Layer              | Technology                                |
-| ------------------ | ----------------------------------------- |
-| Framework          | Next.js 16.2 (App Router, React 19)       |
-| Language           | TypeScript 5.9 (strict mode)              |
-| Styling            | Tailwind CSS v4, PostCSS                  |
-| State Management   | Zustand 5 (persisted stores)              |
-| Server State       | TanStack React Query 5                    |
-| Charts             | ECharts 6, Recharts 3                     |
-| Data Grid          | AG Grid 35, TanStack Table 8              |
-| Grid Layout        | react-grid-layout (drag/resize widgets)   |
-| Icons              | Lucide, Tabler, Carbon, React Icons       |
-| Animation          | Framer Motion / Motion 12, GSAP           |
-| 3D / Globe         | Three.js, cobe, deck.gl                   |
-| Maps               | Leaflet, MapLibre GL                      |
-| Forms / Input      | Radix UI, cmdk, input-otp                 |
-| Notifications      | Sonner                                    |
-| Validation         | Zod                                       |
-| Package Manager    | Bun                                       |
+## Screenshots
 
----
+<table>
+  <tr>
+    <td align="center"><strong>Main Dashboard</strong></td>
+    <td align="center"><strong>Email Inbox</strong></td>
+    <td align="center"><strong>Geo Threat Map</strong></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/Dashboard.png" alt="Dashboard" width="100%"></td>
+    <td><img src="screenshots/Mail-Inbox.png" alt="Email Inbox" width="100%"></td>
+    <td><img src="screenshots/Threat-map.png" alt="Threat Map" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Sandbox Queue</strong></td>
+    <td align="center"><strong>Cases Kanban</strong></td>
+    <td align="center"><strong>Landing Page</strong></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/Sandbox.png" alt="Sandbox" width="100%"></td>
+    <td><img src="screenshots/Cases-Kanban.png" alt="Cases Kanban" width="100%"></td>
+    <td><img src="screenshots/Landing.png" alt="Landing Page" width="100%"></td>
+  </tr>
+</table>
 
-## Getting Started
+## Features
+
+### Threat Detection and Analysis
+
+- Real-time threat monitoring with live WebSocket updates
+- Severity breakdown with donut charts
+- Threat volume timeline with grouped bar charts
+- Top alert categories and malicious senders tracking
+
+### Intelligence and Investigation
+
+- Geo threat map with MapLibre GL clustering and arc visualization
+- MITRE ATT&CK heatmap mapping detections to techniques
+- Active IOCs (Indicators of Compromise) tracking
+- n8n-style workflow graphs for investigation pipelines
+
+### Email Client
+
+- 3-panel resizable email client (sidebar, mail list, mail detail)
+- Real-time WebSocket updates for new emails
+- Keyboard shortcuts for power users
+- Compose modal with rich text editing
+
+### Sandbox Analysis
+
+- XState-driven task lifecycle (PENDING, RUNNING, COMPLETED, FAILED)
+- File analysis with progress bars and verdict indicators
+- Worker node infrastructure monitoring
+- Integration with VirusTotal, GreyNoise
+
+### Dashboard Customization
+
+- 22+ widgets across 5 categories (Core, Intelligence, Operational, Sandbox, Platform)
+- Drag-and-drop grid layout with react-grid-layout
+- Role-based templates (Administrator, Analyst)
+- Persistent layouts via localStorage
+- Widget marketplace for extensibility
+
+### Security and Authentication
+
+- JWT-based authentication with OTP verification
+- Role-based access control
+- API key management
+- Security settings (2FA, session management)
+
+## Quick Start
 
 ### Prerequisites
 
-- **Node.js** 18+ (recommended 20 LTS)
-- **Bun** (package manager) — `curl -fsSL https://bun.sh/install | bash`
-- **Backend running** — see [root README Quick Start](../README.md#quick-start)
+- [Bun](https://bun.sh/) (package manager)
+- Backend services running (see [root README](../README.md#quick-start))
 
-### 1. Install dependencies
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/DeepMail-org/deepmail-dashboard.git
 cd deepmail-dashboard
+
+# Install dependencies
 bun install
-```
 
-### 2. Configure environment
+# Configure environment
+cp .env.example .env.local
+# Edit .env.local with your backend URLs
 
-Create `.env.local`:
-
-```bash
-# Backend API (required)
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-
-# WebSocket endpoint (required for real-time widgets)
-NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
-```
-
-### 3. Start development server
-
-```bash
+# Start development server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
-### 4. Build for production
+## Tech Stack
 
-```bash
-bun run build
-bun start
-```
-
----
+| Category         | Technology                           |
+| ---------------- | ------------------------------------ |
+| Framework        | Next.js 16, React 19, TypeScript 5.9 |
+| Styling          | Tailwind CSS v4                      |
+| State Management | Zustand 5 (persisted stores)         |
+| Server State     | TanStack React Query 5               |
+| Charts           | ECharts 6, Recharts 3                |
+| Grid Layout      | react-grid-layout                    |
+| Maps             | MapLibre GL                          |
+| 3D / Globe       | Three.js, cobe                       |
+| Animation        | Framer Motion, GSAP                  |
+| UI Primitives    | Radix UI, shadcn/ui                  |
+| Package Manager  | Bun                                  |
 
 ## Project Structure
 
 ```
-deepmail-dashboard/
-├── src/
-│   ├── app/                          # Next.js App Router routes
-│   │   ├── layout.tsx                # Root layout (fonts, providers)
-│   │   ├── globals.css               # Global styles, Tailwind theme
-│   │   ├── (marketing)/              # Public pages (landing, auth, payments)
-│   │   │   ├── page.tsx              # Landing page
-│   │   │   ├── login/page.tsx
-│   │   │   ├── signup/page.tsx
-│   │   │   ├── verify/page.tsx
-│   │   │   ├── contact/page.tsx
-│   │   │   └── payments/page.tsx
-│   │   └── (dashboard)/              # Authenticated app pages
-│   │       ├── layout.tsx            # Dashboard shell (auth gate, sidebar)
-│   │       ├── dashboard/page.tsx    # Main widget dashboard
-│   │       ├── mail-inbox/page.tsx
-│   │       ├── detections/page.tsx
-│   │       ├── cases/page.tsx
-│   │       ├── cases/board/page.tsx
-│   │       ├── sandbox/page.tsx
-│   │       ├── log-explorer/page.tsx
-│   │       ├── threat-intel/page.tsx
-│   │       ├── graph-analysis/page.tsx
-│   │       ├── reports/page.tsx
-│   │       ├── marketplace/page.tsx
-│   │       ├── settings/page.tsx
-│   │       └── billing/page.tsx
-│   │
-│   ├── components/
-│   │   ├── layout/                   # App shell, sidebar, topbar, mobile nav
-│   │   ├── dashboard/                # Widget grid, drag/resize, marketplace, command palette
-│   │   ├── widgets/                  # Individual widget components (22 widgets)
-│   │   ├── ui/                       # Reusable UI primitives (shadcn/ui-based)
-│   │   ├── charts/                   # ECharts wrapper, theme config
-│   │   ├── tables/                   # AG Grid theme
-│   │   ├── marketing/                # Landing page sections
-│   │   └── providers/                # React Query, Tooltip, Toast providers
-│   │
-│   ├── stores/                       # Zustand stores
-│   │   ├── auth-store.ts             # JWT token persistence
-│   │   ├── dashboard-store.ts        # Widget layout, active widgets, lock state
-│   │   └── layout-store.ts           # Sidebar collapse, nav group expansion
-│   │
-│   ├── hooks/                        # Custom React hooks
-│   │   ├── use-widget-query.ts       # REST/WS data fetching for widgets
-│   │   ├── use-ws-subscription.ts    # WebSocket channel subscription
-│   │   ├── use-mounted.ts            # SSR-safe mount detection
-│   │   ├── use-container-size.ts     # Container width/height tracking
-│   │   └── use-breakpoint.ts         # Responsive breakpoint detection
-│   │
-│   ├── lib/                          # Utilities and core logic
-│   │   ├── api/                      # API client, endpoints, type definitions
-│   │   │   ├── client.ts             # fetch wrapper with auth, error handling
-│   │   │   ├── endpoints.ts          # Endpoint constants
-│   │   │   └── types.ts              # API response types
-│   │   ├── ws/                       # WebSocket manager
-│   │   │   ├── ws-manager.ts         # Singleton WS connection with reconnect
-│   │   │   └── types.ts              # WS message types
-│   │   ├── dashboard/                # Dashboard grid system
-│   │   │   ├── registry.ts           # Widget registry (register, lookup, categories)
-│   │   │   ├── types.ts              # Widget definitions, layout types
-│   │   │   ├── breakpoints.ts        # Responsive breakpoints, layout generation
-│   │   │   └── presets.ts            # Default widget layout configs
-│   │   ├── graph/                    # Neo4j client (for graph analysis)
-│   │   ├── demo-data.ts              # Fallback demo data for widgets
-│   │   └── utils.ts                  # cn() helper, general utilities
-│   │
-│   └── ...
-│
-├── public/                           # Static assets
-├── components.json                   # shadcn/ui config
-├── next.config.ts                    # Next.js config (security headers, image patterns)
-├── tsconfig.json                     # TypeScript config (strict, path aliases)
-├── tailwind.config.ts                # Tailwind theme tokens
-└── package.json
+src/
+├── app/                    # Next.js App Router routes
+│   ├── (marketing)/        # Public pages (landing, auth, payments)
+│   └── (dashboard)/        # Authenticated app pages
+├── components/
+│   ├── layout/             # App shell, sidebar, topbar
+│   ├── dashboard/          # Widget grid, marketplace, command palette
+│   ├── widgets/            # 22+ widget components
+│   └── ui/                 # Reusable UI primitives (shadcn/ui)
+├── stores/                 # Zustand stores (auth, dashboard, mail, etc.)
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utilities, API client, WebSocket manager
+└── public/                 # Static assets (logos, favicons)
 ```
-
----
-
-## Dashboard Architecture
-
-### Widget System
-
-The dashboard is built around a **widget registry pattern**. Each widget is a self-contained component registered with metadata:
-
-```typescript
-widgetRegistry.register({
-  id: "threat-score",
-  name: "Threat Score Gauge",
-  icon: "ShieldCheck",
-  category: "core",
-  size: { default: { w: 3, h: 2 }, min: { w: 2, h: 2 }, max: { w: 6, h: 4 } },
-  dataSource: { type: "rest", endpoint: "/dashboard", pollInterval: 60_000 },
-  loader: () => import("@/components/widgets/threat-score-gauge"),
-  isDefault: true,
-});
-```
-
-Widgets are **lazy-loaded** via dynamic imports and rendered inside a **responsive grid** (react-grid-layout) that supports drag-to-rearrange and resize.
-
-### Data Flow
-
-```
-Widget Component
-  └─ useWidgetQuery(widgetId, dataSource)
-       ├─ REST → TanStack Query (polling)
-       └─ WebSocket → WsManager → QueryClient cache update
-```
-
-- **REST widgets** poll their endpoint at configured intervals
-- **WebSocket widgets** receive real-time pushes and update the React Query cache
-- The `WsManager` handles connection lifecycle, heartbeat, exponential backoff reconnect, and channel subscriptions
-
-### State Management
-
-| Store              | Purpose                                      | Persistence |
-| ------------------ | -------------------------------------------- | ----------- |
-| `auth-store`       | JWT token, hydration state                   | localStorage |
-| `dashboard-store`  | Active widgets, grid layouts, lock state     | localStorage (v4) |
-| `layout-store`     | Sidebar collapsed, nav group expansion       | — |
-
-### Available Widgets
-
-| Widget | Category | Data Source | Description |
-|--------|----------|-------------|-------------|
-| Threat Score Gauge | Core | REST (poll 60s) | Aggregate threat detection score |
-| Email Volume Timeline | Core | REST (poll 30s) | Inbound email volume over time |
-| Severity Breakdown | Core | REST (poll 60s) | Threat severity distribution (donut) |
-| Recent Threats | Core | WebSocket | Live threat feed with severity indicators |
-| Pipeline Status | Core | WebSocket | Real-time analysis pipeline health |
-| Threat Volume Timeline | Core | REST (poll 60s) | Grouped bar chart of threat volume |
-| Top Alert Categories | Core | REST (poll 60s) | Horizontal bar breakdown by volume |
-| Geo Threat Map | Intelligence | WebSocket | Geographic threat origin visualization |
-| Threat Origins | Intelligence | REST (poll 60s) | Top source countries by volume |
-| Attack Vector Radar | Intelligence | REST (poll 60s) | Attack type distribution radar |
-| Top Malicious Senders | Intelligence | REST (poll 60s) | Most frequent malicious senders |
-| Active IOCs | Intelligence | REST (poll 60s) | Top indicators of compromise |
-| Threat Intel Feed | Intelligence | WebSocket | Aggregated threat intelligence feed |
-| MITRE ATT&CK Heatmap | Intelligence | REST (poll 5min) | MITRE framework coverage heatmap |
-| Threat Radar | Intelligence | WebSocket | Live animated radar by severity |
-| DKIM/SPF/DMARC Health | Operational | REST (poll 2min) | Email authentication protocol status |
-| Incident Report | Operational | REST (poll 60s) | Latest critical incident timeline |
-| Sandbox Queue | Sandbox | WebSocket | File analysis job queue status |
-| Infrastructure Health | Platform | REST (poll 30s) | Service health and uptime monitoring |
-| Billing Usage | Platform | REST (poll 5min) | Plan usage and quota overview |
-| Platform Stats | Platform | REST (poll 60s) | Key performance metrics at a glance |
-| Processing Metrics | Platform | REST (poll 30s) | API usage and processing volume |
-
-### Widget Categories
-
-| Category | Widgets | Description |
-|----------|---------|-------------|
-| **Core** | 7 | Essential threat overview and pipeline monitoring |
-| **Intelligence** | 6 | Threat analysis, geo-mapping, IOCs, intel feeds |
-| **Operational** | 2 | Email auth health, incident tracking |
-| **Sandbox** | 1 | File/URL analysis job monitoring |
-| **Platform** | 4 | System health, billing, processing metrics |
-
----
-
-## Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Marketing landing page |
-| `/login` | Email + OTP authentication |
-| `/signup` | Account registration |
-| `/verify` | OTP verification |
-| `/dashboard` | Main widget dashboard (customizable grid) |
-| `/mail-inbox` | Email inbox with analysis status |
-| `/cases` | Security case management |
-| `/cases/board` | Kanban board view for cases |
-| `/detections` | Threat detection alerts |
-| `/sandbox` | Sandbox analysis queue and results |
-| `/log-explorer` | Log search and exploration |
-| `/threat-intel` | Threat intelligence feeds |
-| `/graph-analysis` | Neo4j relationship graph visualization |
-| `/reports` | Generated threat reports |
-| `/marketplace` | Widget marketplace (add/remove widgets) |
-| `/settings` | User and tenant settings |
-| `/billing` | Usage and billing management |
-
----
-
-## Development Commands
-
-```bash
-# Development
-bun dev                  # Start dev server with HMR
-
-# Build & Deploy
-bun run build            # Production build
-bun start                # Start production server
-
-# Code Quality
-bun run lint             # ESLint (core-web-vitals + typescript)
-bunx tsc --noEmit        # TypeScript type checking
-```
-
----
-
-## Environment Variables
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `NEXT_PUBLIC_API_URL` | Yes | `http://localhost:8000/api/v1` | Backend REST API base URL |
-| `NEXT_PUBLIC_WS_URL` | Yes | `ws://localhost:8000/ws` | Backend WebSocket endpoint |
-
-> **Note:** Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never commit `.env.local`.
-
----
 
 ## Deployment
 
 ### Vercel (Recommended)
 
-1. Push to GitHub/GitLab
-2. Import repository on [vercel.com/new](https://vercel.com/new)
-3. Set environment variables in the Vercel dashboard
+1. Push to GitHub
+2. Import on [vercel.com/new](https://vercel.com/new)
+3. Set environment variables
 4. Deploy
 
 ### Docker
 
-```dockerfile
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package.json bun.lock ./
-RUN corepack enable && corepack prepare bun@latest --activate
-RUN bun install --frozen-lockfile
-COPY . .
-RUN bun run build
-
-FROM node:20-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-EXPOSE 3000
-CMD ["node", "server.js"]
+```bash
+docker build -t deepmail-dashboard .
+docker run -p 3000:3000 deepmail-dashboard
 ```
 
-### Self-Hosted
+### Environment Variables
 
-Ensure the backend is reachable at the configured `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL`.
-
----
+| Variable              | Required | Description                                                    |
+| --------------------- | -------- | -------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL` | Yes      | Backend REST API URL (default: `http://localhost:8000/api/v1`) |
+| `NEXT_PUBLIC_WS_URL`  | Yes      | Backend WebSocket URL (default: `ws://localhost:8000/ws`)      |
 
 ## Contributing
 
-1. Follow the existing code style (ESLint + TypeScript strict)
-2. Components go in `src/components/` organized by domain
-3. New widgets must be registered in `src/lib/dashboard/registry.ts`
-4. Use the `@/` path alias for imports from `src/`
-5. Test your changes against the backend — run the full stack locally
+Contributions are welcome. Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Follow the existing code style (ESLint + TypeScript strict mode).
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
+
+## Community
+
+### Contributors
+
+<a href="https://github.com/DeepMail-org/deepmail-dashboard/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=DeepMail-org/deepmail-dashboard" />
+</a>
+
+### Stargazers
+
+<a href="https://github.com/DeepMail-org/deepmail-dashboard/stargazers">
+  <img src="https://starchart.cc/DeepMail-org/deepmail-dashboard.svg?background=dark&axis=left&labels=false" alt="Stargazers">
+</a>
+
+### Connect
+
+<p align="center">
+  <a href="https://github.com/DeepMail-org">
+    <img src="https://img.shields.io/badge/GitHub-DeepMail--org-181717?style=for-the-badge&logo=github" alt="GitHub">
+  </a>
+  <a href="https://x.com/Vyomjain6904">
+    <img src="https://img.shields.io/badge/X-%40Vyomjain6904-000000?style=for-the-badge&logo=x&logoColor=white" alt="X">
+  </a>
+  <a href="https://www.linkedin.com/in/vyom-jain">
+    <img src="https://img.shields.io/badge/LinkedIn-Vyom%20Jain-0A66C2?style=for-the-badge&logo=linkedin" alt="LinkedIn">
+  </a>
+</p>
